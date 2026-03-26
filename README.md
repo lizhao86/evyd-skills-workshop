@@ -1,6 +1,8 @@
 # 技能 Skills 作坊
 
-面向医疗健康产品团队（EVYD）的 AI 技能工具包，基于 Claude Code Skills 框架构建。覆盖从竞品调研、需求定义、设计落地到文档交付的完整产品流程。
+基于 Claude Code Skills 框架构建的 AI 技能工具包，分两个系列：
+- **evyd-** 系列：面向 EVYD 产品团队，覆盖竞品调研、需求定义、设计落地到文档交付的完整产品流程
+- **ned-** 系列：Ned 个人效率工具，从 Obsidian 知识库自动生成日报和周报
 
 ## 项目简介
 
@@ -15,7 +17,16 @@
 医疗 AI 概念 → 意图分类 → 范围边界规范
 ```
 
+个人效率工具（独立使用）：
+
+```
+Obsidian 会议纪要 + 日记 → [日报生成器] → Obsidian 日报
+Obsidian 日报 + 工作思考 + 会议纪要 → [周报生成器] → Obsidian 周报
+```
+
 ## 技能列表
+
+### evyd- 系列（团队工具）
 
 ### 1. 竞品调研 (Competitor Research)
 
@@ -108,6 +119,53 @@
 
 ---
 
+### ned- 系列（个人效率工具）
+
+> 以下技能绑定 Ned 的 Obsidian 本地知识库路径，不适用于其他用户直接使用。
+
+#### 6. 每日工作报告生成器 (Daily Working Report)
+
+**目录**：`ned-daily-working-report/`
+
+每天下班后，从 Obsidian 自动汇总当天的会议纪要和个人日记，生成简洁的工作日报。
+
+**输入来源**：
+- 当天会议纪要：`/21-Work-会议纪要 💼/`（文件名含当天日期）
+- 当天个人日记：`/10-Notes-晨夕日记 📝/YYYY/MM/`（跳过 Todo 部分）
+
+**输出**：`/24-Work-周报汇总/YYYY-MM-DD EVYD 日报.md`，含工作流水账、下一步汇总、来源索引
+
+**触发词**：`daily-report`、`日报`、`生成日报`
+
+**核心文件**：
+- `SKILL.md` — 主流程与格式规则
+- `assets/template.md` — 日报模板
+- `scripts/generate_daily_report.py` — 自动化脚本
+
+---
+
+#### 7. 每周工作报告生成器 (Weekly Report)
+
+**目录**：`ned-weekly-report/`
+
+每周自动汇总本周日报、工作思考和会议纪要，生成按业务板块分组的结构化周报，体现产品团队负责人视角。
+
+**输入来源**：
+- 本周日报：`/24-Work-周报汇总/`
+- 工作思考：`/22-Work-工作思考 🤔/`
+- 会议纪要：`/21-Work-会议纪要 💼/`
+
+**输出**：`/24-Work-周报汇总/YYYY-MM-DD~YYYY-MM-DD EVYD周报.md`，按业务板块分组，含下周重点和来源索引
+
+**触发词**：`weekly-report`、`周报`、`生成周报`
+
+**核心文件**：
+- `SKILL.md` — 主流程与去重精简规则
+- `assets/template.md` — 周报模板
+- `scripts/generate_weekly_report.py` — 自动化脚本
+
+---
+
 ## 完整工作流
 
 ```
@@ -144,9 +202,17 @@
 │   └── Figma-Make-Prompt-Template.md
 ├── evyd-user-manual/               # 用户手册生成器
 │   └── SKILL.md
-└── evyd-user-story-writer/         # 用户故事编写器
+├── evyd-user-story-writer/         # 用户故事编写器
+│   ├── SKILL.md
+│   └── EVYD-User-Story-Template.md
+├── ned-daily-working-report/       # 每日工作报告生成器（个人）
+│   ├── SKILL.md
+│   ├── assets/template.md
+│   └── scripts/generate_daily_report.py
+└── ned-weekly-report/              # 每周工作报告生成器（个人）
     ├── SKILL.md
-    └── EVYD-User-Story-Template.md
+    ├── assets/template.md
+    └── scripts/generate_weekly_report.py
 ```
 
 ## 输出渠道
