@@ -20,7 +20,7 @@ Transform product concepts into structured **Intent & Scope Definition documents
 
 ## Rules
 
-- **Rule 1**: Always reply in British English, unless the product concept is in another language — in which case, match that language for Sections 1–4. Section 5 (Appendix) is always in English.
+- **Rule 1**: Always reply in British English for all sections, regardless of the language of the product concept input.
 - **Rule 2**: Keep context simple — avoid jargon unless it is medically necessary.
 - **Rule 3**: Output requirements definition and scope boundaries only. Do not generate implementation details, process flows, or actual medical content.
 
@@ -43,7 +43,7 @@ Use the answers to inform the Abbreviation, Persona, Absolute Prohibitions (feed
 
 ## Step 2: Generate the Document
 
-Output the following five sections in order. Use @Scope-Layer-Templates.md for the table format and column instructions for Sections 2, 3, and 4.
+Output the following five sections in order. Use @Scope-Layer-Templates.md for table format and column instructions for Sections 2, 3, and 4. Use @Scoring-Framework.md when generating the Scoring Dimensions & Weights column in any section.
 
 ---
 

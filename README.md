@@ -89,16 +89,22 @@
 
 **目录**：`evyd-ai-intention-brainstorm/`
 
-将医疗 AI 产品概念转换为结构化的意图分类和范围边界规范文档。
+将医疗 AI 产品概念转换为结构化的意图分类和范围边界规范文档，含评估维度与权重打分逻辑。
 
-**适用场景**：AI 产品规划、合规性设计、跨团队对齐
+**适用场景**：AI 产品规划、合规性设计、跨团队对齐、QA 测试用例设计
 
-**输入**：AI 功能概念和使用场景描述
+**输入**：AI 功能概念和使用场景描述（中英文均可）
 
-**输出**：包含三层范围定义的规范文档：
-- **IS（范围内）**：AI 可以处理的意图
-- **HOOS（硬性范围外）**：绝对禁止的场景（如直接诊断）
-- **SOOS（软性范围外）**：需转介医生的场景
+**输出**：英文结构化规范文档，包含三层范围定义：
+- **IS（范围内）**：AI 可以处理的意图，含知识库要求、判定标准、回复结构
+- **HOOS（硬性范围外）**：绝对禁止的场景，含拒绝话术结构
+- **SOOS（软性范围外）**：需转介医生的场景，遵循 Empathy → Education → Boundary → Referral → Disclaimer 模型
+- **每个场景均包含 Scoring Dimensions & Weights**：基于"失败代价"框架，使用 6 个评估维度（Clinical Safety / Medical Accuracy / Information Clarity / Patient Guidance / Empathy & Support / Context Awareness）推导权重，供 AI 评测使用
+
+**核心文件**：
+- `SKILL.md` — 技能主流程
+- `Scope-Layer-Templates.md` — 三层表格格式规范与示例行
+- `Scoring-Framework.md` — 评分维度定义、层级基准权重、权重推导协议（3步）
 
 ---
 
@@ -128,7 +134,8 @@
 ├── OUTPUT_CHANNELS.md              # 共享输出渠道配置（飞书/Obsidian/本地）
 ├── evyd-ai-intention-brainstorm/   # 医疗 AI 意图架构师
 │   ├── SKILL.md
-│   └── Scope-Layer-Templates.md
+│   ├── Scope-Layer-Templates.md
+│   └── Scoring-Framework.md
 ├── evyd-competitor-research/       # 竞品调研
 │   ├── SKILL.md
 │   └── references/
