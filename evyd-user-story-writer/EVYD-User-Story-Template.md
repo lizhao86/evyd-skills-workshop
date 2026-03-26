@@ -14,7 +14,20 @@ Example:
 
 ### Description
 
-2–3 sentences describing the feature context and purpose from the user's perspective.
+**Business Objective**
+<why this feature matters from a business or product perspective>
+
+**User Value**
+<what the target user gains from this>
+
+**Scope**
+<what this story covers>
+
+**Out of Scope**
+<what this story explicitly does NOT cover, or N/A>
+
+**Assumptions**
+<assumptions made due to incomplete requirements, or N/A>
 
 ---
 
@@ -31,15 +44,11 @@ Example:
 
 Use **Given-When-Then-And** format. Requirements:
 
-- Include **at least 5 scenarios**
-- Cover all four path types:
-  - **Happy Path** — primary success flow
-  - **Alternative Paths** — other valid usage flows
-  - **Edge Cases** — uncommon but possible situations
-  - **Error Handling** — invalid input or system failures
+- Cover all applicable scenario types (see Coverage Checklist below)
 - Each scenario must consider: user operation flow, system response, and data changes
 - Add `And` clauses to make criteria more comprehensive
 - Define conditions QA can verify — leave no room for interpretation
+- Do NOT use vague language: ~~should work properly~~, ~~should be user-friendly~~, ~~should be clear~~, ~~should be intuitive~~
 
 **Scenario format:**
 
@@ -50,3 +59,28 @@ Use **Given-When-Then-And** format. Requirements:
 - **Then** [expected result],
 - **And** [additional result] _(if applicable)_
 ```
+
+**Scenario 1: [Scenario Name]**
+- **Given** ...,
+- **When** ...,
+- **Then** ...,
+- **And** ... _(if applicable)_
+
+_(Continue with additional scenarios as needed)_
+
+<!-- ai-context-end -->
+
+---
+
+> 📋 **Human review only — not part of AI context**
+
+| Coverage Category | Status |
+|-------------------|--------|
+| Happy path        | ✅ Scenario N / N/A |
+| Alternative flows | ✅ Scenario N / N/A |
+| Edge cases        | ✅ Scenario N / N/A |
+| Validation rules  | ✅ Scenario N / N/A |
+| Permission / role | ✅ Scenario N / N/A |
+| Empty state       | ✅ Scenario N / N/A |
+| Error handling    | ✅ Scenario N / N/A |
+| UI state changes  | ✅ Scenario N / N/A |

@@ -55,8 +55,9 @@ Obsidian 日报 + 工作思考 + 会议纪要 → [周报生成器] → Obsidian
 **输入**：产品需求描述（平台、系统模块、功能目标）
 
 **输出**：
-- 标准格式的用户故事（标题 + 描述 + 验收标准）
-- 使用 Given-When-Then 格式的验收标准，覆盖主流程、异常流程和边界场景
+- 标准格式的用户故事，Description 包含五节结构：Business Objective / User Value / Scope / Out of Scope / Assumptions
+- 使用 Given-When-Then-And 格式的验收标准，按实际需要覆盖所有适用场景类别（不凑固定数量）
+- AC 末尾附 Coverage Checklist（`<!-- ai-context-end -->` 之后），仅供人工自检，不进入 AI 评审上下文
 - 可选输出到飞书云文档
 
 ---
