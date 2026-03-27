@@ -103,11 +103,6 @@ Use pipe-separated values:
 - `Medical | Ops`
 - `Ops | MOH | Medical`
 
-### Export formatting
-Convert these into arrays:
-- `Ops | BD` -> `["Ops", "BD"]`
-- `-` -> `[]`
-
 ### Mapping guidance
 
 Use `Medical` for:
@@ -196,42 +191,7 @@ Plan months using dependency logic, not source order.
 - incentives
 - avatar / Oyen / brand layers
 
-## 5. Export schema canon
-
-Default export payload:
-
-```json
-{
-  "year": 2026,
-  "items": [
-    {
-      "module": "Routines",
-      "title": "Reusable health plan system",
-      "problem": "Routine capabilities are too tightly coupled to specific scenarios and cannot be reused across broader health management journeys.",
-      "description": "Turn Routine capabilities into a reusable health plan system that can support broader health and disease-management scenarios.",
-      "outcome": "Create a reusable health plan foundation that supports faster rollout across more health programs.",
-      "collaborators": ["Medical"],
-      "author": "lmh",
-      "startMonth": 5,
-      "duration": 3
-    }
-  ]
-}
-```
-
-## 6. Export mapping canon
-
-- `Module` -> `module`
-- `Function` -> `title`
-- `Problem` -> `problem`
-- `Description` -> `description`
-- `Value` -> `outcome`
-- `Resource` -> `collaborators`
-- `Name` -> `author`
-- `startMonth` -> `startMonth`
-- `duration` -> fixed `3` unless overridden
-
-## 7. Empty row rule
+## 5. Empty row rule
 
 Rows with no meaningful planning content are invalid working rows.
 

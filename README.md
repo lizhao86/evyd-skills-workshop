@@ -142,21 +142,15 @@ Obsidian 日报 + 工作思考 + 会议纪要 → [周报生成器] → Obsidian
 **模块化能力**：
 - **Collect + Write**：对话收集场景，并写回指定 Feishu Bitable
 - **Duplicate Check**：检查重复/近重复条目，要求人工判断保留、更新或合并
-- **JSON Export**：按固定 schema 导出 JSON
-- **Future Export Placeholder**：为 Excel / narrative doc 等后续导出方式预留占位
 
 **已内置辅助脚本**：
-- `scripts/export_json.py` — 将本地 records JSON 转换为固定 roadmap export JSON
 - `scripts/detect_duplicates.py` — 做候选重复项扫描（辅助判定，不自动裁决）
 
 **核心文件**：
 - `SKILL.md` — 主流程与模块入口
-- `references/schema.md` — Bitable 字段规范、映射规则、Resource 映射、startMonth 规划 canon
+- `references/schema.md` — Bitable 字段规范、Resource 映射、startMonth 规划 canon
 - `references/collection-write.md`
 - `references/dedup-check.md`
-- `references/export-json.md`
-- `references/export-placeholders.md`
-- `scripts/export_json.py`
 - `scripts/detect_duplicates.py`
 
 ---

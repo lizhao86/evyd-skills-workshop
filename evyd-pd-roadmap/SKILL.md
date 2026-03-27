@@ -1,6 +1,6 @@
 ---
 name: evyd-pd-roadmap
-description: Modular EVYD PD roadmap operations for Feishu Bitable. Use when the user wants to collect roadmap ideas from conversation and write them into a specified Feishu Bitable, check for duplicate or overlapping roadmap rows, assign roadmap planning fields such as Problem / Function / Value / Resource / startMonth, or export roadmap data into a fixed JSON payload for downstream roadmap systems. Also use when the user wants to evolve this workflow toward future export targets such as Excel or narrative docs.
+description: Modular EVYD PD roadmap operations for Feishu Bitable. Use when the user wants to collect roadmap ideas from conversation and write them into a specified Feishu Bitable, check for duplicate or overlapping roadmap rows, or assign roadmap planning fields such as Problem / Function / Value / Resource / startMonth.
 ---
 
 # EVYD PD Roadmap
@@ -12,7 +12,7 @@ Default delivery artifact: structured export.
 
 ## Workflow modules
 
-This skill has four modules.
+This skill has two modules.
 Pick the module that matches the user's request.
 
 ### A. Collect + Write
@@ -36,25 +36,6 @@ Use the script for a first-pass duplicate scan when records are already availabl
 Treat script output as candidate duplicate groups, not final truth.
 The user still decides whether to keep both, update the original, or merge.
 
-### C. JSON Export
-
-Use when the user wants a roadmap JSON payload for another planning or rendering system.
-
-Read:
-- `references/export-json.md`
-
-Script available:
-- `scripts/export_json.py`
-
-Use the script when records have already been dumped to local JSON and a stable export is preferred over ad-hoc transformation.
-
-### D. Future Export Placeholders
-
-Use when the user asks for non-JSON exports that are not implemented yet, such as Excel or narrative docs.
-
-Read:
-- `references/export-placeholders.md`
-
 ## Shared operating rules
 
 Canonical schema and mapping reference:
@@ -63,9 +44,7 @@ Canonical schema and mapping reference:
 Read it when you need:
 - field meaning
 - Resource mapping
-- collaborators export behavior
 - startMonth planning canon
-- export schema canon
 
 
 ### 1. Always anchor on the target Bitable first when writing
@@ -136,8 +115,6 @@ This skill is already proven for the following real pattern:
 2. Fill `Problem`, `Function`, `Value`, `Resource`
 3. Check duplicates
 4. Assign `startMonth`
-5. Export JSON locally
-6. If Feishu cloud upload is unreliable, send JSON back as a chat attachment
 
 ## Output quality bar
 
