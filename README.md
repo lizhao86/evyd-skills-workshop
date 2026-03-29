@@ -226,7 +226,10 @@ Obsidian 日报 + 工作思考 + 会议纪要 → [周报生成器] → Obsidian
 ```
 技能 skills 作坊/
 ├── README.md
-├── OUTPUT_CHANNELS.md              # 共享输出渠道配置（飞书/Obsidian/本地）
+├── OUTPUT_CHANNELS.md              # 输出渠道 Active Config（改两行全局切换）
+├── output-channels/                # 输出渠道协议 skill（4 个渠道详细规则）
+│   ├── SKILL.md
+│   └── references/
 ├── evyd-ai-intention-brainstorm/   # 医疗 AI 意图架构师
 │   ├── SKILL.md
 │   ├── Scope-Layer-Templates.md
@@ -258,16 +261,16 @@ Obsidian 日报 + 工作思考 + 会议纪要 → [周报生成器] → Obsidian
 
 ## 输出渠道
 
-所有技能共用根目录的 `OUTPUT_CHANNELS.md` 管理输出渠道，**改一行即可全局切换**。
+`OUTPUT_CHANNELS.md`（根目录）是全局 Active Config，改两行即可切换所有 skill 的输出方式。
 
-`evyd-pd-roadmap` 当前与 `OUTPUT_CHANNELS.md` 的关系是：
-- **已结合**：它遵循共享的输出通道理念（本地文件 / 飞书 / 聊天附件 fallback）
-- **但不强绑定**：因为它目前主交付物是 `.json` 文件，而根目录 `OUTPUT_CHANNELS.md` 更偏向 Markdown / Feishu Doc 类文本输出协议
+详细协议（Write Protocol / Format Constraints / File Naming）拆在 `output-channels/` skill 的 4 个 reference 文件中：
 
-所以当前策略是：
-- 继续**引用全局输出理念**
-- 不强行把 JSON 导出塞进文档写入协议
-- 当飞书云盘上传工具不稳定时，优先走**聊天附件 fallback**
+| 渠道 | Reference |
+|---|---|
+| feishu + lark-cli | `output-channels/references/feishu-lark-cli.md` |
+| feishu + openclaw | `output-channels/references/feishu-openclaw.md` |
+| obsidian + local-fs | `output-channels/references/obsidian-local-fs.md` |
+| local-markdown + local-fs | `output-channels/references/local-markdown-local-fs.md` |
 
 ## 技术栈
 
