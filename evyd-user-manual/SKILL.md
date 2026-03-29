@@ -94,7 +94,7 @@ Ask the user: *"Does this look right? Let me know if any UI labels, steps, or tr
 
 ## Output Channel
 
-When the user requests writing output to a doc / cloud storage, read `../OUTPUT_CHANNELS.md` for the active channel’s write protocol, format constraints, and naming convention.
+When the user requests writing output to a doc / cloud storage, read `../evyd-output-channels/SKILL.md` for the active channel’s write protocol, format constraints, and naming convention.
 
 - File type: `「Manual」`
 - Default folder: ask the user if not specified

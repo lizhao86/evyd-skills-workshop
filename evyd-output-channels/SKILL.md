@@ -1,16 +1,26 @@
 ---
-name: output-channels
+name: evyd-output-channels
 description: Output channel protocols for writing skill results to Feishu, Obsidian, or local Markdown. Use when a skill needs to write output and must follow the correct write protocol, format constraints, and file naming convention for the active channel.
 ---
 
-# Output Channels
+# EVYD Output Channels
 
 Shared output protocol for all EVYD skills.
 
-Active channel is set in `../OUTPUT_CHANNELS.md`.
-Read it first to determine which channel applies, then load the corresponding reference.
+## Active Config
+
+```yaml
+destination: feishu      # feishu | obsidian | local-markdown
+executor: lark-cli       # lark-cli | openclaw | local-fs
+```
+
+改这两行即可切换全部 skill 的输出方式。
+- `destination` — 写到哪里
+- `executor` — 用什么工具写
 
 ## Channel map
+
+Read the Active Config above, then load the matching reference file only.
 
 | destination | executor | Reference |
 |---|---|---|
@@ -19,5 +29,4 @@ Read it first to determine which channel applies, then load the corresponding re
 | `obsidian` | `local-fs` | `references/obsidian-local-fs.md` |
 | `local-markdown` | `local-fs` | `references/local-markdown-local-fs.md` |
 
-Load only the reference that matches the active config.
-Do not load all four.
+Do not load all four. Load only the one that matches.

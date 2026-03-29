@@ -56,7 +56,7 @@ description: |-
 4. 等待全部完成，合并输出 + 生成 Normalized Summary
 5. 读取 `references/report-template.md` 获取文档结构模板
 6. 读取 `references/taxonomy.md` 确定 System/Module 归类
-7. 按 `../OUTPUT_CHANNELS.md` 中 active channel 的协议输出文档，目标文件夹 `G1tGfI3wFldgE3d2JKscrj1InHc`
+7. 按 `../evyd-output-channels/SKILL.md` 中 active channel 的协议输出文档，目标文件夹 `G1tGfI3wFldgE3d2JKscrj1InHc`
    - 文件名：`For {User昵称} - 👊「Research」{System} - {Company_ProductName} - {Module} {date}`
 8. 进入追问模式：读取 `references/followup-prompt.md`，生成 3 个深挖问题
 
@@ -79,7 +79,7 @@ description: |-
 2. 逐个读取，提取 Normalized Summary + Evidence Table + Links
 3. 读取 `references/landscape-prompt.md` 获取全景分析输出模板
 4. 综合生成全景报告
-5. 按 `../OUTPUT_CHANNELS.md` 中 active channel 的协议输出文档
+5. 按 `../evyd-output-channels/SKILL.md` 中 active channel 的协议输出文档
    - 文件名：`For {User昵称} - 👊「Landscape」{System} - 全景分析 - {date}`
 
 ---

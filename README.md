@@ -226,8 +226,7 @@ Obsidian 日报 + 工作思考 + 会议纪要 → [周报生成器] → Obsidian
 ```
 技能 skills 作坊/
 ├── README.md
-├── OUTPUT_CHANNELS.md              # 输出渠道 Active Config（改两行全局切换）
-├── output-channels/                # 输出渠道协议 skill（4 个渠道详细规则）
+├── evyd-output-channels/           # 输出渠道 skill（Active Config + 4 个渠道协议）
 │   ├── SKILL.md
 │   └── references/
 ├── evyd-ai-intention-brainstorm/   # 医疗 AI 意图架构师
@@ -261,16 +260,14 @@ Obsidian 日报 + 工作思考 + 会议纪要 → [周报生成器] → Obsidian
 
 ## 输出渠道
 
-`OUTPUT_CHANNELS.md`（根目录）是全局 Active Config，改两行即可切换所有 skill 的输出方式。
-
-详细协议（Write Protocol / Format Constraints / File Naming）拆在 `output-channels/` skill 的 4 个 reference 文件中：
+`evyd-output-channels/SKILL.md` 包含 Active Config 和 4 个渠道的完整协议，改两行即可切换所有 skill 的输出方式。
 
 | 渠道 | Reference |
 |---|---|
-| feishu + lark-cli | `output-channels/references/feishu-lark-cli.md` |
-| feishu + openclaw | `output-channels/references/feishu-openclaw.md` |
-| obsidian + local-fs | `output-channels/references/obsidian-local-fs.md` |
-| local-markdown + local-fs | `output-channels/references/local-markdown-local-fs.md` |
+| feishu + lark-cli | `evyd-output-channels/references/feishu-lark-cli.md` |
+| feishu + openclaw | `evyd-output-channels/references/feishu-openclaw.md` |
+| obsidian + local-fs | `evyd-output-channels/references/obsidian-local-fs.md` |
+| local-markdown + local-fs | `evyd-output-channels/references/local-markdown-local-fs.md` |
 
 ## 技术栈
 
