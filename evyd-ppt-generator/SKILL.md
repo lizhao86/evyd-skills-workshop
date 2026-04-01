@@ -1,14 +1,9 @@
 ---
 name: evyd-ppt-generator
-description: Generate professional EVYD-branded PPTX presentations from a content JSON file. Uses the EVYD Aptos template for native-editable slides (real shapes + text, not screenshots). Triggered by PPT creation requests related to EVYD content.
-triggers:
-  - "生成PPT"
-  - "做幻灯片"
-  - "演示文稿"
-  - "ppt generator"
-  - "make slides"
-  - "create presentation"
-  - "EVYD ppt"
+description: >
+  Generate professional EVYD-branded PPTX presentations from a content JSON file.
+  Uses the EVYD Aptos template for native-editable slides (real shapes + text, not screenshots).
+  Use when the user asks to 生成PPT, 做幻灯片, 演示文稿, make slides, create presentation, ppt generator, or EVYD ppt.
 ---
 
 # EVYD PPT Generator Skill

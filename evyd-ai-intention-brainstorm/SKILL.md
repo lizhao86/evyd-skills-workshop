@@ -6,10 +6,10 @@ description: |-
   Use proactively when user describes a Medical AI product concept and needs to explore what the AI should handle.
 
   Examples:
-  - user: "App 内的 AI 用药助手，面向患者，中文，提供安全用药评估和处方解读。禁止：修改处方、推荐处方药" → parse concept + hard rules, generate Use Case Overview + IS/HOOS/SOOS + Missing Intent Suggestions
-  - user: "医生端 Console 的 AI 问诊转录助手，面向医生，中文，实时语音转文字 + 结构化 + 情绪/危险信号识别，输出结构化记录" → generate Use Case Overview + IS/HOOS/SOOS + Missing Intent Suggestions
-  - user: "Patient-facing health coaching AI, English (AU), mobile app. Absolute rule: never diagnose." → generate Use Case Overview + IS/HOOS/SOOS with hard prohibition in HOOS + Missing Intent Suggestions
-  - user: "帮我把这个想法的边界定义好，哪些 AI 能答，哪些要拒绝" → clarify target user + channel if missing, then generate full document
+  - user: "App 内的 AI 用药助手，面向患者，中文，提供安全用药评估和处方解读。禁止：修改处方、推荐处方药" → generate IS/HOOS/SOOS + Missing Intent Suggestions
+  - user: "医生端 Console 的 AI 问诊转录助手，面向医生，中文，实时语音转文字 + 结构化 + 情绪/危险信号识别" → generate IS/HOOS/SOOS
+  - user: "Patient-facing health coaching AI, English (AU). Absolute rule: never diagnose." → generate IS/HOOS/SOOS with hard prohibition
+  - user: "帮我把这个想法的边界定义好" → clarify target user + channel if missing, then generate full document
 ---
 
 # Medical AI Intent Architect
