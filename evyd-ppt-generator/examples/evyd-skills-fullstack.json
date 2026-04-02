@@ -1,0 +1,92 @@
+{
+  "meta": {
+    "title": "EVYD Skills全栈团队课题",
+    "free_style": "dark_navy",
+    "template": "/Users/Li.ZHAO/Documents/EVYD PPT Template Aptos.pptx",
+    "output": "/Users/Li.ZHAO/Desktop/EVYD-Skills全栈团队课题.pptx"
+  },
+  "slides": [
+    {
+      "type": "cover",
+      "title": "基于 Skills 技术构建企业全栈 AI 团队",
+      "subtitle": "——面向组织转型的人机协作新范式探索 · EVYD Technology"
+    },
+    {
+      "type": "bullets_with_panel",
+      "section": "01 — 背景与痛点",
+      "title": "组织转型中的 AI 协作断层",
+      "background": "blue",
+      "bullets": [
+        "企业内部存在大量「为人设计」的标准化工具：表单、界面、Excel 流程",
+        "这些工具在 AI 时代成为瓶颈——输入碎片化、产出不可复用、流程无法自动化",
+        "团队之间缺乏统一的「AI 可理解」的工作流标准",
+        "组织转型需要的不是更多工具，而是重新定义人与 AI 之间的协作边界"
+      ],
+      "side_panel": {
+        "type": "quote",
+        "text": "原本为人设计的效率工具，正在成为 AI 时代的新摩擦。"
+      }
+    },
+    {
+      "type": "criteria_rows",
+      "section": "02 — 现有成果",
+      "title": "产品团队已实现的全流程 Skills 覆盖",
+      "subtitle": "从需求撰写到数据分析，产品工作流已全面 AI 化",
+      "background": "blue",
+      "criteria": [
+        { "num": "01", "label": "需求 & 概念设计", "text": "用户故事撰写、AC 生成、LoFi 原型 Prompt 自动产出" },
+        { "num": "02", "label": "质量 & 验证", "text": "测试脚本生成、成功指标梳理、用户手册自动生成" },
+        { "num": "03", "label": "设计 & 分析", "text": "Figma 设计评估、用户视角评审报告、数据分析结论生成" },
+        { "num": "04", "label": "知识 & 竞品", "text": "竞品调研报告、路线图管理、意图边界定义（AI Intention Brainstorm）" }
+      ]
+    },
+    {
+      "type": "scope_tiers",
+      "section": "03 — 课题目标",
+      "title": "构建企业级全栈 AI 工作流",
+      "subtitle": "将 Skills 范式从产品团队扩展至全价值链",
+      "background": "blue",
+      "tiers": [
+        { "color": [39,174,96],  "icon": "🟢", "label": "已验证 — 产品团队",     "desc": "需求 → 设计 → 测试 → 数据分析，Skills 流水线完整闭环",           "example": "e.g. User Story → AC → LoFi → 用户手册" },
+        { "color": [52,152,219], "icon": "🔵", "label": "本课题 — 上下游扩展",   "desc": "医学论证 → 产品 → 设计 → 研发 → 测试 → 项目管理 → 数据分析",     "example": "e.g. 医学需求 Skill / 研发接口文档 Skill / 项目周报 Skill" },
+        { "color": [230,126,34], "icon": "🟠", "label": "探索 — 人机关系重构",   "desc": "定义新的「人类判断点」与「AI 自动化点」，建立组织级 AI 工作规范",  "example": "e.g. 哪些决策必须人审？哪些可全自动？" },
+        { "color": [155,89,182], "icon": "🟣", "label": "愿景 — 可复用 Skill 库", "desc": "沉淀跨团队通用 Skills，形成 EVYD 内部 AI 能力资产",               "example": "e.g. 不同团队共用同一套「报告生成」Skill" }
+      ]
+    },
+    {
+      "type": "two_column_steps",
+      "section": "04 — 交付物 & 团队",
+      "title": "课题交付物与实习生要求",
+      "background": "blue",
+      "columns": [
+        {
+          "title": "📦  三大交付物",
+          "steps": [
+            { "bold": "全栈 Skills 原型",   "normal": "覆盖至少 3 个跨团队场景的可运行 Skill 工作流" },
+            { "bold": "SOP 接入文档",       "normal": "各团队 Skill 接入标准、输入/输出规范、Prompt 模板库" },
+            { "bold": "场景验证报告",       "normal": "真实业务场景下的效率对比、人机协作边界分析" }
+          ]
+        },
+        {
+          "title": "👥  实习生专业要求",
+          "steps": [
+            { "bold": "计算机 / 软件工程",  "normal": "熟悉 Python、API 集成，能开发和调试 Skill 脚本" },
+            { "bold": "信息管理 / 医学信息", "normal": "理解医疗业务流程，能参与医学论证场景的 Skill 设计" },
+            { "bold": "产品 / HCI",          "normal": "具备用户研究能力，能评估 AI 工作流的可用性与人机协作体验" }
+          ]
+        }
+      ],
+      "warning": "🎓  指导团队：Ned（产品负责人）+ 各业务线团队负责人（医学、研发、测试、项目、数据）"
+    },
+    {
+      "type": "ending",
+      "title": "一起探索 AI 时代的新型团队",
+      "subtitle": "Skills × 全栈团队 × 人机协作新范式",
+      "actions": [
+        { "icon": "🛠", "title": "动手即研究",   "desc": "课题成果直接落地 EVYD 真实业务，不是纸上报告" },
+        { "icon": "🔗", "title": "跨团队协作",   "desc": "与产品、研发、医学、数据等多个真实团队共创" },
+        { "icon": "🚀", "title": "前沿 AI 实践", "desc": "基于 Claude Skills 等最新 Agentic AI 技术" }
+      ]
+    }
+  ]
+}
