@@ -220,8 +220,11 @@ python gen_pptx.py content.json --output output.pptx
 所有 evyd- 技能共用的输出渠道配置与协议。在 `SKILL.md` 顶部改两行 YAML 即可全局切换输出方式。
 
 **支持渠道**：
-- **feishu + lark-cli**：本地 Claude Code CLI 通过 lark-cli 写入飞书云文档
-- **feishu + openclaw**：通过飞书机器人调用 OpenClaw 写入（待接入）
+- **feishu + lark-cli**：通过 lark-cli 写入飞书 / Lark 文档
+  - ⚠️ Cowork 模式下 lark-cli 在用户本机，必须通过 Desktop Commander 的 `start_process` 执行（不能在 sandbox 里跑）
+  - ⚠️ 长内容不能直接作为 `--markdown` 参数，需先用 `write_file` 写入 `/tmp/content.md`，再用 `$(cat /tmp/content.md)` 引用
+  - 支持 `feishu`（飞书国内版）和 `lark`（Lark 国际版 larksuite.com）两种 brand，通过 `lark-cli config init --brand lark` 切换
+- **feishu + openclaw**：通过飞书机器人调用 OpenClaw 写入（待接入，接口细节待补充）
 - **obsidian + local-fs**：写入本地 Obsidian vault，支持模板映射
 - **local-markdown + local-fs**：写入本地桌面 Markdown 文件
 
