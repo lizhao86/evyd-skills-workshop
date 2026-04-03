@@ -13,9 +13,11 @@
 ```
 市场/竞品 → 竞品调研报告（飞书）
                   ↓
-产品需求 → 用户故事 + AC → Figma 线框图脚本 → 低保真原型
-                              ↓                        ↓
-                        User Manual（用户手册）   设计评审（用户视角反馈 + Heuristic 评分）
+产品需求（零散输入）→ [需求拆解器] Requirement Ticket（Y Model + UC + Story Scope + Dependency）
+                                              ↓
+                              [用户故事编写器] → 用户故事 + AC → Figma 线框图脚本 → 低保真原型
+                                                                      ↓                        ↓
+                                                               User Manual（用户手册）   设计评审（用户视角反馈 + Heuristic 评分）
 产品内容 → PPT 内容 JSON → EVYD Aptos 幻灯片（可编辑 .pptx）
 医疗 AI 概念 → 意图分类 → 范围边界规范
 产品路线图想法 → 飞书多维表沉淀 → 重复检查 → startMonth 排期
@@ -116,6 +118,35 @@ python gen_pptx.py content.json --output output.pptx
 - 可选输出到飞书云文档
 
 ---
+
+
+---
+
+### 2.5. 需求拆解器 (Requirement Breakdown)
+
+**目录**：`evyd-requirement-breakdown/`
+
+将零散的产品想法、会议纪要、客户反馈等非结构化输入，转换为规范化的 Jira Requirement Ticket，使用 Y Model 框架（WHAT / WHY / HOW）进行分析。
+
+**适用场景**：需求启动阶段、BA 整理需求、PM 对齐跨团队依赖
+
+**输入**：任意形式的产品需求描述（文字、会议纪要、Figma 链接、聊天记录等）
+
+**输出**：结构化 Requirement Ticket（英文 Markdown），包含：
+- **WHAT**：用户场景分析
+- **WHY**：业务目标与用户动机
+- **HOW**：
+  - **Use Cases**：用户旅程 + 功能边界定义表格
+  - **User Story Scope**：产品与技术功能清单（直接作为 `/evyd-user-story-writer` 的输入）
+  - **Dependency Scope**：跨团队协作 TODO，含时机标注（前置 / 可并行 / 上线后）
+- **Clarifying Questions**：针对未确认假设的追问
+
+**触发词**：`需求拆解`、`requirement breakdown`、`帮我整理需求`、`做个 requirement doc`
+
+**工作流位置**：`evyd-user-story-writer` 的上游 skill
+
+**核心文件**：
+- `SKILL.md` — 主流程与输出格式规范
 
 ### 3. 低保真 Figma 脚本生成器 (LoFi Figma Maker)
 
@@ -333,6 +364,8 @@ content.json（模型生成，约 400 tokens / 15 页）
         ↓
 2. 描述产品需求
         ↓
+2.5 [需求拆解器] 生成 Requirement Ticket（Y Model + UC + Story Scope + Dependency）
+        ↓
 3. [用户故事编写器] 生成用户故事 + 验收标准
         ↓
 4. [Figma 脚本生成器] 生成 Figma Make 提示词   →  [用户手册生成器] 生成 User Manual
@@ -372,6 +405,8 @@ content.json（模型生成，约 400 tokens / 15 页）
 │   ├── SKILL.md
 │   └── Figma-Make-Prompt-Template.md
 ├── evyd-user-manual/               # 用户手册生成器
+│   └── SKILL.md
+├── evyd-requirement-breakdown/     # 需求拆解器（Y Model + UC + Story Scope + Dependency）
 │   └── SKILL.md
 ├── evyd-user-story-writer/         # 用户故事编写器
 │   ├── SKILL.md
