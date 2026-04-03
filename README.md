@@ -32,6 +32,26 @@ Obsidian 日报 + 工作思考 + 会议纪要 → [周报生成器] → Obsidian
 
 ### evyd- 系列（团队工具）
 
+### Repo Workflow. EVYD 远程仓库规则 (Remote Repo Rules)
+
+**目录**：`evyd-remote-repo-rules/`
+
+约束 EVYD/Ned skills 的 GitHub 仓库工作流：真仓库放在独立 repo，`workspace/skills/` 只暴露各 skill 入口，不允许出现嵌套仓库目录。用于新建 skill、同步 GitHub 更新、修正软链接暴露、以及把本地 skill 修改提交回 GitHub。
+
+**适用场景**：
+- 新建一个 EVYD/Ned skill
+- 说“evydskills 更新了，git”
+- 修复 `workspace/skills/` 目录结构
+- 把 skill 改动提交/推送到 GitHub
+
+**核心规则**：
+- Git 真仓库：`/root/.openclaw/repos/evyd-skills-made-by-Ned`
+- 运行时暴露：`/root/.openclaw/workspace/skills/<skill-name>`
+- `workspace/skills/` 下 EVYD/Ned skill 应为指向 repo 的软链接，而不是副本
+- Git 操作一律在 repo 目录执行
+
+---
+
 ### 0. EVYD PPT 生成器 (PPT Generator)
 
 **目录**：`evyd-ppt-generator/`
