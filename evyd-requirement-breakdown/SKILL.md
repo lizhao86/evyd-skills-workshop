@@ -2,9 +2,9 @@
 name: evyd-requirement-breakdown
 description: |-
   Transform scattered product ideas and client inputs into a structured Jira Requirement Ticket using the Y Model framework.
-  Use when a PM or BA needs to consolidate vague or unstructured requirements into a formal requirement document with Use Cases, User Story Scope, and cross-team Dependency tracking.
+  Use when a PM or BA needs to consolidate vague or unstructured requirements into a formal requirement document with Use Cases, Feature Scope, and cross-team Dependency tracking.
   Use proactively when the user shares product ideas, meeting notes, client requests, Figma links, or any unstructured input and wants to formalise it into a requirement document.
-  Upstream of evyd-user-story-writer — the User Story Scope section feeds directly into user story generation.
+  Upstream of evyd-user-story-writer — the Feature Scope section feeds directly into user story generation.
 
   Examples:
   - user: "我有个新需求，AI 转录 + PHR 总结，在文莱 Flu Clinic 落地" → analyse with Y Model, output full Requirement Ticket
@@ -41,7 +41,7 @@ Analyse the input across three dimensions:
 
 - **WHAT** — User Scenario: Who is the user, what environment are they in, what problem do they face?
 - **WHY** — User Motivation: What is the business objective? What user need drives this requirement?
-- **HOW** — Proposed Solutions: Break down into three structured components — Use Cases, User Story Scope, and Dependency Scope.
+- **HOW** — Proposed Solutions: Keep all requirement breakdown content under HOW. Break down into three structured components — Use Cases, Feature Scope, and Dependency Scope. Place Module Legend inside each UC as a distilled module explanation, not as a standalone top-level section.
 
 ## Step 3: Generate Output
 
@@ -61,23 +61,25 @@ Follow the exact structure below:
 
 ## HOW (Proposed Solutions)
 
+All requirement breakdown detail belongs under HOW. Present the sections below in this order.
+
 ### Use Cases
 
 Define the functional boundary. Each UC represents a distinct user journey and implicitly describes the function modules it touches. Challenge the input — identify journeys the client may have missed.
+
+For each UC, include a short **Module Legend** immediately after the journey or in the same subsection, summarising the modules involved and what each module is responsible for. Do not create Module Legend as a standalone top-level section outside the UC context.
 
 | UC-ID | Use Case | User Journey | Function Modules Covered |
 |-------|----------|--------------|--------------------------|
 | UC-1  | ...      | Step 1 → Step 2 → Step 3 | Module A · Module B |
 
-### User Story Scope
+### Feature Scope
 
-Full list of product and technical features required to support the Use Cases above. Organised by functional module. This section is the direct input for `/evyd-user-story-writer`.
+Full list of product and technical features required to support the Use Cases above. Organise by functional module. Use `Fxx` numbering consistently. This section is the direct upstream input for `/evyd-user-story-writer`.
 
 | ID  | Feature | Module | Related UC |
 |-----|---------|--------|------------|
 | F01 | ...     | ...    | UC-1/2     |
-
-List all modules used as a legend below the table.
 
 ### Dependency Scope
 
@@ -100,6 +102,10 @@ Organise by team. For each team, list items as a sub-section.
 
 [3–5 targeted open questions about unresolved assumptions. Focus only on questions that would materially change the scope or design. Scale down naturally as the requirement document becomes more detailed.]
 
+## Notes
+
+[Optional implementation notes, caveats, assumptions, or boundary statements that do not belong in the formal requirement breakdown itself. Keep concise.]
+
 ---
 
 ## Additional Guidelines
@@ -110,6 +116,9 @@ Organise by team. For each team, list items as a sub-section.
 - If the input contains ambiguities, acknowledge them explicitly and offer alternative interpretations
 - Keep output concise — avoid padding sections with generic statements
 - The Dependency Scope should reflect the specific deployment context (e.g., regulatory requirements differ by country)
+- Requirement Breakdown content must sit fully under **HOW (Proposed Solutions)**; do not float Use Cases / Feature Scope / Dependency Scope outside HOW
+- Prefer `Feature Scope` over `User Story Scope` in titles and explanatory text
+- Place `Module Legend` inside each UC context, immediately following the relevant use case, instead of as a detached section
 
 ## Output Channel
 
