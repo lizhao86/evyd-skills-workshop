@@ -210,3 +210,17 @@ When the user describes a style in natural language, parse using these dimension
 | Formality | 轻松/活泼/个性 | 专业 | 正式/庄重/官方 |
 
 Use these dimensions to select the closest available style, or suggest creating a new one.
+
+---
+
+## 9. Design Anti-Patterns (avoid these)
+
+- Don't repeat the same layout on consecutive slides — vary columns, cards, and callouts
+- Don't center body text — left-align paragraphs; center only titles and cover text
+- Don't skimp on size contrast — titles need 24pt+ vs. 12–15pt body
+- Don't default to blue for everything — pick colors that match the topic and audience
+- Don't mix spacing randomly — choose 0.3" or 0.5" gaps and apply consistently
+- Don't style one slide and leave the rest plain — commit to the visual motif fully
+- Don't create text-only slides — add visual elements (cards, panels, colored rows)
+- NEVER use accent lines under titles — use whitespace or background color contrast instead
+- Don't use more than one visual motif per deck — pick ONE distinctive element (rounded cards, colored left bars, icon circles) and repeat it across every content slide

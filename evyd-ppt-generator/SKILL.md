@@ -81,6 +81,21 @@ Three-layer separation:
 
 ---
 
+## When to Use Which Mode
+
+| Signal | Recommended Mode | Why |
+|--------|-----------------|-----|
+| External audience (clients, government, investors) | `hybrid` or `free` | Need visual polish beyond template |
+| Internal team update, speed priority | `template` | Fast, consistent, "good enough" |
+| User provides custom `.pptx` template | `template` | Respect template as design system |
+| Style keywords: "时尚/大胆/极简/custom/premium" | `free` | Needs full design control |
+| EVYD-branded + custom content colors | `hybrid` (default) | Best of both worlds |
+| Explicit: "用模板/quick/fast" | `template` | Speed-focused request |
+
+When unclear, ask: **这个 PPT 是对外展示还是内部沟通？需要高品质定制还是快速出稿？** — then route accordingly.
+
+---
+
 ## Workflow
 
 ### Phase 1 — Gather requirements (ask user)
@@ -130,12 +145,22 @@ python3 gen_pptx.py content.json --mode template --style evyd_blue \
 
 CLI flags override `meta` values.
 
-### Phase 4 — Visual QA loop
+### Phase 4 — QA & verification loop
 
-After generating, always do a visual pass before delivering:
+After generating, always do a full pass before delivering.
 
+#### Content QA (text extraction)
 ```bash
-# Option A: Convert to images for quick inspection
+# Extract all text — check for missing content, typos, wrong slide order
+python -m markitdown output.pptx
+
+# Detect leftover placeholders or dummy text
+python -m markitdown output.pptx | grep -iE "\bx{3,}\b|lorem|ipsum|\bTODO|\[insert"
+```
+
+#### Visual QA (convert to images)
+```bash
+# Option A: Convert to images for per-slide inspection
 /Applications/LibreOffice.app/Contents/MacOS/soffice --headless \
   --convert-to pdf "/path/to/output.pptx" --outdir /tmp/
 pdftoppm -jpeg -r 150 /tmp/output.pdf /tmp/slide
@@ -145,8 +170,26 @@ open /tmp/slide-*.jpg
 open "/path/to/output.pptx"
 ```
 
-Inspect each slide for text overflow, overlap, wrapping issues. Fix coordinates
-in `gen_pptx.py` if needed, then re-run.
+#### QA checklist
+
+Assume there are problems — your job is to find them:
+
+- Overlapping elements (text through shapes, lines through words)
+- Text overflow or cut off at edges / box boundaries
+- Elements too close (< 0.3" gaps) or uneven spacing
+- Insufficient margin from slide edges (< 0.5")
+- Low-contrast text (light gray on cream, dark icons on dark backgrounds)
+- Leftover placeholder content or template dummy text
+- Columns or similar elements not aligned consistently
+- Text boxes too narrow causing excessive wrapping
+
+Fix coordinates in `gen_pptx.py` or adjust content.json, then re-run.
+Repeat until a full pass finds no new issues.
+
+#### File hygiene
+
+All intermediate files (QA images, PDF conversions, temp JSON) go to `/tmp/`.
+Only the final `.pptx` goes to the user's output directory.
 
 ---
 
