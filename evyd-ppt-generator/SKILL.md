@@ -30,6 +30,34 @@ Always consult this file when deciding:
 - Whether to use `"blue"` or `"white"` background
 - How to write concise titles and bullets
 
+### Optional upstream skills (style brainstorming)
+
+When the user's style direction is vague ("做个好看的"、"科技感一点") and the built-in
+`design-guidelines.md` style mapping is not enough, check if either of these skills
+is available. If installed, use them **before** Phase 2 (content.json generation) to
+explore palettes, font pairings, and design directions. If not installed, fall back
+to `design-guidelines.md` — the core workflow does not depend on them.
+
+| Skill | What it does | How to use with PPT |
+|-------|-------------|---------------------|
+| **typeui** | 66 pre-built design system specs (glassmorphism, corporate, etc.) | `npx typeui.sh pull <slug>` → read the color/typography tokens → inform style choice |
+| **ui-ux-pro-max** | Searchable DB: 67 UI styles, 161 palettes, 57 font pairings | `python3 search.py "<query>" --design-system` → extract recommended colors/style → map to a `styles/*.json` or create a new one |
+
+**Integration pattern:**
+```
+User: "帮我做个科技感的 AI 产品 PPT"
+  │
+  ├─ [if ui-ux-pro-max available] → search "AI tech modern" → get palette + style direction
+  ├─ [if typeui available]        → pull "futuristic" or "corporate" → read tokens
+  └─ [fallback]                   → design-guidelines.md § Color Psychology → recommend cooltech
+  │
+  ▼
+Select/create styles/<name>.json → generate content.json → run gen_pptx.py
+```
+
+> **Key rule**: These skills are **optional enhancements**, not dependencies. Never fail
+> or ask the user to install them. If unavailable, silently use built-in guidelines.
+
 ---
 
 ## Architecture
