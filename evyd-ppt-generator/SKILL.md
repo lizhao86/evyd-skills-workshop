@@ -91,10 +91,15 @@ npm install pptxgenjs   # one-time; installs to local node_modules/
 
 ### Phase 1 — Choose (or add) a style
 
-Available styles in `styles/`:
-| Name | Description |
-|------|-------------|
-| `dark_navy` | Deep navy + teal + orange. Premium look for strategy / research decks. |
+All styles use **Aptos** font. Pick by mood/audience:
+
+| Style | Base tone | Primary accent | Secondary | Best for |
+|-------|-----------|---------------|-----------|----------|
+| `dark_navy` | Deep navy `0B1F3A` | Orange `E87722` | Teal `17A589` | Strategy decks, internal pitches |
+| `cooltech` | Space blue `0D1B2A` | Cyan `00C9C8` | Purple `7B61FF` | AI / SaaS / healthcare tech |
+| `morandi` | Slate blue `5C7080` | Dusty rose `C4857A` | Sage `8FAF9F` | Culture, brand, upscale reports |
+| `warm` | Espresso `2C1810` | Coral `E8622A` | Amber `F0A830` | Education, patient-facing, training |
+| `monochrome` | Charcoal `111111` | White-grey `EEEEEE` | Mid-grey `888888` | Executive briefs, editorial, fashion |
 
 To add a new style: copy `styles/dark_navy.js`, rename it, and edit the `colors`, `fonts`, and `motifs` blocks. No other files need changing.
 
@@ -150,29 +155,52 @@ Alternatively, open the `.pptx` directly in PowerPoint to inspect slide-by-slide
 
 ## Style System (styles/*.js)
 
-Each style file exports a single config object:
+All styles use **Aptos** font. Each style file exports three blocks:
 
 ```javascript
 module.exports = {
   name: "my_style",
-  description: "Short description shown in CLI error messages.",
+  description: "Short description.",
 
+  // ── Colors (21 tokens) ─────────────────────────────────────────────────
   colors: {
-    bg_primary:    "0B1F3A",  // cover / ending background
-    bg_content:    "1A5276",  // main content background
-    accent_orange: "E87722",  // primary accent
-    accent_teal:   "17A589",  // secondary accent
-    // ... (copy dark_navy.js for the full list of required keys)
+    bg_primary:    "0B1F3A",  // cover / ending background (dark)
+    bg_content:    "1A5276",  // main content slide background (dark)
+    bg_white:      "FFFFFF",  // light slide background
+    bg_row:        "F4F6F8",  // row/card bg on white slides
+    bg_card:       "FFFFFF",  // card background
+
+    accent_orange: "E87722",  // PRIMARY accent — tags, dots, left bar top
+    accent_teal:   "17A589",  // SECONDARY accent — borders, numbers, left bar bottom
+    accent_dark2:  "102740",  // darker bg for tag/badge backgrounds
+
+    header_bg:     "0B1F3A",  // slide header strip
+    header_sep:    "3A5570",  // header separator line
+
+    text_white:    "FFFFFF",
+    text_primary:  "D8E8F4",  // body text on dark backgrounds
+    text_muted:    "6B8BA4",  // subtitle / muted text
+    text_navy:     "1C2B3A",  // body text on white backgrounds
+    text_mid:      "3D5166",  // secondary text on white
+    text_blue_lt:  "7AAABF",  // light subtitle on blue slides
+    text_dim:      "9BBFD4",  // dimmed text in cards
+    text_example:  "6899AA",  // italic example text in tier rows
+
+    slide_num:     "3A5570",  // slide number (dark slides)
+    slide_num_lt:  "BBBBBB",  // slide number (light slides)
+    warning_bg:    "1C3A52",  // bottom warning bar background
   },
 
+  // ── Typography ─────────────────────────────────────────────────────────
   fonts: {
-    heading: "Georgia",    // serif — titles, large numbers
-    body:    "Calibri",    // sans — body text, labels, bullets
+    heading: "Aptos",   // titles, large numbers, cover
+    body:    "Aptos",   // body text, labels, bullets
   },
 
+  // ── Visual motifs ──────────────────────────────────────────────────────
   motifs: {
-    left_bar_colors:  ["E87722", "17A589"],  // cover decorative bar
-    header_tag_color: "E87722",              // section tag text
+    left_bar_colors:  ["E87722", "17A589"],  // cover gradient bar [top, bottom]
+    header_tag_color: "E87722",
     bullet_dot_color: "E87722",
     number_color:     "17A589",
     row_border_color: "17A589",
@@ -206,11 +234,17 @@ module.exports = {
 `free_style` → used by `gen_free.js` (free-design mode)
 
 ### Available template-mode styles
-| Name | Description |
-|------|-------------|
-| `evyd_blue` | Navy header + blue backgrounds. Default for internal/MOH presentations. |
-| `evyd_white` | White backgrounds throughout. Good for printed handouts. |
-| `evyd_teal`  | Dark navy + teal accent. High-contrast for external events. |
+
+Template mode uses the EVYD Aptos `.pptx` template — styles stay within EVYD brand.
+All use **Aptos** font.
+
+| Style | Background | Accent | Best for |
+|-------|-----------|--------|----------|
+| `evyd_blue` | Navy `172E41` | Teal `2CD5C3` | Default — internal / MOH presentations |
+| `evyd_white` | White | Blue `0076B3` | Printed handouts |
+| `evyd_teal` | Dark navy `0A1E30` | Teal `2CD5C3` | External events, high-contrast |
+
+> For custom visual styles (non-EVYD-branded), use **Free-design mode** instead.
 
 ### Slide types
 
@@ -418,7 +452,7 @@ Thank-you / call-to-action slide.
 3. Set `"free_style": "<new_name>"` in your `content.json`, or pass `--style <new_name>` at CLI
 4. No changes to `gen_free.js` needed
 
-Style ideas: `cyberpunk` (neon green on black), `red_line` (bold red + white), `minimal` (grey + mono), `sunrise` (warm orange + cream).
+Style ideas: `vibrant` (high-saturation 活力橙/玫红/电光蓝), `forest` (自然森林绿 + 米白), `morandi_light` (all-light pastel variant of morandi).
 
 ### Add a new slide type (free-design mode)
 1. Write a renderer function in `gen_free.js`:

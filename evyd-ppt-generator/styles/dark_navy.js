@@ -44,8 +44,8 @@ module.exports = {
 
   // ── Typography
   fonts: {
-    heading: "Georgia",      // serif — cover title, large numbers, quote mark
-    body:    "Calibri",      // sans — all body text, labels, bullets
+    heading: "Aptos",
+    body:    "Aptos",
   },
 
   // ── Visual motifs (used by renderer for consistent decoration)
