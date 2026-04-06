@@ -1,52 +1,27 @@
 """
-EVYD PPT Generator — Unified Renderer
-=======================================
+EVYD PPT Generator — Free Mode Renderer
+=========================================
 Renders a content.json into a native-PPTX presentation.
-Three rendering modes:
-
-  free     — No template. Every element drawn from code. Full style freedom.
-  template — Loads an EVYD .pptx template. All slides use template layouts.
-  hybrid   — Template for chrome (cover/agenda/divider/ending), code-drawn
-             content slides. Best of both worlds. (DEFAULT)
+All slides are drawn from code — no external template dependency.
 
 Usage:
-  python gen_pptx.py content.json [--mode free|template|hybrid]
-                                   [--style evyd_blue]
-                                   [--template /path/to/template.pptx]
-                                   [--output path.pptx]
+  python gen_pptx.py content.json [--style evyd_blue] [--output path.pptx]
 
-Styles live in styles/<name>.json — same file works for all modes.
+Styles live in styles/<name>.json — pick one or create your own.
 """
 
-import json, sys, os, argparse, glob as globmod
+import json, sys, os, argparse, math, glob as globmod
 from pptx import Presentation
 from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN
 
-# ── Constants ────────────────────────────────────────────────────────────────
-
-# Template layout indices (EVYD PPT Template Aptos.pptx)
-L_COVER = 0   # Front Cover_Brunei
-L_AGEND = 7   # Agenda_P1
-L_TRANS = 29  # Transition Template_S2  (section dividers)
-L_BG_B  = 31  # Background_P1  (blue content slides)
-L_BG_W  = 37  # Background_White
-L_END   = 39  # End_P1
-
-DEFAULT_TEMPLATE = '/Users/Li.ZHAO/Documents/EVYD PPT Template Aptos.pptx'
-
-# Slide dimensions (match EVYD template: 20″ × 11.25″, 16:9)
+# ── Slide dimensions (20″ × 11.25″, 16:9) ────────────────────────────────────
 SW = 20.0
 SH = 11.25
 
-MODE_FREE     = 'free'
-MODE_TEMPLATE = 'template'
-MODE_HYBRID   = 'hybrid'
-
 I = Inches
 P = Pt
-NS_REL = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships'
 
 CHROME_TYPES = {'cover', 'agenda', 'section_divider', 'ending'}
 
@@ -87,13 +62,11 @@ def load_style(name):
     st = {}
     st['font'] = raw.get('font', 'Aptos')
 
-    # Core color keys (used by template-mode renderers)
     for key in ['accent', 'accent2', 'navy', 'white', 'card', 'card_side',
                 'card_num', 'text_dim', 'text_num', 'card_white', 'text_gray',
                 'text_dark', 'line_gray']:
         st[key] = _rgb(raw[key])
 
-    # Free-mode keys — explicit or derived from core keys
     st['bg_content']  = _rgb(raw.get('bg_content', raw['card']))
     st['bg_blue']     = st['bg_content']
     st['bg_white']    = _rgb(raw.get('white'))
@@ -110,7 +83,6 @@ def load_style(name):
     st['slide_num_lt']= _rgb('AAAAAA')
     st['warning_bg']  = st['navy']
 
-    # Motifs (for free-mode decorative elements)
     st['motifs'] = raw.get('motifs', {})
 
     return st
@@ -120,22 +92,8 @@ def load_style(name):
 # Primitive helpers
 # ─────────────────────────────────────────────────────────────────────────────
 
-def ph(slide, idx, text, sz=None, bold=None, color=None, align=None,
-       italic=False, font='Aptos'):
-    """Fill a placeholder by idx (template mode only)."""
-    try: pl = slide.placeholders[idx]
-    except KeyError: return
-    tf = pl.text_frame; tf.clear()
-    pg = tf.paragraphs[0]
-    if align: pg.alignment = align
-    r = pg.add_run(); r.text = text; r.font.name = font
-    if sz:    r.font.size  = P(sz)
-    if bold is not None: r.font.bold = bold
-    if italic: r.font.italic = italic
-    if color: r.font.color.rgb = _rgb(color)
-
 def bx(slide, l, t, w, h, text='', sz=16, bold=False, color=None,
-       align=None, italic=False, font='Aptos'):
+        align=None, italic=False, font='Aptos'):
     """Add a textbox. Returns the textbox shape."""
     tb = slide.shapes.add_textbox(I(l), I(t), I(w), I(h))
     tf = tb.text_frame; tf.word_wrap = True
@@ -147,7 +105,7 @@ def bx(slide, l, t, w, h, text='', sz=16, bold=False, color=None,
     return tb
 
 def ap(tf, text, sz=14, bold=False, color=None, align=None, spb=0,
-       italic=False, font='Aptos'):
+        italic=False, font='Aptos'):
     """Append a paragraph to an existing text frame."""
     pg = tf.add_paragraph()
     pg.alignment = align or PP_ALIGN.LEFT
@@ -167,7 +125,6 @@ def rc(slide, l, t, w, h, fill=None, line=None, lw=0.75, rd=False):
 
 def ov(slide, l, t, w, h, fill=None, transparency=0):
     """Add an oval shape with optional transparency."""
-    from pptx.oxml.ns import qn
     s = slide.shapes.add_shape(9, I(l), I(t), I(w), I(h))
     if fill:
         s.fill.solid(); s.fill.fore_color.rgb = _rgb(fill)
@@ -180,10 +137,8 @@ def _set_transparency(shape, pct):
     """Set fill transparency (0-100) on a shape via XML."""
     from pptx.oxml.ns import qn
     from lxml import etree
-    # Get the shape's spPr element
     sp_pr = shape._element.find(qn('a:solidFill'))
     if sp_pr is None:
-        # Navigate through shape XML: shape > spPr > solidFill
         sp_pr_elem = shape._element.find(qn('p:spPr'))
         if sp_pr_elem is None:
             return
@@ -200,7 +155,6 @@ def _set_transparency(shape, pct):
         alpha = etree.SubElement(color_elem, qn('a:alpha'))
     alpha.set('val', str(int((100 - pct) * 1000)))
 
-
 def _fill_bg(slide, data, st):
     """Fill entire slide with the appropriate background color."""
     blue = data.get('background', 'blue') == 'blue'
@@ -213,7 +167,7 @@ def _fill_bg(slide, data, st):
 # ─────────────────────────────────────────────────────────────────────────────
 
 def hdr(slide, section, num, title, blue=True, tsz=26, st=None):
-    """Standard content-slide header: section label + slide# + title + teal rule.
+    """Standard content-slide header: section label + slide# + title + accent rule.
     Returns content_top_y (inches) — start your content below this."""
     F = st['font'] if st else 'Aptos'
     lc = st['accent']   if st else _rgb('2CD5C3')
@@ -227,25 +181,11 @@ def hdr(slide, section, num, title, blue=True, tsz=26, st=None):
     rc(slide, 1.0, 1.44, 0.55, 0.045, fill=lc)
     return 1.68
 
-
-def hdr_free(slide, section, title, st):
-    """Compact header bar for free-mode slides (draws a nav strip at top)."""
-    F = st['font']
-    M = st['motifs']
-    rc(slide, 0, 0, SW, 1.3, fill=st['header_bg'])
-    bx(slide, 1.0, 0, 5.6, 1.3, section, sz=9 * 2, bold=True,
-       color=_rgb(M.get('header_tag_color', '2CD5C3')), font=F)
-    rc(slide, 6.7, 0.44, 0.04, 0.44, fill=st['header_sep'])
-    bx(slide, 6.9, 0, 12.4, 1.3, title, sz=15 * 2, bold=True,
-       color=st['text_white'], font=F)
-
-
 def _slide_num(slide_data, auto_num, total):
     return slide_data.get('num', f'{auto_num:02d} / {total:02d}')
 
-
 def _slide_num_free(slide, n, total, light=False, st=None):
-    """Add slide number (free mode, bottom-right)."""
+    """Add slide number bottom-right."""
     color = st['slide_num_lt'] if light else st['slide_num_dk']
     bx(slide, 17.6, 10.6, 2, 0.4,
        f'{str(n).zfill(2)} / {str(total).zfill(2)}',
@@ -253,78 +193,20 @@ def _slide_num_free(slide, n, total, light=False, st=None):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Chrome slide renderers — Template mode
+# Chrome slide renderers
 # ─────────────────────────────────────────────────────────────────────────────
 
-def render_cover_tpl(slide, data, st, _num, _total):
-    F = st['font']
-    ph(slide, 0,  data.get('title', 'Presentation Title'), sz=44, bold=True,
-       color=st['white'], font=F)
-    ph(slide, 10, data.get('subtitle', 'Subtitle'), sz=18,
-       color=st['text_num'], font=F)
-
-
-def render_agenda_tpl(slide, data, st, _num, _total):
-    F = st['font']
-    ROWS = [(19, 10), (20, 11), (21, 12), (22, 13), (23, 14)]
-    for i, row in enumerate(data.get('items', [])):
-        if i >= len(ROWS): break
-        ci, ti = ROWS[i]
-        ph(slide, ci, str(row.get('num', i + 1)), sz=16, bold=True,
-           color=st['white'], align=PP_ALIGN.CENTER, font=F)
-        ph(slide, ti, f"{row['title']}   {row.get('time', '')}", sz=16,
-           color=st['white'], font=F)
-    for ci, ti in [(25, 15), (26, 16), (27, 17), (28, 18)]:
-        ph(slide, ci, ' ', font=F); ph(slide, ti, ' ', font=F)
-
-
-def render_section_divider_tpl(slide, data, st, _num, _total):
-    F = st['font']
-    bg = _rgb(data.get('bg_color', [4, 30, 20]))
-    rc(slide, 0, 0, SW, SH, fill=bg)
-    ph(slide, 19, str(data.get('num', '01')), sz=20, bold=True,
-       color=st['white'], align=PP_ALIGN.CENTER, font=F)
-    ph(slide, 20, data.get('title', 'Section'), sz=22, bold=True,
-       color=st['white'], font=F)
-
-
-def render_ending_tpl(slide, data, st, _num, _total):
-    F = st['font']
-    bx(slide, 4.0, 1.3, 12.0, 0.75,
-       data.get('title', 'Thank You'), sz=32, bold=True,
-       color=st['white'], align=PP_ALIGN.CENTER, font=F)
-    bx(slide, 4.0, 2.15, 12.0, 0.48,
-       data.get('subtitle', ''), sz=15,
-       color=st['text_num'], align=PP_ALIGN.CENTER, font=F)
-
-    for col_i, action in enumerate(data.get('actions', [])[:2]):
-        x = 4.5 + col_i * 5.8
-        rc(slide, x, 7.55, 5.1, 1.70, fill=_rgb([0x00, 0x4A, 0x85]))
-        bx(slide, x + 0.2, 7.65, 4.5, 0.45,
-           f"{action.get('icon', '')}  {action.get('title', '')}", sz=13,
-           bold=True, color=st['accent'], font=F)
-        bx(slide, x + 0.2, 8.18, 4.5, 0.90,
-           action.get('desc', ''), sz=12, color=st['white'], font=F)
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Chrome slide renderers — Free mode
-# ─────────────────────────────────────────────────────────────────────────────
-
-def render_cover_free(slide, data, st, n, total):
+def render_cover(slide, data, st, n, total):
     F = st['font']
     M = st['motifs']
     rc(slide, 0, 0, SW, SH, fill=st['navy'])
 
-    # Decorative left bar (gradient-like: top + bottom halves)
     bar_colors = M.get('left_bar_colors', ['2CD5C3', '0076B3'])
     rc(slide, 0, 0, 0.14, SH / 2, fill=_rgb(bar_colors[0]))
     rc(slide, 0, SH / 2, 0.14, SH / 2, fill=_rgb(bar_colors[1]))
 
-    # Decorative circle
     ov(slide, 11.6, -3.0, 12, 12, fill=st['accent2'], transparency=94)
 
-    # Tag badge
     tag_text = (data.get('tag', 'PRESENTATION')).upper()
     rc(slide, 1.1, 1.7, 5.6, 0.64, fill=st['accent_dark'],
        line=_rgb(M.get('header_tag_color', '2CD5C3')), lw=1)
@@ -332,16 +214,13 @@ def render_cover_free(slide, data, st, n, total):
        color=_rgb(M.get('header_tag_color', '2CD5C3')),
        align=PP_ALIGN.CENTER, font=F)
 
-    # Title
     bx(slide, 1.1, 2.6, 14.4, 3.8,
        data.get('title', ''), sz=40 * 2, color=st['text_white'], font=F)
 
-    # Subtitle with accent bar
     rc(slide, 1.1, 6.7, 0.1, 1.36, fill=st['accent2'])
     bx(slide, 1.4, 6.7, 11.6, 1.36,
        data.get('subtitle', ''), sz=14 * 2, color=st['text_muted'], font=F)
 
-    # Logo / date
     bx(slide, 15.0, 10.2, 4.4, 0.6,
        data.get('logo', 'EVYD  ·  2025'), sz=9 * 2,
        color=st['header_sep'], align=PP_ALIGN.RIGHT, font=F)
@@ -349,7 +228,7 @@ def render_cover_free(slide, data, st, n, total):
     _slide_num_free(slide, n, total, st=st)
 
 
-def render_agenda_free(slide, data, st, _n, _total):
+def render_agenda(slide, data, st, _n, _total):
     F = st['font']
     M = st['motifs']
     rc(slide, 0, 0, SW, SH, fill=st['navy'])
@@ -376,53 +255,44 @@ def render_agenda_free(slide, data, st, _n, _total):
            sz=11 * 2, color=st['text_muted'], font=F)
 
 
-def render_section_divider_free(slide, data, st, _n, _total):
+def render_section_divider(slide, data, st, _n, _total):
     F = st['font']
     M = st['motifs']
     bg = _rgb(data.get('bg_color', st['navy']))
     rc(slide, 0, 0, SW, SH, fill=bg)
 
-    # Large section number
     bx(slide, 1.0, 2.5, 5, 3.5, str(data.get('num', '01')),
        sz=72 * 2, bold=True,
        color=_rgb(M.get('number_color', '0076B3')), font=F)
 
-    # Divider line
     rc(slide, 1.0, 5.8, 2.0, 0.08,
        fill=_rgb(M.get('divider_color', '0076B3')))
 
-    # Title
     bx(slide, 1.0, 6.2, 18, 2.0, data.get('title', 'Section'),
        sz=28 * 2, bold=True, color=st['text_white'], font=F)
 
 
-def render_ending_free(slide, data, st, n, total):
+def render_ending(slide, data, st, n, total):
     F = st['font']
     M = st['motifs']
     rc(slide, 0, 0, SW, SH, fill=st['navy'])
 
-    # Decorative circle
     ov(slide, 5.0, 0.6, 10, 5.6, fill=st['accent2'], transparency=93)
 
-    # Title
     bx(slide, 1.0, 1.4, 18, 2.2, data.get('title', 'Thank You'),
        sz=36 * 2, color=st['text_white'], align=PP_ALIGN.CENTER, font=F)
 
-    # Divider
     rc(slide, 8.9, 3.8, 2.2, 0.1,
        fill=_rgb(M.get('divider_color', '0076B3')))
 
-    # Subtitle
     if data.get('subtitle'):
         bx(slide, 2.0, 4.1, 16, 0.9, data['subtitle'],
            sz=14 * 2, color=st['text_muted'], align=PP_ALIGN.CENTER, font=F)
 
-    # Faint divider
     rc(slide, 0, 7.1, SW, 0.03, fill=_rgb('FFFFFF'))
     _set_transparency(
         rc(slide, 0, 7.1, SW, 0.03, fill=_rgb('FFFFFF')), 88)
 
-    # Action items
     acts = data.get('actions', [])
     if acts:
         aw = SW / max(len(acts), 1)
@@ -443,7 +313,7 @@ def render_ending_free(slide, data, st, n, total):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Content slide renderers (work in ALL modes)
+# Content slide renderers
 # ─────────────────────────────────────────────────────────────────────────────
 
 def render_bullets_with_panel(slide, data, st, num, total):
@@ -460,7 +330,6 @@ def render_bullets_with_panel(slide, data, st, num, total):
            color=st['white'] if blue else st['text_dark'], font=F)
         by += 0.65
 
-    # Side panel
     panel = data.get('side_panel', {})
     if panel.get('type') == 'quote':
         rc(slide, 11.0, ct + 0.1, 7.9, 7.65, fill=st['card_side'])
@@ -471,7 +340,6 @@ def render_bullets_with_panel(slide, data, st, num, total):
            panel.get('text', ''), sz=22, italic=True,
            color=st['white'], font=F)
 
-    # Ground rules
     rules = data.get('ground_rules', [])
     if rules:
         rc(slide, 1.0, by + 0.12, 9.5, 2.55, fill=st['card'])
@@ -527,16 +395,24 @@ def render_cards_grid(slide, data, st, num, total):
              data.get('title', ''), blue=blue, st=st)
 
     cards = data.get('cards', [])
-    CW = 8.7; CH = 2.55; GX = 0.5; GY = 0.28
-    for i, card in enumerate(cards[:6]):
+    n = len(cards)
+    if n == 0: return
+    CW = 8.7; GX = 0.5; GY = 0.28
+    rows_n = math.ceil(n / 2)
+    avail_h = SH - ct - 0.2
+    CH = min(2.55, max(1.4, (avail_h - GY * (rows_n - 1)) / rows_n))
+
+    for i, card in enumerate(cards[:8]):
         col = i % 2; row = i // 2
-        x = 1.0 + col * (CW + GX); y = ct + 0.1 + row * (CH + GY)
+        x = 1.0 + col * (CW + GX)
+        y = ct + 0.1 + row * (CH + GY)
         bg = st['card'] if blue else st['card_white']
         rc(slide, x, y, CW, CH, fill=bg)
-        bx(slide, x + 0.2, y + 0.14, 1.5, 0.9, card.get('num', ''),
+        bx(slide, x + 0.2, y + CH * 0.06, 1.5, CH * 0.38, card.get('num', ''),
            sz=32, bold=True, color=st['card_num'], font=F)
-        bx(slide, x + 0.2, y + 1.02, CW - 0.4, 1.35, card.get('text', ''),
-           sz=14, color=st['white'] if blue else st['text_dark'], font=F)
+        bx(slide, x + 0.2, y + CH * 0.48, CW - 0.4, CH * 0.48,
+           card.get('text', ''), sz=14,
+           color=st['white'] if blue else st['text_dark'], font=F)
 
 
 def render_criteria_rows(slide, data, st, num, total):
@@ -550,21 +426,26 @@ def render_criteria_rows(slide, data, st, num, total):
            color=st['text_dim'] if blue else st['text_gray'], font=F)
 
     rows = data.get('criteria', [])
-    RH = 1.85; RG = 0.24
-    for i, row in enumerate(rows[:4]):
-        y = ct + 0.4 + i * (RH + RG)
+    n = len(rows)
+    if n == 0: return
+    gap = 0.18
+    avail_h = SH - ct - 0.5
+    RH = min(2.2, max(1.0, (avail_h - gap * (n - 1)) / n))
+
+    for i, row in enumerate(rows):
+        y = ct + 0.4 + i * (RH + gap)
         bg = st['card'] if blue else st['card_white']
         rc(slide, 1.0, y, 17.5, RH, fill=bg)
-        bx(slide, 1.1, y + 0.35, 1.3, 1.0, row.get('num', ''),
+        bx(slide, 1.1, y + RH * 0.19, 1.3, RH * 0.54, row.get('num', ''),
            sz=30, bold=True, color=st['card_num'], font=F)
-        rc(slide, 2.5, y + 0.28, 0.035, RH - 0.56, fill=st['line_gray'])
-        bx(slide, 2.65, y + 0.28, 5.0, 0.34, row.get('label', ''),
+        rc(slide, 2.5, y + RH * 0.15, 0.035, RH * 0.70, fill=st['line_gray'])
+        bx(slide, 2.65, y + RH * 0.15, 5.0, RH * 0.28, row.get('label', ''),
            sz=9, bold=True, color=st['accent'], font=F)
-        bx(slide, 2.65, y + 0.70, 14.5, 0.85, row.get('text', ''),
+        bx(slide, 2.65, y + RH * 0.44, 14.5, RH * 0.50, row.get('text', ''),
            sz=15, color=st['white'] if blue else st['text_dark'], font=F)
 
     if data.get('footnote'):
-        fn_y = ct + 0.4 + len(rows) * (RH + RG) - 0.15
+        fn_y = ct + 0.4 + n * (RH + gap) - 0.15
         bx(slide, 1.0, fn_y, 17.5, 0.28, data['footnote'], sz=10,
            color=st['text_dim'] if blue else st['text_gray'],
            align=PP_ALIGN.RIGHT, font=F)
@@ -581,20 +462,25 @@ def render_scope_tiers(slide, data, st, num, total):
            color=st['text_dim'] if blue else st['text_gray'], font=F)
 
     tiers = data.get('tiers', [])
-    BH = 1.85; BG = 0.20
-    for i, tier in enumerate(tiers[:4]):
-        y = ct + 0.35 + i * (BH + BG)
+    n = len(tiers)
+    if n == 0: return
+    gap = 0.18
+    avail_h = SH - ct - 0.45
+    BH = min(2.2, max(1.0, (avail_h - gap * (n - 1)) / n))
+
+    for i, tier in enumerate(tiers):
+        y = ct + 0.35 + i * (BH + gap)
         tc = _rgb(tier.get('color', [0x44, 0x99, 0x44]))
         bg = st['card'] if blue else st['card_white']
         rc(slide, 1.0, y, 17.5, BH, fill=bg)
         rc(slide, 1.0, y, 0.14, BH, fill=tc)
-        bx(slide, 1.28, y + 0.15, 1.0, 0.80, tier.get('icon', ''),
+        bx(slide, 1.28, y + BH * 0.08, 1.0, BH * 0.43, tier.get('icon', ''),
            sz=22, color=st['white'], font=F)
-        bx(slide, 2.45, y + 0.12, 15.3, 0.36, tier.get('label', ''),
+        bx(slide, 2.45, y + BH * 0.06, 15.3, BH * 0.20, tier.get('label', ''),
            sz=9, bold=True, color=st['accent'], font=F)
-        bx(slide, 2.45, y + 0.52, 15.3, 0.48, tier.get('desc', ''),
+        bx(slide, 2.45, y + BH * 0.28, 15.3, BH * 0.26, tier.get('desc', ''),
            sz=13.5, color=st['white'] if blue else st['text_dark'], font=F)
-        bx(slide, 2.45, y + 1.08, 15.3, 0.55, tier.get('example', ''),
+        bx(slide, 2.45, y + BH * 0.58, 15.3, BH * 0.30, tier.get('example', ''),
            sz=11, italic=True,
            color=st['text_dim'] if blue else st['text_gray'], font=F)
 
@@ -609,9 +495,8 @@ def render_two_panel(slide, data, st, num, total):
         x = 1.0 + col_i * 9.5
         hc = _rgb(panel.get('color', [0x00, 0x76, 0xB3]))
         bg = st['card'] if blue else st['card_white']
-        header_bg = st['navy']
         rc(slide, x, ct + 0.25, 8.8, 7.65, fill=bg)
-        rc(slide, x, ct + 0.25, 8.8, 0.52, fill=header_bg)
+        rc(slide, x, ct + 0.25, 8.8, 0.52, fill=st['navy'])
         bx(slide, x + 0.15, ct + 0.31, 8.3, 0.36,
            f"{panel.get('icon', '')}  {panel.get('title', '')}", sz=11,
            bold=True, color=st['white'], font=F)
@@ -711,7 +596,6 @@ def render_survey(slide, data, st, num, total):
         bx(slide, 1.82, y + 0.84, 9.5, 0.72, step.get('desc', ''),
            sz=13, color=st['text_gray'], font=F)
 
-    # QR panel
     qr_bg = st['card_white'] if not blue else st['card']
     rc(slide, 12.3, ct + 0.3, 6.6, 9.0, fill=qr_bg,
        line=st['accent2'], lw=1.0)
@@ -733,20 +617,310 @@ def render_survey(slide, data, st, num, total):
        sz=12, color=st['text_gray'], align=PP_ALIGN.CENTER, font=F)
 
 
+# ── NEW: stat_highlight ───────────────────────────────────────────────────────
+
+def render_stat_highlight(slide, data, st, num, total):
+    """2–4 large statistics displayed as bold data cards in a row."""
+    blue = data.get('background', 'blue') == 'blue'
+    F = st['font']
+    ct = hdr(slide, data.get('section', ''), _slide_num(data, num, total),
+             data.get('title', ''), blue=blue, st=st)
+
+    stats = data.get('stats', [])
+    n = len(stats)
+    if n == 0: return
+
+    gap   = 0.4
+    CW    = (SW - 2.0 - gap * (n - 1)) / n
+    CH    = SH - ct - 0.7
+    y     = ct + 0.4
+
+    for i, stat in enumerate(stats):
+        x  = 1.0 + i * (CW + gap)
+        bg = st['card'] if blue else st['card_white']
+        rc(slide, x, y, CW, CH, fill=bg)
+        rc(slide, x, y, CW, 0.12, fill=st['accent'])
+
+        bx(slide, x + 0.15, y + 0.35, CW - 0.3, CH * 0.42,
+           stat.get('value', ''), sz=60, bold=True,
+           color=st['accent'], align=PP_ALIGN.CENTER, font=F)
+
+        bx(slide, x + 0.15, y + CH * 0.55, CW - 0.3, CH * 0.18,
+           stat.get('label', ''), sz=16, bold=True,
+           color=st['white'] if blue else st['text_dark'],
+           align=PP_ALIGN.CENTER, font=F)
+
+        bx(slide, x + 0.15, y + CH * 0.76, CW - 0.3, CH * 0.20,
+           stat.get('desc', ''), sz=12,
+           color=st['text_dim'] if blue else st['text_gray'],
+           align=PP_ALIGN.CENTER, font=F)
+
+
+# ── NEW: timeline ─────────────────────────────────────────────────────────────
+
+def render_timeline(slide, data, st, num, total):
+    """Horizontal timeline: phase label → connector → dot → title + desc."""
+    blue   = data.get('background', 'blue') == 'blue'
+    F      = st['font']
+    M      = st['motifs']
+    ct     = hdr(slide, data.get('section', ''), _slide_num(data, num, total),
+                 data.get('title', ''), blue=blue, st=st)
+
+    items  = data.get('items', [])
+    n      = len(items)
+    if n == 0: return
+
+    line_y = ct + 4.2
+    slot_w = 18.0 / n
+    dot_r  = 0.28
+    lc     = st['accent']
+    nc     = _rgb(M.get('number_color', st['accent']))
+    tc     = st['white'] if blue else st['text_dark']
+    dc     = st['text_dim'] if blue else st['text_gray']
+
+    # Horizontal line
+    rc(slide, 1.0, line_y - 0.045, 18.0, 0.09, fill=lc)
+
+    for i, item in enumerate(items):
+        cx = 1.0 + slot_w * i + slot_w / 2.0
+
+        # Phase label (above)
+        bx(slide, cx - slot_w / 2 + 0.1, ct + 0.25, slot_w - 0.2, 0.55,
+           item.get('phase', ''), sz=11, bold=True,
+           color=nc, align=PP_ALIGN.CENTER, font=F)
+
+        # Vertical connector phase→dot
+        rc(slide, cx - 0.03, ct + 0.9, 0.06,
+           max(0.05, line_y - ct - 0.9 - dot_r), fill=lc)
+
+        # Dot
+        s = slide.shapes.add_shape(9,
+            I(cx - dot_r), I(line_y - dot_r),
+            I(dot_r * 2),  I(dot_r * 2))
+        s.fill.solid(); s.fill.fore_color.rgb = lc
+        s.line.fill.background()
+
+        # Title (below line)
+        bx(slide, cx - slot_w / 2 + 0.1, line_y + 0.42, slot_w - 0.2, 0.65,
+           item.get('title', ''), sz=15, bold=True,
+           color=tc, align=PP_ALIGN.CENTER, font=F)
+
+        # Description
+        bx(slide, cx - slot_w / 2 + 0.1, line_y + 1.2, slot_w - 0.2, 4.5,
+           item.get('desc', ''), sz=12,
+           color=dc, align=PP_ALIGN.CENTER, font=F)
+
+
+# ── NEW: quote_full ───────────────────────────────────────────────────────────
+
+def render_quote_full(slide, data, st, num, total):
+    """Full-slide featured quote with large decorative treatment."""
+    blue = data.get('background', 'blue') == 'blue'
+    F    = st['font']
+
+    # Minimal header (no rule line — quote needs clean space)
+    lc = st['accent'] if blue else st['accent2']
+    nc = st['text_num'] if blue else _rgb('AAAAAA')
+    bx(slide, 1.0, 0.35, 10, 0.28, data.get('section', ''), sz=8, color=lc, font=F)
+    bx(slide, 16.5, 0.35, 2.5, 0.28,
+       _slide_num(data, num, total), sz=8,
+       color=nc, align=PP_ALIGN.RIGHT, font=F)
+
+    # Left accent bar
+    rc(slide, 0.8, 1.8, 0.14, 7.2, fill=st['accent'])
+
+    # Large decorative opening quote mark
+    bx(slide, 1.5, 1.0, 4.5, 2.8, '\u201C', sz=120, italic=True,
+       color=st['accent2'], font=F)
+
+    # Quote body
+    bx(slide, 1.5, 3.0, 16.5, 5.2,
+       data.get('quote', ''), sz=28, italic=True,
+       color=st['white'] if blue else st['text_dark'],
+       align=PP_ALIGN.LEFT, font=F)
+
+    # Attribution
+    if data.get('attribution'):
+        rc(slide, 1.5, 8.5, 16.5, 0.04, fill=st['line_gray'])
+        bx(slide, 1.5, 8.7, 16.5, 0.65,
+           data['attribution'], sz=14,
+           color=st['text_dim'] if blue else st['text_gray'],
+           align=PP_ALIGN.LEFT, font=F)
+
+    _slide_num_free(slide, num, total, light=blue, st=st)
+
+
+# ── NEW: center_focus ─────────────────────────────────────────────────────────
+
+def render_center_focus(slide, data, st, num, total):
+    """Center-dominant layout for key statements, strategic focus, section openers."""
+    blue = data.get('background', 'blue') == 'blue'
+    F    = st['font']
+    M    = st['motifs']
+
+    # Small section label top-left
+    lc = st['accent'] if blue else st['accent2']
+    bx(slide, 1.0, 0.35, 12, 0.30, data.get('section', ''), sz=8, color=lc, font=F)
+
+    # Large decorative background circle
+    ov(slide, 3.5, 0.8, 13.0, 9.5, fill=st['accent2'], transparency=91)
+
+    # Optional title label (small caps, above message)
+    if data.get('title'):
+        bx(slide, 1.5, 2.6, 17.0, 0.48,
+           data['title'].upper(), sz=10, bold=True,
+           color=st['accent'], align=PP_ALIGN.CENTER, font=F)
+
+    # Main message — large, centered
+    bx(slide, 1.5, 3.3, 17.0, 3.8,
+       data.get('message', ''), sz=36, bold=True,
+       color=st['white'] if blue else st['text_dark'],
+       align=PP_ALIGN.CENTER, font=F)
+
+    # Accent divider
+    rc(slide, 8.75, 7.3, 2.5, 0.1,
+       fill=_rgb(M.get('divider_color', st['accent'])))
+
+    # Optional context line
+    if data.get('context'):
+        bx(slide, 1.5, 7.6, 17.0, 0.65,
+           data['context'], sz=13,
+           color=st['text_dim'] if blue else st['text_gray'],
+           align=PP_ALIGN.CENTER, font=F)
+
+    _slide_num_free(slide, num, total, light=blue, st=st)
+
+
+# ── NEW: comparison_table ─────────────────────────────────────────────────────
+
+def render_comparison_table(slide, data, st, num, total):
+    """Structured comparison table: label column + N value columns."""
+    blue = data.get('background', 'white') == 'blue'
+    F    = st['font']
+    ct   = hdr(slide, data.get('section', ''), _slide_num(data, num, total),
+               data.get('title', ''), blue=blue, st=st)
+
+    cols = data.get('columns', [])
+    rows = data.get('rows', [])
+    if not cols or not rows: return
+
+    nc      = len(cols)
+    label_w = 3.8
+    col_gap = 0.05
+    data_w  = (SW - 2.0 - label_w - col_gap * nc) / nc
+    x0      = 1.0
+
+    n_rows  = len(rows)
+    avail_h = SH - ct - 0.4
+    RH      = min(1.35, max(0.55, (avail_h - 0.72) / (n_rows + 1)))  # +1 for header
+
+    y = ct + 0.3
+
+    # Header row
+    rc(slide, x0, y, label_w, RH, fill=st['accent'])
+    for ci, col_title in enumerate(cols):
+        cx = x0 + label_w + col_gap + ci * (data_w + col_gap)
+        hdr_col = st['accent2'] if ci % 2 == 0 else st['card_side']
+        rc(slide, cx, y, data_w, RH, fill=hdr_col)
+        bx(slide, cx + 0.12, y + RH * 0.18, data_w - 0.24, RH * 0.64,
+           col_title, sz=13, bold=True,
+           color=st['white'], align=PP_ALIGN.CENTER, font=F)
+
+    y += RH + col_gap
+
+    # Data rows
+    for ri, row in enumerate(rows):
+        if blue:
+            row_bg = st['card'] if ri % 2 == 0 else st['card_side']
+        else:
+            row_bg = _rgb('EEF4FC') if ri % 2 == 0 else st['card_white']
+
+        rc(slide, x0, y, label_w, RH - col_gap, fill=row_bg)
+        bx(slide, x0 + 0.15, y + RH * 0.18, label_w - 0.3, RH * 0.64,
+           row.get('label', ''), sz=13, bold=True,
+           color=st['white'] if blue else st['text_dark'], font=F)
+
+        for ci, val in enumerate(row.get('values', [])[:nc]):
+            cx = x0 + label_w + col_gap + ci * (data_w + col_gap)
+            rc(slide, cx, y, data_w, RH - col_gap, fill=row_bg)
+            bx(slide, cx + 0.12, y + RH * 0.18, data_w - 0.24, RH * 0.64,
+               val, sz=13,
+               color=st['white'] if blue else st['text_dark'],
+               align=PP_ALIGN.CENTER, font=F)
+
+        y += RH
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Validate and auto-fix overflow
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _estimate_overflow(tf, box_w_in, box_h_in):
+    """Estimate if text frame overflows its bounding box. Returns True if likely."""
+    total_h = 0.0
+    for para in tf.paragraphs:
+        if not para.runs:
+            total_h += 0.18
+            continue
+        pt = para.runs[0].font.size.pt if para.runs[0].font.size else 13.0
+        chars_per_line = max(1, int(box_w_in * 96.0 / (pt * 0.58)))
+        text_len = len(para.text)
+        lines = max(1, math.ceil(text_len / chars_per_line)) if text_len else 1
+        total_h += lines * pt * 1.35 / 72.0
+    return total_h > box_h_in * 0.90
+
+def _shrink_font(tf, delta_pt=1):
+    """Reduce all run font sizes in a text frame by delta_pt (floor: 8pt)."""
+    for para in tf.paragraphs:
+        for run in para.runs:
+            if run.font.size:
+                run.font.size = P(max(8, run.font.size.pt - delta_pt))
+
+def validate_and_fix(prs):
+    """
+    Scan every text box for likely overflow and shrink font to fit.
+    Applies up to 4 pt reduction per shape. Logs adjustments.
+    """
+    fixes = []
+    for si, slide in enumerate(prs.slides):
+        for shape in slide.shapes:
+            if not shape.has_text_frame:
+                continue
+            tf = shape.text_frame
+            # Skip shapes with no real text content
+            if not any(para.text.strip() for para in tf.paragraphs):
+                continue
+            bw = shape.width  / 914400.0
+            bh = shape.height / 914400.0
+            if bw < 0.5 or bh < 0.1:   # skip decorative micro-boxes
+                continue
+            for _ in range(4):
+                if not _estimate_overflow(tf, bw, bh):
+                    break
+                _shrink_font(tf, 1)
+                fixes.append(f"  slide {si + 1} '{shape.name}': -1pt")
+
+    if fixes:
+        print(f"validate_and_fix: {len(fixes)} adjustment(s) applied")
+        for f in fixes:
+            print(f)
+    else:
+        print("validate_and_fix: no overflow detected \u2713")
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Routing tables
 # ─────────────────────────────────────────────────────────────────────────────
 
-# Chrome slides: (template_layout_idx, template_renderer, free_renderer)
 CHROME_RENDERERS = {
-    'cover':           (L_COVER, render_cover_tpl,           render_cover_free),
-    'agenda':          (L_AGEND, render_agenda_tpl,          render_agenda_free),
-    'section_divider': (L_TRANS, render_section_divider_tpl, render_section_divider_free),
-    'ending':          (L_END,   render_ending_tpl,          render_ending_free),
+    'cover':           render_cover,
+    'agenda':          render_agenda,
+    'section_divider': render_section_divider,
+    'ending':          render_ending,
 }
 
-# Content slides: (renderer,) — same function for all modes
 CONTENT_RENDERERS = {
+    # Original 9
     'bullets_with_panel': render_bullets_with_panel,
     'two_column_check':   render_two_column_check,
     'cards_grid':         render_cards_grid,
@@ -756,10 +930,13 @@ CONTENT_RENDERERS = {
     'two_column_steps':   render_two_column_steps,
     'scenario_cards':     render_scenario_cards,
     'survey':             render_survey,
+    # New 5
+    'stat_highlight':     render_stat_highlight,
+    'timeline':           render_timeline,
+    'quote_full':         render_quote_full,
+    'center_focus':       render_center_focus,
+    'comparison_table':   render_comparison_table,
 }
-
-def _bg_layout(slide_data):
-    return L_BG_W if slide_data.get('background', 'blue') == 'white' else L_BG_B
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -767,107 +944,53 @@ def _bg_layout(slide_data):
 # ─────────────────────────────────────────────────────────────────────────────
 
 def main():
-    parser = argparse.ArgumentParser(description='EVYD PPT Generator')
+    parser = argparse.ArgumentParser(
+        description='EVYD PPT Generator — render content.json → PPTX')
     parser.add_argument('content', help='Path to content JSON file')
-    parser.add_argument('--mode', choices=[MODE_FREE, MODE_TEMPLATE, MODE_HYBRID],
-                        default=None,
-                        help=f'Rendering mode (default: from JSON meta.mode, '
-                             f'then hybrid)')
-    parser.add_argument('--template', default=None,
-                        help=f'PPTX template path (default: {DEFAULT_TEMPLATE})')
-    parser.add_argument('--output', '-o', default=None,
-                        help='Output .pptx path')
     parser.add_argument('--style', default=None,
-                        help='Style preset name (default: from JSON meta.style)')
+                        help='Style preset name (default: from JSON meta.style, '
+                             'then evyd_blue)')
+    parser.add_argument('--output', '-o', default=None,
+                        help='Output .pptx path (default: from JSON meta.output, '
+                             'then output.pptx)')
     args = parser.parse_args()
 
-    # ── Load content JSON
     with open(args.content, encoding='utf-8') as f:
         content = json.load(f)
     meta = content.get('meta', {})
 
-    # ── Resolve mode
-    mode = args.mode or meta.get('mode', MODE_HYBRID)
+    style_name  = args.style  or meta.get('style',  'evyd_blue')
+    output_path = args.output or meta.get('output', 'output.pptx')
 
-    # ── Resolve style
-    style_name = args.style or meta.get('style', 'evyd_blue')
     st = load_style(style_name)
+    print(f'Style: {style_name}  →  {output_path}')
 
-    # ── Resolve paths
-    template_path = args.template or meta.get('template', DEFAULT_TEMPLATE)
-    output_path   = args.output   or meta.get('output', 'output.pptx')
+    prs = Presentation()
+    prs.slide_width  = I(SW)
+    prs.slide_height = I(SH)
+    blank_layout = prs.slide_layouts[6]   # "Blank"
 
-    # ── Create presentation
-    if mode == MODE_FREE:
-        prs = Presentation()
-        prs.slide_width  = I(SW)
-        prs.slide_height = I(SH)
-        blank_layout = prs.slide_layouts[6]  # "Blank" layout
-        print(f'Mode: FREE (no template, {style_name} style)')
-    else:
-        prs = Presentation(template_path)
-        print(f'Mode: {mode.upper()} (template: {os.path.basename(template_path)}, '
-              f'{style_name} style)')
-
-    n_template = len(prs.slides) if mode != MODE_FREE else 0
-
-    # ── Render slides
-    slides = content['slides']
-    total  = len(slides)
+    slides  = content['slides']
+    total   = len(slides)
     counter = 0
 
     for slide_data in slides:
         stype = slide_data.get('type', '')
+        s = prs.slides.add_slide(blank_layout)
 
         if stype in CHROME_RENDERERS:
-            layout_idx, tpl_renderer, free_renderer = CHROME_RENDERERS[stype]
-
-            if mode == MODE_FREE:
-                s = prs.slides.add_slide(blank_layout)
-                free_renderer(s, slide_data, st, counter, total)
-            else:
-                # template & hybrid: use template layout
-                s = prs.slides.add_slide(prs.slide_layouts[layout_idx])
-                tpl_renderer(s, slide_data, st, counter, total)
-
+            CHROME_RENDERERS[stype](s, slide_data, st, counter, total)
         elif stype in CONTENT_RENDERERS:
-            renderer = CONTENT_RENDERERS[stype]
             counter += 1
-
-            if mode == MODE_FREE:
-                s = prs.slides.add_slide(blank_layout)
-                _fill_bg(s, slide_data, st)
-                renderer(s, slide_data, st, counter, total)
-            elif mode == MODE_HYBRID:
-                # Use any layout as base, then paint over with style bg
-                s = prs.slides.add_slide(prs.slide_layouts[_bg_layout(slide_data)])
-                _fill_bg(s, slide_data, st)
-                renderer(s, slide_data, st, counter, total)
-            else:
-                # template: layout provides the background
-                s = prs.slides.add_slide(prs.slide_layouts[_bg_layout(slide_data)])
-                renderer(s, slide_data, st, counter, total)
+            _fill_bg(s, slide_data, st)
+            CONTENT_RENDERERS[stype](s, slide_data, st, counter, total)
         else:
-            print(f'  ⚠  Unknown slide type "{stype}" — skipped')
-            continue
+            print(f'  \u26a0  Unknown slide type "{stype}" \u2014 skipped')
 
-    # ── Remove original template slides (they were loaded first)
-    if mode != MODE_FREE and n_template > 0:
-        sldIdLst = prs.slides._sldIdLst
-        removed = 0
-        for _ in range(n_template):
-            if len(sldIdLst) == 0: break
-            first = sldIdLst[0]
-            rid   = first.get(f'{{{NS_REL}}}id')
-            sldIdLst.remove(first)
-            try: prs.part.rels.pop(rid)
-            except: pass
-            removed += 1
-        print(f'Removed {removed} template slides')
-
+    validate_and_fix(prs)
     prs.save(output_path)
-    print(f'Final slide count: {len(prs.slides)}')
-    print(f'✓ Saved → {output_path}')
+    print(f'Slide count: {len(prs.slides)}')
+    print(f'\u2713  Saved \u2192 {output_path}')
 
 
 if __name__ == '__main__':

@@ -51,28 +51,31 @@
 
 **目录**：`evyd-ppt-generator/`
 
-将内容 JSON 文件渲染为原生可编辑的 EVYD 品牌 PPTX 演示文稿。所有幻灯片均为真实形状和文本框（可在 PowerPoint 中编辑），非截图。
+将内容 JSON 文件渲染为原生可编辑的 PPTX 演示文稿。所有幻灯片均为真实形状和文本框（可在 PowerPoint 中编辑），非截图。无需外部模板文件。
 
-**架构**：内容（JSON）/ 风格（预设）/ 渲染器（固定代码）三层分离——模型只需生成 content.json（约 400 tokens/15 张幻灯片），换风格改一行字，无需重新生成代码。
+**架构**：内容（JSON）/ 布局（渲染器）/ 风格（JSON 预设）三层分离——模型只需生成 content.json（约 400 tokens/15 张幻灯片），**布局由 Claude 自动根据内容选择**，换风格改一行字，无需重新生成代码。渲染后自动运行溢出检测，智能缩小字号修复排版问题。
 
 **触发词**：`生成PPT`、`做幻灯片`、`演示文稿`、`ppt generator`、`EVYD ppt`
 
-**可用幻灯片类型**：`cover` / `agenda` / `section_divider` / `bullets_with_panel` / `two_column_check` / `cards_grid` / `criteria_rows` / `scope_tiers` / `two_panel` / `two_column_steps` / `scenario_cards` / `survey` / `ending`
+**可用幻灯片类型（14 种）**：
+- **Chrome 框架**：`cover` / `agenda` / `section_divider` / `ending`
+- **内容布局**：`bullets_with_panel` / `two_column_check` / `cards_grid` / `criteria_rows` / `scope_tiers` / `two_panel` / `two_column_steps` / `scenario_cards` / `survey`
+- **新增**：`stat_highlight`（数字统计）/ `timeline`（时间轴）/ `quote_full`（金句全屏）/ `center_focus`（中心强调）/ `comparison_table`（对比表格）
 
-**可用风格预设**：`evyd_blue`（默认）/ `evyd_white`（适合打印）/ `evyd_teal`（高对比度）
+**可用风格预设（8 套）**：`evyd_blue`（默认）/ `evyd_white` / `evyd_teal` / `dark_navy` / `cooltech` / `morandi` / `warm` / `monochrome`
 
 **用法**：
 ```bash
 cd "evyd-ppt-generator"
-python gen_pptx.py content.json --output output.pptx
+python3 gen_pptx.py content.json --style evyd_blue --output output.pptx
 ```
 
 **示例文件**：`examples/bruai-focusgroup.json`（MOH BruAI Focus Group 完整 15 张幻灯片）
 
 **核心文件**：
-- `SKILL.md` — 完整 JSON schema 文档 + 扩展指南
-- `gen_pptx.py` — 通用渲染器（固定，不重新生成）
-- `styles.py` — 风格预设（添加新风格只需新增一个 dict）
+- `SKILL.md` — 完整 JSON schema + 布局选型指南 + 扩展说明
+- `gen_pptx.py` — 统一渲染器（固定，不重新生成）
+- `styles/` — 风格预设目录（添加新风格只需新建 JSON）
 - `examples/` — 示例 content.json 文件
 
 ---
@@ -279,27 +282,30 @@ python gen_pptx.py content.json --output output.pptx
 
 **目录**：`evyd-ppt-generator/`
 
-从内容 JSON 生成 EVYD 品牌风格的 PPTX 演示文稿，使用 EVYD Aptos 模板，输出真实可编辑的形状和文字（非截图）。
+从内容 JSON 生成 EVYD 品牌风格的 PPTX 演示文稿，纯程序化 free-mode 渲染，输出真实可编辑的形状和文字（非截图）。布局类型由 AI 自动选择，无需手动指定。
 
 **适用场景**：内部汇报、客户提案、MOH 演讲、焦点小组等
 
 **架构**：
 ```
 content.json（模型生成，约 400 tokens / 15 页）
-    → gen_pptx.py + styles.py（固定渲染器，不重新生成）
+    → gen_pptx.py + styles/（固定渲染器，不重新生成）
     → .pptx（PowerPoint 可直接编辑）
 ```
 
-**支持的幻灯片类型**：`cover` / `agenda` / `section_divider` / `bullets_with_panel` / `two_column_check` / `cards_grid` / `criteria_rows` / `scope_tiers` / `two_panel` / `two_column_steps` / `scenario_cards` / `survey` / `ending`
+**可用幻灯片类型（18 种）**：
+- **Chrome 框架**：`cover` / `agenda` / `section_divider` / `ending`
+- **内容布局**：`bullets_with_panel` / `two_column_check` / `cards_grid` / `criteria_rows` / `scope_tiers` / `two_panel` / `two_column_steps` / `scenario_cards` / `survey`
+- **新增**：`stat_highlight` / `timeline` / `quote_full` / `center_focus` / `comparison_table`
 
-**内置样式**：`evyd_blue`（默认）/ `evyd_white` / `evyd_teal`
+**可用风格预设（8 套）**：`evyd_blue`（默认）/ `evyd_white` / `evyd_teal` / `dark_navy` / `cooltech` / `morandi` / `warm` / `monochrome`
 
 **触发词**：`生成PPT`、`做幻灯片`、`演示文稿`、`EVYD ppt`
 
 **核心文件**：
-- `SKILL.md` — 完整 JSON schema 与 workflow
-- `gen_pptx.py` — 渲染器
-- `styles.py` — 样式预设
+- `SKILL.md` — 完整 JSON schema、布局选型指引与 workflow
+- `gen_pptx.py` — 渲染器（含 validate_and_fix 溢出检测）
+- `styles/` — 样式预设
 - `examples/` — 示例 JSON
 
 ---
@@ -333,11 +339,11 @@ content.json（模型生成，约 400 tokens / 15 页）
 ```
 技能 skills 作坊/
 ├── README.md
-├── evyd-ppt-generator/             # EVYD PPT 生成器（JSON → 原生可编辑 PPTX）
+├── evyd-ppt-generator/             # EVYD PPT 生成器（JSON → 原生可编辑 PPTX，18 种布局）
 │   ├── SKILL.md
 │   ├── gen_pptx.py
-│   ├── styles.py
-│   └── examples/bruai-focusgroup.json
+│   ├── styles/
+│   └── examples/
 ├── evyd-output-channels/           # 输出渠道 skill（Active Config + 4 个渠道协议）
 │   ├── SKILL.md
 │   └── references/
@@ -365,11 +371,6 @@ content.json（模型生成，约 400 tokens / 15 页）
 │   ├── SKILL.md
 │   ├── references/
 │   └── scripts/
-├── evyd-ppt-generator/            # PPT 生成器
-│   ├── SKILL.md
-│   ├── gen_pptx.py
-│   ├── styles.py
-│   └── examples/
 └── evyd-remote-repo-rules/         # 远程仓库工作流规则
 ```
 
