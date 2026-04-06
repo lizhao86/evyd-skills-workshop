@@ -1,0 +1,32 @@
+{
+  "name": "morandi",
+  "description": "Muted grey-toned pastels — slate, dusty rose, sage. Calm and refined.",
+  "font": "Aptos",
+
+  "accent":     "C4857A",
+  "accent2":    "8FAF9F",
+  "navy":       "5C7080",
+  "white":      "FAF7F2",
+  "card":       "4A6070",
+  "card_side":  "4A5F6A",
+  "card_num":   "C4857A",
+  "text_dim":   "9AACBA",
+  "text_num":   "7A90A0",
+  "card_white": "F0EBE3",
+  "text_gray":  "5A7080",
+  "text_dark":  "3A4A52",
+  "line_gray":  "7A90A0",
+
+  "bg_content": "6B8090",
+
+  "motifs": {
+    "left_bar_colors": ["C4857A", "8FAF9F"],
+    "header_tag_color": "C4857A",
+    "bullet_dot_color": "C4857A",
+    "number_color": "8FAF9F",
+    "row_border_color": "8FAF9F",
+    "quote_mark_color": "C4857A",
+    "divider_color": "8FAF9F",
+    "tier_dot_size": 14
+  }
+}

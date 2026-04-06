@@ -1,0 +1,32 @@
+{
+  "name": "warm",
+  "description": "Coral + amber on deep espresso. Energetic, approachable, human.",
+  "font": "Aptos",
+
+  "accent":     "E8622A",
+  "accent2":    "F0A830",
+  "navy":       "2C1810",
+  "white":      "FFFAF5",
+  "card":       "1E1008",
+  "card_side":  "1E1008",
+  "card_num":   "F0A830",
+  "text_dim":   "987060",
+  "text_num":   "5A3020",
+  "card_white": "FFF3E8",
+  "text_gray":  "6A4030",
+  "text_dark":  "2C1810",
+  "line_gray":  "5A3020",
+
+  "bg_content": "3D2418",
+
+  "motifs": {
+    "left_bar_colors": ["E8622A", "F0A830"],
+    "header_tag_color": "E8622A",
+    "bullet_dot_color": "E8622A",
+    "number_color": "F0A830",
+    "row_border_color": "E8622A",
+    "quote_mark_color": "F0A830",
+    "divider_color": "E8622A",
+    "tier_dot_size": 14
+  }
+}

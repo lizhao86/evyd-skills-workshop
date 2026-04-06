@@ -1,22 +1,34 @@
 ---
 name: evyd-ppt-generator
 description: >
-  Generate professional EVYD-branded PPTX presentations from a content JSON file.
-  Uses the EVYD Aptos template for native-editable slides (real shapes + text, not screenshots).
+  Generate professional PPTX presentations from a content JSON file.
+  Supports three modes: free (no template), template (EVYD Aptos), hybrid (template chrome + free content).
   Use when the user asks to 生成PPT, 做幻灯片, 演示文稿, make slides, create presentation, ppt generator, or EVYD ppt.
 ---
 
 # EVYD PPT Generator Skill
 
 Generates native-PPTX presentations from a compact content JSON file.
-Two rendering modes are available:
+One renderer (`gen_pptx.py`), three modes, eight pluggable styles.
 
-| Mode | Renderer | Style source | When to use |
-|------|----------|-------------|-------------|
-| **Template mode** (default) | `gen_pptx.py` | EVYD Aptos `.pptx` template | EVYD-branded deliverables, MOH submissions |
-| **Free-design mode** | `gen_free.js` | `styles/<name>.js` (code-driven) | Custom visual styles, non-EVYD decks |
+| Mode | Template needed? | Chrome slides | Content slides | Best for |
+|------|-----------------|---------------|----------------|----------|
+| **`free`** | No | Code-drawn | Code-drawn | Custom visual styles, non-EVYD decks |
+| **`template`** | Yes | Template layouts | Template layouts | Strict EVYD brand compliance |
+| **`hybrid`** (default) | Yes | Template layouts | Code-drawn with style colors | EVYD chrome + custom content colors |
 
 **Skill location**: `/Users/Li.ZHAO/我的代码/技能 skills 作坊/evyd-ppt-generator/`
+
+### Design reference (MUST read before generating content.json)
+
+**`references/design-guidelines.md`** — Typography hierarchy, layout selection rules,
+color psychology, slide sequencing, content writing rules, and style vocabulary.
+Always consult this file when deciding:
+- Which slide type to use for what content
+- Which style to recommend for the audience
+- How many items per slide (max limits)
+- Whether to use `"blue"` or `"white"` background
+- How to write concise titles and bullets
 
 ---
 
@@ -24,241 +36,179 @@ Two rendering modes are available:
 
 ```
 content.json  ← Model generates this (~400 tokens per 15 slides)
-               │
-               ├── gen_pptx.py   ← Template-mode renderer (Python / python-pptx)
-               │     ├── styles.py          ← EVYD color presets
-               │     └── EVYD Aptos .pptx   ← Source template
-               │
-               └── gen_free.js   ← Free-design renderer (Node / PptxGenJS)
-                     └── styles/dark_navy.js   ← Pluggable style config
-                         styles/cyberpunk.js   ← (add more here)
-                         styles/red_line.js    …
+      │
+      └── gen_pptx.py  ← Unified renderer (Python / python-pptx)
+            │
+            ├── --mode free      → Presentation() from scratch
+            ├── --mode template  → Presentation(EVYD Aptos .pptx)
+            └── --mode hybrid    → Template chrome + style-driven content
+                  │
+                  └── styles/<name>.json  ← Pluggable color/font/motif config
 ```
+
+Three-layer separation:
+1. **Content** — `content.json` (what to say)
+2. **Layout** — slide-type renderers in `gen_pptx.py` (where to put it)
+3. **Style** — `styles/*.json` (how it looks) — renderer-independent, portable
 
 ---
 
-## Template Mode Workflow (gen_pptx.py)
+## Workflow
 
 ### Phase 1 — Gather requirements (ask user)
 1. **Topic / purpose** of the presentation
 2. **Audience** (internal team, external client, MOH, etc.)
 3. **Key sections** / what needs to be covered
 4. **Date, venue, presenter** (for cover slide)
-5. **Style** preference (default: `evyd_blue`)
+5. **Mode** preference (default: `hybrid`)
+6. **Style** preference (consult `references/design-guidelines.md` to recommend)
 
 ### Phase 2 — Generate content.json
 
-Generate ONLY the JSON file. Do NOT regenerate `gen_pptx.py` or `styles.py`.
-
-Save the JSON to a sensible path, e.g.:
-```
-/tmp/<project-name>/content.json
-```
-
-Or directly to the examples folder for reuse:
-```
-examples/<project-name>.json
-```
-
-### Phase 3 — Run renderer
-
-```bash
-cd "/Users/Li.ZHAO/我的代码/技能 skills 作坊/evyd-ppt-generator"
-python3 gen_pptx.py /tmp/<project-name>/content.json \
-  --output "/Users/Li.ZHAO/Desktop/<OutputName>.pptx"
-```
-
-Override style or template if needed:
-```bash
-python3 gen_pptx.py content.json --style evyd_white --output output.pptx
-```
-
----
-
-## Free-Design Mode Workflow (gen_free.js)
-
-Use this mode when:
-- The user wants a custom visual style (not EVYD-branded)
-- You want no dependency on a `.pptx` template file
-- You want the design fully code-driven and version-controllable
-
-### Prerequisites
-
-```bash
-cd "/Users/Li.ZHAO/我的代码/技能 skills 作坊/evyd-ppt-generator"
-npm install pptxgenjs   # one-time; installs to local node_modules/
-```
-
-### Phase 1 — Choose (or add) a style
-
-All styles use **Aptos** font. Pick by mood/audience:
-
-| Style | Base tone | Primary accent | Secondary | Best for |
-|-------|-----------|---------------|-----------|----------|
-| `dark_navy` | Deep navy `0B1F3A` | Orange `E87722` | Teal `17A589` | Strategy decks, internal pitches |
-| `cooltech` | Space blue `0D1B2A` | Cyan `00C9C8` | Purple `7B61FF` | AI / SaaS / healthcare tech |
-| `morandi` | Slate blue `5C7080` | Dusty rose `C4857A` | Sage `8FAF9F` | Culture, brand, upscale reports |
-| `warm` | Espresso `2C1810` | Coral `E8622A` | Amber `F0A830` | Education, patient-facing, training |
-| `monochrome` | Charcoal `111111` | White-grey `EEEEEE` | Mid-grey `888888` | Executive briefs, editorial, fashion |
-
-To add a new style: copy `styles/dark_navy.js`, rename it, and edit the `colors`, `fonts`, and `motifs` blocks. No other files need changing.
-
-### Phase 2 — Author content.json
-
-Same JSON structure as template mode (same slide types).
-Optionally set `meta.free_style` to pre-select a style:
+Generate ONLY the JSON file. Do NOT regenerate `gen_pptx.py` or style files.
 
 ```json
 {
   "meta": {
-    "title": "My Deck",
-    "free_style": "dark_navy",
-    "output": "/Users/Li.ZHAO/Desktop/MyDeck.pptx"
+    "title": "Presentation Title",
+    "mode": "hybrid",
+    "style": "evyd_blue",
+    "template": "/Users/Li.ZHAO/Documents/EVYD PPT Template Aptos.pptx",
+    "output": "/Users/Li.ZHAO/Desktop/Output.pptx"
   },
   "slides": [ ... ]
 }
 ```
 
+Save to `/tmp/<project-name>/content.json` or `examples/<project-name>.json`.
+
 ### Phase 3 — Run renderer
 
 ```bash
 cd "/Users/Li.ZHAO/我的代码/技能 skills 作坊/evyd-ppt-generator"
-node gen_free.js examples/my-deck.json \
-  [--style dark_navy] \
-  [--output "/Users/Li.ZHAO/Desktop/MyDeck.pptx"]
+
+# Hybrid mode (default) — EVYD chrome + custom style
+python3 gen_pptx.py content.json --style cooltech \
+  --output "/Users/Li.ZHAO/Desktop/Output.pptx"
+
+# Free mode — no template dependency
+python3 gen_pptx.py content.json --mode free --style dark_navy \
+  --output "/Users/Li.ZHAO/Desktop/Output.pptx"
+
+# Template mode — strict EVYD branding
+python3 gen_pptx.py content.json --mode template --style evyd_blue \
+  --output "/Users/Li.ZHAO/Desktop/Output.pptx"
 ```
 
-CLI flags override `meta` values when both are present.
+CLI flags override `meta` values.
 
 ### Phase 4 — Visual QA loop
 
 After generating, always do a visual pass before delivering:
 
 ```bash
-# 1. Convert to images (run on user's Mac via Desktop Commander)
+# Option A: Convert to images for quick inspection
 /Applications/LibreOffice.app/Contents/MacOS/soffice --headless \
   --convert-to pdf "/path/to/output.pptx" --outdir /tmp/
-
 pdftoppm -jpeg -r 150 /tmp/output.pdf /tmp/slide
-
-# 2. Open all slide images
 open /tmp/slide-*.jpg
 
-# 3. Inspect each slide for: text overflow, overlap, wrapping issues
-# 4. Fix in gen_free.js (adjust x/y/w/h, font size, or rowH constants)
-# 5. Re-run node gen_free.js and repeat until clean
+# Option B: Open directly in PowerPoint
+open "/path/to/output.pptx"
 ```
 
-Alternatively, open the `.pptx` directly in PowerPoint to inspect slide-by-slide.
+Inspect each slide for text overflow, overlap, wrapping issues. Fix coordinates
+in `gen_pptx.py` if needed, then re-run.
 
 ---
 
-## Style System (styles/*.js)
+## Style System (styles/*.json)
 
-All styles use **Aptos** font. Each style file exports three blocks:
+All styles use **Aptos** font. Each JSON file defines colors and motifs:
 
-```javascript
-module.exports = {
-  name: "my_style",
-  description: "Short description.",
+```json
+{
+  "name": "my_style",
+  "description": "Short description.",
+  "font": "Aptos",
 
-  // ── Colors (21 tokens) ─────────────────────────────────────────────────
-  colors: {
-    bg_primary:    "0B1F3A",  // cover / ending background (dark)
-    bg_content:    "1A5276",  // main content slide background (dark)
-    bg_white:      "FFFFFF",  // light slide background
-    bg_row:        "F4F6F8",  // row/card bg on white slides
-    bg_card:       "FFFFFF",  // card background
+  "accent":     "2CD5C3",
+  "accent2":    "0076B3",
+  "navy":       "172E41",
+  "white":      "FFFFFF",
+  "card":       "003B6B",
+  "card_side":  "004F7D",
+  "card_num":   "3388BB",
+  "text_dim":   "BBCCDD",
+  "text_num":   "CCE8F5",
+  "card_white": "EFF7FD",
+  "text_gray":  "446688",
+  "text_dark":  "172E41",
+  "line_gray":  "225588",
+  "bg_content": "0A3A5C",
 
-    accent_orange: "E87722",  // PRIMARY accent — tags, dots, left bar top
-    accent_teal:   "17A589",  // SECONDARY accent — borders, numbers, left bar bottom
-    accent_dark2:  "102740",  // darker bg for tag/badge backgrounds
-
-    header_bg:     "0B1F3A",  // slide header strip
-    header_sep:    "3A5570",  // header separator line
-
-    text_white:    "FFFFFF",
-    text_primary:  "D8E8F4",  // body text on dark backgrounds
-    text_muted:    "6B8BA4",  // subtitle / muted text
-    text_navy:     "1C2B3A",  // body text on white backgrounds
-    text_mid:      "3D5166",  // secondary text on white
-    text_blue_lt:  "7AAABF",  // light subtitle on blue slides
-    text_dim:      "9BBFD4",  // dimmed text in cards
-    text_example:  "6899AA",  // italic example text in tier rows
-
-    slide_num:     "3A5570",  // slide number (dark slides)
-    slide_num_lt:  "BBBBBB",  // slide number (light slides)
-    warning_bg:    "1C3A52",  // bottom warning bar background
-  },
-
-  // ── Typography ─────────────────────────────────────────────────────────
-  fonts: {
-    heading: "Aptos",   // titles, large numbers, cover
-    body:    "Aptos",   // body text, labels, bullets
-  },
-
-  // ── Visual motifs ──────────────────────────────────────────────────────
-  motifs: {
-    left_bar_colors:  ["E87722", "17A589"],  // cover gradient bar [top, bottom]
-    header_tag_color: "E87722",
-    bullet_dot_color: "E87722",
-    number_color:     "17A589",
-    row_border_color: "17A589",
-    quote_mark_color: "17A589",
-    divider_color:    "17A589",
-    tier_dot_size:    14,
-  },
-};
+  "motifs": {
+    "left_bar_colors": ["2CD5C3", "0076B3"],
+    "header_tag_color": "2CD5C3",
+    "bullet_dot_color": "2CD5C3",
+    "number_color": "0076B3",
+    "row_border_color": "0076B3",
+    "quote_mark_color": "2CD5C3",
+    "divider_color": "0076B3",
+    "tier_dot_size": 14
+  }
+}
 ```
 
-> ⚠️ **No `#` prefix on hex colors** — PptxGenJS requires bare hex strings (e.g. `"E87722"` not `"#E87722"`). Using `#` causes file corruption.
+Hex colors without `#` prefix. Style files are pure data — portable to any future renderer.
+
+### Available styles
+
+#### EVYD brand styles (template/hybrid mode)
+
+| Style | Background | Accent | Best for |
+|-------|-----------|--------|----------|
+| `evyd_blue` | Navy `172E41` | Teal `2CD5C3` | Default — internal / MOH |
+| `evyd_white` | White | Blue `0076B3` | Printed handouts |
+| `evyd_teal` | Dark navy `0A1E30` | Teal `2CD5C3` | External events, high-contrast |
+
+#### Custom styles (free/hybrid mode)
+
+| Style | Base tone | Primary | Secondary | Best for |
+|-------|-----------|---------|-----------|----------|
+| `dark_navy` | Deep navy `0B1F3A` | Orange `E87722` | Teal `17A589` | Strategy, research |
+| `cooltech` | Space blue `0D1B2A` | Cyan `00C9C8` | Purple `7B61FF` | AI / SaaS / healthtech |
+| `morandi` | Slate `5C7080` | Dusty rose `C4857A` | Sage `8FAF9F` | Culture, brand |
+| `warm` | Espresso `2C1810` | Coral `E8622A` | Amber `F0A830` | Education, training |
+| `monochrome` | Charcoal `111111` | White-grey `EEEEEE` | Mid-grey `888888` | Executive, editorial |
+
+### Add a new style
+1. Copy `styles/dark_navy.json` → `styles/<new_name>.json`
+2. Edit color values and motifs
+3. Use via `--style <new_name>` or `"style": "<new_name>"` in content.json
+4. No changes to `gen_pptx.py` needed
 
 ---
 
 ## Content JSON Schema
 
-### meta (required)
-```json
-{
-  "meta": {
-    "title":      "Presentation title (for reference only)",
-    "style":      "evyd_blue",
-    "free_style": "dark_navy",
-    "template":   "/Users/Li.ZHAO/Documents/EVYD PPT Template Aptos.pptx",
-    "output":     "/Users/Li.ZHAO/Desktop/Output.pptx"
-  }
-}
-```
-
-`style` → used by `gen_pptx.py` (template mode)
-`free_style` → used by `gen_free.js` (free-design mode)
-
-### Available template-mode styles
-
-Template mode uses the EVYD Aptos `.pptx` template — styles stay within EVYD brand.
-All use **Aptos** font.
-
-| Style | Background | Accent | Best for |
-|-------|-----------|--------|----------|
-| `evyd_blue` | Navy `172E41` | Teal `2CD5C3` | Default — internal / MOH presentations |
-| `evyd_white` | White | Blue `0076B3` | Printed handouts |
-| `evyd_teal` | Dark navy `0A1E30` | Teal `2CD5C3` | External events, high-contrast |
-
-> For custom visual styles (non-EVYD-branded), use **Free-design mode** instead.
-
 ### Slide types
 
 All content slides support:
 - `"section"`: label in top-left corner (e.g. `"01 — Welcome"`)
-- `"background"`: `"blue"` or `"white"` (controls which EVYD layout is used)
-- `"num"`: slide number override (e.g. `"04 / 12"`). Auto-calculated if omitted.
+- `"background"`: `"blue"` or `"white"` (controls background color)
+- `"num"`: slide number override. Auto-calculated if omitted.
+
+Chrome slides: `cover`, `agenda`, `section_divider`, `ending`
+Content slides: all others (code-drawn, support style customization)
 
 ---
 
 #### `cover`
 ```json
-{ "type": "cover", "title": "...", "subtitle": "..." }
+{ "type": "cover", "title": "...", "subtitle": "...", "tag": "PRESENTATION", "logo": "EVYD · 2025" }
 ```
+`tag` and `logo` are optional (free mode only).
 
 ---
 
@@ -315,7 +265,6 @@ Side-by-side IN SCOPE / OUT OF SCOPE columns with colored headers.
   "right": { "title": "🚫  OUT OF SCOPE", "color": [231,76,60],  "light_color": "red",   "marker": "✗", "items": ["..."] }
 }
 ```
-`light_color`: `"green"`, `"red"`, `"blue"`, or `"yellow"`.
 
 ---
 
@@ -399,7 +348,7 @@ Max 4 steps per column, 2 columns.
 ---
 
 #### `scenario_cards`
-2×2 grid of scenario cards with teal top bar and tag badge.
+2×2 grid of scenario cards with accent top bar and tag badge.
 ```json
 {
   "type": "scenario_cards",
@@ -446,31 +395,19 @@ Thank-you / call-to-action slide.
 
 ## Extending the Skill
 
-### Add a new free-design style
-1. Copy `styles/dark_navy.js` → `styles/<new_name>.js`
-2. Edit `colors`, `fonts`, `motifs` blocks
-3. Set `"free_style": "<new_name>"` in your `content.json`, or pass `--style <new_name>` at CLI
-4. No changes to `gen_free.js` needed
+### Add a new style
+1. Copy `styles/dark_navy.json` → `styles/<new_name>.json`
+2. Edit color values and motifs
+3. No code changes needed
 
-Style ideas: `vibrant` (high-saturation 活力橙/玫红/电光蓝), `forest` (自然森林绿 + 米白), `morandi_light` (all-light pastel variant of morandi).
+Style ideas: `vibrant` (活力橙/玫红/电光蓝), `forest` (森林绿 + 米白), `morandi_light` (all-light pastel).
 
-### Add a new slide type (free-design mode)
-1. Write a renderer function in `gen_free.js`:
-   ```javascript
-   function renderMyType(s, d, n, total) {
-     // s = PptxGenJS slide, d = slide data from JSON, n = slide index, total = total slides
-   }
-   ```
-2. Add to `RENDERERS` dict: `my_type: renderMyType`
-3. Document the JSON schema here in SKILL.md
-
-### Add a new slide type (template mode)
+### Add a new slide type
 1. Write a `render_<type>(slide, data, st, num, total)` function in `gen_pptx.py`
-2. Add it to the `RENDERERS` dict
-3. If it uses a fixed layout (not blue/white), add the type name to `FIXED_LAYOUTS`
-4. Document the JSON schema here in SKILL.md
+2. Add it to `CONTENT_RENDERERS` dict (or `CHROME_RENDERERS` with a free variant)
+3. Document the JSON schema here
 
-### Change the template (template mode)
+### Change the template
 Update `DEFAULT_TEMPLATE` in `gen_pptx.py`, or pass `--template` on the CLI.
 Layout indices (L_COVER, L_AGEND, etc.) may need updating for a different template:
 ```python
@@ -485,11 +422,39 @@ for i, layout in enumerate(prs.slide_layouts):
 ## Examples
 
 ```bash
-# Template mode — BruAI Focus Group
 cd "/Users/Li.ZHAO/我的代码/技能 skills 作坊/evyd-ppt-generator"
+
+# Hybrid mode (default) — EVYD chrome + evyd_blue style
 python3 gen_pptx.py examples/bruai-focusgroup.json
 
-# Free-design mode — EVYD Skills全栈团队课题 (dark_navy style)
-node gen_free.js examples/evyd-skills-fullstack.json \
-  --output "/Users/Li.ZHAO/Desktop/EVYD-Skills全栈团队课题.pptx"
+# Free mode — dark_navy style, no template
+python3 gen_pptx.py examples/bruai-focusgroup.json --mode free --style dark_navy \
+  --output "/Users/Li.ZHAO/Desktop/BruAI-DarkNavy.pptx"
+
+# Template mode — strict EVYD branding
+python3 gen_pptx.py examples/bruai-focusgroup.json --mode template --style evyd_teal \
+  --output "/Users/Li.ZHAO/Desktop/BruAI-Teal.pptx"
+```
+
+## File Structure
+
+```
+evyd-ppt-generator/
+├── SKILL.md                          # This file
+├── gen_pptx.py                       # Unified renderer (free/template/hybrid)
+├── references/
+│   └── design-guidelines.md          # Design rules for content.json generation
+├── styles/
+│   ├── evyd_blue.json                # EVYD brand — default
+│   ├── evyd_white.json               # EVYD brand — print
+│   ├── evyd_teal.json                # EVYD brand — high contrast
+│   ├── dark_navy.json                # Navy + orange + teal
+│   ├── cooltech.json                 # Space blue + cyan + purple
+│   ├── morandi.json                  # Muted pastels
+│   ├── warm.json                     # Espresso + coral + amber
+│   └── monochrome.json               # Black/white/grey
+└── examples/
+    ├── bruai-focusgroup.json
+    ├── evyd-1person-fullstack.json
+    └── evyd-skills-fullstack.json
 ```

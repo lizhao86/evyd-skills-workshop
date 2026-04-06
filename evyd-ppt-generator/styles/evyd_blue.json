@@ -1,0 +1,32 @@
+{
+  "name": "evyd_blue",
+  "description": "Navy header + blue backgrounds. Default for EVYD internal/MOH presentations.",
+  "font": "Aptos",
+
+  "accent":     "2CD5C3",
+  "accent2":    "0076B3",
+  "navy":       "172E41",
+  "white":      "FFFFFF",
+  "card":       "003B6B",
+  "card_side":  "004F7D",
+  "card_num":   "3388BB",
+  "text_dim":   "BBCCDD",
+  "text_num":   "CCE8F5",
+  "card_white": "EFF7FD",
+  "text_gray":  "446688",
+  "text_dark":  "172E41",
+  "line_gray":  "225588",
+
+  "bg_content": "0A3A5C",
+
+  "motifs": {
+    "left_bar_colors": ["2CD5C3", "0076B3"],
+    "header_tag_color": "2CD5C3",
+    "bullet_dot_color": "2CD5C3",
+    "number_color": "0076B3",
+    "row_border_color": "0076B3",
+    "quote_mark_color": "2CD5C3",
+    "divider_color": "0076B3",
+    "tier_dot_size": 14
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "name": "cooltech",
+  "description": "Deep space navy with tech cyan + electric purple. Futuristic, confident.",
+  "font": "Aptos",
+
+  "accent":     "00C9C8",
+  "accent2":    "7B61FF",
+  "navy":       "0D1B2A",
+  "white":      "FFFFFF",
+  "card":       "0A2538",
+  "card_side":  "091523",
+  "card_num":   "7B61FF",
+  "text_dim":   "4A7A99",
+  "text_num":   "1E4060",
+  "card_white": "EBF4FA",
+  "text_gray":  "2A5070",
+  "text_dark":  "0D1B2A",
+  "line_gray":  "1E4060",
+
+  "bg_content": "14304A",
+
+  "motifs": {
+    "left_bar_colors": ["00C9C8", "7B61FF"],
+    "header_tag_color": "00C9C8",
+    "bullet_dot_color": "00C9C8",
+    "number_color": "7B61FF",
+    "row_border_color": "00C9C8",
+    "quote_mark_color": "7B61FF",
+    "divider_color": "00C9C8",
+    "tier_dot_size": 14
+  }
+}

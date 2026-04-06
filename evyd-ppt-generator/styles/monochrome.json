@@ -1,0 +1,32 @@
+{
+  "name": "monochrome",
+  "description": "Black, white, and grey — minimal, editorial, high-end.",
+  "font": "Aptos",
+
+  "accent":     "EEEEEE",
+  "accent2":    "888888",
+  "navy":       "111111",
+  "white":      "FAFAFA",
+  "card":       "1A1A1A",
+  "card_side":  "080808",
+  "card_num":   "AAAAAA",
+  "text_dim":   "666666",
+  "text_num":   "444444",
+  "card_white": "F0F0F0",
+  "text_gray":  "444444",
+  "text_dark":  "111111",
+  "line_gray":  "333333",
+
+  "bg_content": "1E1E1E",
+
+  "motifs": {
+    "left_bar_colors": ["EEEEEE", "888888"],
+    "header_tag_color": "DDDDDD",
+    "bullet_dot_color": "EEEEEE",
+    "number_color": "AAAAAA",
+    "row_border_color": "AAAAAA",
+    "quote_mark_color": "888888",
+    "divider_color": "555555",
+    "tier_dot_size": 14
+  }
+}

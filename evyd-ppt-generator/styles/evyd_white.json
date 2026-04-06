@@ -1,0 +1,32 @@
+{
+  "name": "evyd_white",
+  "description": "White backgrounds throughout. Good for printed handouts.",
+  "font": "Aptos",
+
+  "accent":     "0076B3",
+  "accent2":    "2CD5C3",
+  "navy":       "172E41",
+  "white":      "FFFFFF",
+  "card":       "EFF7FD",
+  "card_side":  "0076B3",
+  "card_num":   "0076B3",
+  "text_dim":   "446688",
+  "text_num":   "AAAAAA",
+  "card_white": "EFF7FD",
+  "text_gray":  "446688",
+  "text_dark":  "172E41",
+  "line_gray":  "BCD6E8",
+
+  "bg_content": "F5F9FC",
+
+  "motifs": {
+    "left_bar_colors": ["0076B3", "2CD5C3"],
+    "header_tag_color": "0076B3",
+    "bullet_dot_color": "0076B3",
+    "number_color": "2CD5C3",
+    "row_border_color": "2CD5C3",
+    "quote_mark_color": "0076B3",
+    "divider_color": "2CD5C3",
+    "tier_dot_size": 14
+  }
+}

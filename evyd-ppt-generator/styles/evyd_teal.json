@@ -1,0 +1,32 @@
+{
+  "name": "evyd_teal",
+  "description": "Dark navy + teal accent. High-contrast for external events.",
+  "font": "Aptos",
+
+  "accent":     "2CD5C3",
+  "accent2":    "06B6AA",
+  "navy":       "0A1E30",
+  "white":      "FFFFFF",
+  "card":       "072834",
+  "card_side":  "076C60",
+  "card_num":   "2CD5C3",
+  "text_dim":   "88BBBB",
+  "text_num":   "99DDDD",
+  "card_white": "E8F9F7",
+  "text_gray":  "2A6666",
+  "text_dark":  "0A1E30",
+  "line_gray":  "076C60",
+
+  "bg_content": "0C2A38",
+
+  "motifs": {
+    "left_bar_colors": ["2CD5C3", "06B6AA"],
+    "header_tag_color": "2CD5C3",
+    "bullet_dot_color": "2CD5C3",
+    "number_color": "06B6AA",
+    "row_border_color": "06B6AA",
+    "quote_mark_color": "2CD5C3",
+    "divider_color": "06B6AA",
+    "tier_dot_size": 14
+  }
+}

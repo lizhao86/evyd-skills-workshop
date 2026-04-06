@@ -1,0 +1,32 @@
+{
+  "name": "dark_navy",
+  "description": "Deep navy + teal + orange. Premium look for strategy/research decks.",
+  "font": "Aptos",
+
+  "accent":     "E87722",
+  "accent2":    "17A589",
+  "navy":       "0B1F3A",
+  "white":      "FFFFFF",
+  "card":       "0F2D45",
+  "card_side":  "102740",
+  "card_num":   "17A589",
+  "text_dim":   "9BBFD4",
+  "text_num":   "3A5570",
+  "card_white": "F4F6F8",
+  "text_gray":  "3D5166",
+  "text_dark":  "1C2B3A",
+  "line_gray":  "3A5570",
+
+  "bg_content": "1A5276",
+
+  "motifs": {
+    "left_bar_colors": ["E87722", "17A589"],
+    "header_tag_color": "E87722",
+    "bullet_dot_color": "E87722",
+    "number_color": "17A589",
+    "row_border_color": "17A589",
+    "quote_mark_color": "17A589",
+    "divider_color": "17A589",
+    "tier_dot_size": 14
+  }
+}
