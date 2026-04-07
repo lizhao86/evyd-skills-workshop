@@ -376,14 +376,34 @@ content.json（模型生成，约 400 tokens / 15 页）
 
 ## 输出渠道
 
-`evyd-output-channels/SKILL.md` 包含 Active Config 和 4 个渠道的完整协议，改两行即可切换所有 skill 的输出方式。
+`evyd-output-channels/SKILL.md` 包含 Active Config 和 8 个渠道的完整协议，改两行即可切换所有 skill 的输出方式。
 
-| 渠道 | Reference |
-|---|---|
-| feishu + lark-cli | `evyd-output-channels/references/feishu-lark-cli.md` |
-| feishu + openclaw | `evyd-output-channels/references/feishu-openclaw.md` |
-| obsidian + local-fs | `evyd-output-channels/references/obsidian-local-fs.md` |
-| local-markdown + local-fs | `evyd-output-channels/references/local-markdown-local-fs.md` |
+| 渠道 | Reference | 环境要求 |
+|---|---|---|
+| feishu + lark-cli | `references/feishu-lark-cli.md` | 需安装 lark-cli |
+| feishu + openclaw | `references/feishu-openclaw.md` | 待接入 |
+| obsidian + local-fs | `references/obsidian-local-fs.md` | 无 |
+| local-markdown + local-fs | `references/local-markdown-local-fs.md` | 无 |
+| jira + claude-mcp | `references/jira-claude-mcp.md` | Claude Code + Atlassian OAuth |
+| jira + community-mcp | `references/jira-community-mcp.md` | sooperset/mcp-atlassian + API Token |
+| confluence + claude-mcp | `references/confluence-claude-mcp.md` | Claude Code + Atlassian OAuth |
+| confluence + community-mcp | `references/confluence-community-mcp.md` | sooperset/mcp-atlassian + API Token |
+
+### Jira / Confluence Per-skill 路由
+
+Jira 和 Confluence 渠道不是所有 skill 统一写到一个地方，而是按 skill 分别路由：
+
+| Skill | Jira | Confluence |
+|---|---|---|
+| evyd-competitor-research | — | 页面 → EPT1 / Overall Landscape |
+| evyd-requirement-breakdown | Requirement ticket → BACKLOG | — |
+| evyd-user-story-writer | Story ticket → BACKLOG（link Requirement） | — |
+| evyd-ai-intention-brainstorm | Story ticket → BACKLOG（link Requirement） | — |
+| evyd-lofi-figma-maker | Comment → 关联 ticket | — |
+| evyd-user-manual | — | 页面 → BPS / To Be Moved（可覆盖） |
+| evyd-design-review | Comment → 关联 ticket | — |
+| evyd-pd-roadmap | 不适用（继续飞书多维表） | — |
+| evyd-ppt-generator | 不适用（本地文件） | — |
 
 ## 技术栈
 
