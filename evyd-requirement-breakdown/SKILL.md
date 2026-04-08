@@ -94,9 +94,9 @@ Organise by team. For each team, list items as a sub-section.
 
 #### [Team Name] (N items)
 
-| ID  | Task | Description | Unlocks | Timing |
-|-----|------|-------------|---------|--------|
-| M1  | ...  | ...         | F01·F02 | Pre-requisite |
+| ID  | Task | Team | Description | Unlocks | Timing |
+|-----|------|------|-------------|---------|--------|
+| M1  | ...  | Medical | ...         | F01·F02 | Pre-requisite |
 
 ## Clarifying Questions
 
