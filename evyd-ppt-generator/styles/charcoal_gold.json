@@ -1,0 +1,32 @@
+{
+  "name": "charcoal_gold",
+  "description": "Dark charcoal + gold accents. Matches Strategic Workshop Materials style.",
+  "font": "Aptos",
+
+  "accent":     "C9A96E",
+  "accent2":    "8B7542",
+  "navy":       "1C1C22",
+  "white":      "FFFFFF",
+  "card":       "252530",
+  "card_side":  "1E1E28",
+  "card_num":   "C9A96E",
+  "text_dim":   "A0A0A8",
+  "text_num":   "6B6B75",
+  "card_white": "F2F0EC",
+  "text_gray":  "6B6B75",
+  "text_dark":  "1C1C22",
+  "line_gray":  "3A3A45",
+
+  "bg_content": "22222C",
+
+  "motifs": {
+    "left_bar_colors": ["C9A96E", "8B7542"],
+    "header_tag_color": "C9A96E",
+    "bullet_dot_color": "C9A96E",
+    "number_color": "C9A96E",
+    "row_border_color": "3A3A45",
+    "quote_mark_color": "C9A96E",
+    "divider_color": "3A3A45",
+    "tier_dot_size": 14
+  }
+}

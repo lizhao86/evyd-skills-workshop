@@ -1,0 +1,32 @@
+{
+  "name": "sunrise",
+  "description": "Medium navy + coral + amber. Warm, hopeful, high-contrast. For AI/progress narratives.",
+  "font": "Aptos",
+
+  "accent":     "E8634A",
+  "accent2":    "F5A623",
+  "navy":       "1B2838",
+  "white":      "FFFBF5",
+  "card":       "2A3F55",
+  "card_side":  "34506A",
+  "card_num":   "F5A623",
+  "text_dim":   "B0C4D8",
+  "text_num":   "F5D08A",
+  "card_white": "FFF3E6",
+  "text_gray":  "5A7A94",
+  "text_dark":  "1B2838",
+  "line_gray":  "3D5A73",
+
+  "bg_content": "243B53",
+
+  "motifs": {
+    "left_bar_colors": ["E8634A", "F5A623"],
+    "header_tag_color": "E8634A",
+    "bullet_dot_color": "E8634A",
+    "number_color": "F5A623",
+    "row_border_color": "F5A623",
+    "quote_mark_color": "F5A623",
+    "divider_color": "E8634A",
+    "tier_dot_size": 14
+  }
+}

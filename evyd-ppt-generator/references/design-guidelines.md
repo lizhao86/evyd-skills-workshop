@@ -88,6 +88,7 @@ When the user describes their audience or mood, map to a style:
 | 优雅、文艺、品牌 | elegant, artistic, culture | `morandi` | Muted tones = refinement |
 | 对外演讲、高对比 | external, high-contrast | `evyd_teal` | Teal on dark = bold |
 | 打印、白底 | print, handout | `evyd_white` | White background for paper |
+| 充满希望、温暖感性、进展汇报 | hopeful, warm progress | `sunrise` | Coral + amber = optimism |
 
 ### Industry defaults
 
@@ -272,3 +273,42 @@ When a slide has more than 5 data columns:
 
 Each table cell must be wide enough for at least 10 Chinese characters
 per line at the body font size. At 18pt that means ≥ 3.5″ column width.
+
+### Content must fill available space
+
+Panel and column types (`two_panel`, `two_column_check`, `two_column_steps`)
+must use the **full available height** (`SH - ct - 0.3`). Items within panels
+should be **evenly distributed** across the panel height, not clustered at the top.
+
+- Formula: `item_space = (panel_h - header_h) / n_items`
+- Card-based types (`scenario_cards`, `two_column_steps`): card height should be
+  dynamically calculated from available space, not a small fixed value
+- **Anti-pattern**: 4 items squeezed into the top 40% with the bottom 60% blank
+
+### Explicit `sz=` parameters override defaults
+
+Changing a function's default `sz` parameter is **not enough** — callers that pass
+an explicit `sz=` value will override it. After changing any font size default:
+1. Global-search for `sz=` in the affected function's callers
+2. Update every explicit value that falls below the projection floor
+
+### Timeline design
+
+- **Do not** connect phase labels to dots with long vertical lines (looks like prison bars)
+- **Do**: place dots on a horizontal line, hang cards below each dot
+  (card background + accent top bar, content inside: phase / title / divider / desc)
+- Vertically center the whole assembly: `top_pad = (avail_h - assembly_h) / 2`
+
+### Extended font size floor table
+
+Supplement to the main table above:
+
+| Element | Minimum size (20″ canvas) |
+|---------|---------------------------|
+| Subtitle / description text | 15pt |
+| Column header | 16pt bold |
+| Card bold + normal combo | bold ≥ 19pt, normal ≥ 17pt |
+| Stat value (stat_highlight) | 60pt bold |
+| Stat label | 22pt |
+| Scenario card title | 20pt bold |
+| Scenario card description | 18pt |

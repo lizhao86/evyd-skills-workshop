@@ -166,7 +166,7 @@ def _fill_bg(slide, data, st):
 # Shared header helper
 # ─────────────────────────────────────────────────────────────────────────────
 
-def hdr(slide, section, num, title, blue=True, tsz=26, st=None):
+def hdr(slide, section, num, title, blue=True, tsz=34, st=None):
     """Standard content-slide header: section label + slide# + title + accent rule.
     Returns content_top_y (inches) — start your content below this."""
     F = st['font'] if st else 'Aptos'
@@ -175,11 +175,11 @@ def hdr(slide, section, num, title, blue=True, tsz=26, st=None):
     tc = st['white']    if st else (_rgb('FFFFFF') if blue else _rgb('172E41'))
     if not blue and st: tc = st['text_dark']
     if not blue and st: lc = st['accent2']
-    bx(slide, 1.0, 0.30, 10,   0.28, section, sz=8,   color=lc,  font=F)
-    bx(slide, 16.5, 0.30, 2.5, 0.28, num,     sz=8,   color=nc,  align=PP_ALIGN.RIGHT, font=F)
-    bx(slide, 1.0, 0.70, 17,   0.75, title,   sz=tsz, bold=True, color=tc, font=F)
-    rc(slide, 1.0, 1.44, 0.55, 0.045, fill=lc)
-    return 1.68
+    bx(slide, 1.0, 0.30, 10,   0.35, section, sz=11,  color=lc,  font=F)
+    bx(slide, 16.5, 0.30, 2.5, 0.35, num,     sz=11,  color=nc,  align=PP_ALIGN.RIGHT, font=F)
+    bx(slide, 1.0, 0.72, 17,   0.90, title,   sz=tsz, bold=True, color=tc, font=F)
+    rc(slide, 1.0, 1.60, 0.55, 0.055, fill=lc)
+    return 1.85
 
 def _slide_num(slide_data, auto_num, total):
     return slide_data.get('num', f'{auto_num:02d} / {total:02d}')
@@ -361,13 +361,14 @@ def render_two_column_check(slide, data, st, num, total):
              data.get('title', ''), blue=blue, st=st)
 
     if data.get('subtitle'):
-        bx(slide, 1.0, ct - 0.05, 17, 0.28, data['subtitle'], sz=12,
+        bx(slide, 1.0, ct - 0.05, 17, 0.35, data['subtitle'], sz=15,
            color=st['text_gray'], font=F)
 
     LIGHT_COLORS = {
         'green': [0xEB, 0xF9, 0xF0], 'red': [0xFF, 0xEB, 0xEB],
         'blue':  [0xEF, 0xF7, 0xFD], 'yellow': [0xFF, 0xFB, 0xE6],
     }
+    col_h = SH - ct - 0.3
     for col_i, side in enumerate([data.get('left', {}), data.get('right', {})]):
         x = 1.0 + col_i * 9.5
         hc = _rgb(side.get('color', [0x27, 0xAE, 0x60] if col_i == 0
@@ -375,17 +376,20 @@ def render_two_column_check(slide, data, st, num, total):
         lc_key = side.get('light_color', 'green' if col_i == 0 else 'red')
         lc = _rgb(LIGHT_COLORS.get(lc_key, LIGHT_COLORS['green']))
         marker = side.get('marker', '✓' if col_i == 0 else '✗')
-        rc(slide, x, ct + 0.3, 8.8, 7.85, fill=lc)
-        rc(slide, x, ct + 0.3, 8.8, 0.50, fill=hc)
-        bx(slide, x + 0.15, ct + 0.34, 8.3, 0.38, side.get('title', ''),
-           sz=11, bold=True, color=st['white'], font=F)
-        iy = ct + 0.98
-        for item in side.get('items', []):
-            bx(slide, x + 0.10, iy, 0.32, 0.30, marker, sz=12, bold=True,
+        rc(slide, x, ct + 0.3, 8.8, col_h, fill=lc)
+        rc(slide, x, ct + 0.3, 8.8, 0.58, fill=hc)
+        bx(slide, x + 0.20, ct + 0.34, 8.3, 0.50, side.get('title', ''),
+           sz=16, bold=True, color=st['white'], font=F)
+        items = side.get('items', [])
+        n_items = len(items)
+        item_space = (col_h - 0.85) / max(n_items, 1)
+        iy = ct + 1.08
+        for item in items:
+            bx(slide, x + 0.15, iy, 0.40, 0.40, marker, sz=19, bold=True,
                color=hc, font=F)
-            bx(slide, x + 0.46, iy, 8.18, 0.45, item, sz=13.5,
+            bx(slide, x + 0.60, iy, 8.0, 0.70, item, sz=19,
                color=st['text_dark'] if not blue else st['white'], font=F)
-            iy += 0.53
+            iy += item_space
 
 
 def render_cards_grid(slide, data, st, num, total):
@@ -422,31 +426,31 @@ def render_criteria_rows(slide, data, st, num, total):
              data.get('title', ''), blue=blue, st=st)
 
     if data.get('subtitle'):
-        bx(slide, 1.0, ct - 0.05, 17, 0.28, data['subtitle'], sz=12,
+        bx(slide, 1.0, ct - 0.05, 17, 0.35, data['subtitle'], sz=15,
            color=st['text_dim'] if blue else st['text_gray'], font=F)
 
     rows = data.get('criteria', [])
     n = len(rows)
     if n == 0: return
     gap = 0.18
-    avail_h = SH - ct - 0.5
+    avail_h = SH - ct - 0.3
     RH = min(2.2, max(1.0, (avail_h - gap * (n - 1)) / n))
 
     for i, row in enumerate(rows):
         y = ct + 0.4 + i * (RH + gap)
         bg = st['card'] if blue else st['card_white']
         rc(slide, 1.0, y, 17.5, RH, fill=bg)
-        bx(slide, 1.1, y + RH * 0.19, 1.3, RH * 0.54, row.get('num', ''),
-           sz=30, bold=True, color=st['card_num'], font=F)
-        rc(slide, 2.5, y + RH * 0.15, 0.035, RH * 0.70, fill=st['line_gray'])
-        bx(slide, 2.65, y + RH * 0.15, 5.0, RH * 0.28, row.get('label', ''),
-           sz=9, bold=True, color=st['accent'], font=F)
-        bx(slide, 2.65, y + RH * 0.44, 14.5, RH * 0.50, row.get('text', ''),
-           sz=15, color=st['white'] if blue else st['text_dark'], font=F)
+        bx(slide, 1.1, y + RH * 0.15, 1.5, RH * 0.54, row.get('num', ''),
+           sz=36, bold=True, color=st['card_num'], font=F)
+        rc(slide, 2.7, y + RH * 0.12, 0.04, RH * 0.76, fill=st['line_gray'])
+        bx(slide, 2.9, y + RH * 0.08, 5.5, RH * 0.32, row.get('label', ''),
+           sz=14, bold=True, color=st['accent'], font=F)
+        bx(slide, 2.9, y + RH * 0.40, 15.0, RH * 0.55, row.get('text', ''),
+           sz=20, color=st['white'] if blue else st['text_dark'], font=F)
 
     if data.get('footnote'):
         fn_y = ct + 0.4 + n * (RH + gap) - 0.15
-        bx(slide, 1.0, fn_y, 17.5, 0.28, data['footnote'], sz=10,
+        bx(slide, 1.0, fn_y, 17.5, 0.35, data['footnote'], sz=13,
            color=st['text_dim'] if blue else st['text_gray'],
            align=PP_ALIGN.RIGHT, font=F)
 
@@ -491,22 +495,26 @@ def render_two_panel(slide, data, st, num, total):
     ct = hdr(slide, data.get('section', ''), _slide_num(data, num, total),
              data.get('title', ''), blue=blue, st=st)
 
+    panel_h = SH - ct - 0.3
     for col_i, panel in enumerate(data.get('panels', [])[:2]):
         x = 1.0 + col_i * 9.5
         hc = _rgb(panel.get('color', [0x00, 0x76, 0xB3]))
         bg = st['card'] if blue else st['card_white']
-        rc(slide, x, ct + 0.25, 8.8, 7.65, fill=bg)
-        rc(slide, x, ct + 0.25, 8.8, 0.52, fill=st['navy'])
-        bx(slide, x + 0.15, ct + 0.31, 8.3, 0.36,
-           f"{panel.get('icon', '')}  {panel.get('title', '')}", sz=11,
+        rc(slide, x, ct + 0.15, 8.8, panel_h, fill=bg)
+        rc(slide, x, ct + 0.15, 8.8, 0.60, fill=st['navy'])
+        bx(slide, x + 0.20, ct + 0.22, 8.3, 0.50,
+           f"{panel.get('icon', '')}  {panel.get('title', '')}", sz=16,
            bold=True, color=st['white'], font=F)
-        iy = ct + 0.97
-        for item in panel.get('items', []):
-            bx(slide, x + 0.10, iy, 0.32, 0.30, '▸', sz=14, bold=True,
+        items = panel.get('items', [])
+        n_items = len(items)
+        item_space = (panel_h - 0.85) / max(n_items, 1)
+        iy = ct + 0.95
+        for item in items:
+            bx(slide, x + 0.15, iy, 0.40, 0.40, '▸', sz=19, bold=True,
                color=hc, font=F)
-            bx(slide, x + 0.48, iy, 8.15, 0.65, item, sz=13.5,
+            bx(slide, x + 0.60, iy, 8.0, 0.85, item, sz=19,
                color=st['white'] if blue else st['text_dark'], font=F)
-            iy += 0.80
+            iy += item_space
 
 
 def render_two_column_steps(slide, data, st, num, total):
@@ -515,23 +523,30 @@ def render_two_column_steps(slide, data, st, num, total):
     ct = hdr(slide, data.get('section', ''), _slide_num(data, num, total),
              data.get('title', ''), blue=blue, st=st)
 
-    for col_i, col in enumerate(data.get('columns', [])[:2]):
+    steps_list = data.get('columns', [])[:2]
+    # Calculate card height to fill available space
+    max_steps = max((len(c.get('steps', [])) for c in steps_list), default=3)
+    avail_h = SH - ct - 0.9
+    card_gap = 0.22
+    card_h = min(2.6, max(1.6, (avail_h - 0.5 - card_gap * (max_steps - 1)) / max_steps))
+
+    for col_i, col in enumerate(steps_list):
         x = 1.0 + col_i * 9.5
-        bx(slide, x, ct + 0.08, 9, 0.32, col.get('title', ''), sz=11,
+        bx(slide, x, ct + 0.08, 9, 0.40, col.get('title', ''), sz=15,
            bold=True, color=st['accent'], font=F)
-        sy = ct + 0.55
+        sy = ct + 0.60
         for n, step in enumerate(col.get('steps', [])[:4], 1):
             bg = st['card'] if blue else st['card_white']
-            rc(slide, x, sy, 8.8, 1.55, fill=bg)
-            rc(slide, x, sy, 0.5, 1.55, fill=st['card_side'])
-            bx(slide, x + 0.08, sy + 0.53, 0.34, 0.50, str(n), sz=14,
+            rc(slide, x, sy, 8.8, card_h, fill=bg)
+            rc(slide, x, sy, 0.55, card_h, fill=st['card_side'])
+            bx(slide, x + 0.08, sy + card_h * 0.32, 0.40, 0.55, str(n), sz=17,
                bold=True, color=st['white'], align=PP_ALIGN.CENTER, font=F)
-            tb = bx(slide, x + 0.65, sy + 0.22, 8.0, 0.52,
-                    step.get('bold', ''), sz=14, bold=True,
-                    color=st['white'], font=F)
-            ap(tb.text_frame, step.get('normal', ''), sz=12.5,
+            tb = bx(slide, x + 0.72, sy + card_h * 0.12, 7.9, card_h * 0.76,
+                    step.get('bold', ''), sz=19, bold=True,
+                    color=st['white'] if blue else st['text_dark'], font=F)
+            ap(tb.text_frame, step.get('normal', ''), sz=17,
                color=st['text_dim'] if blue else st['text_gray'], font=F)
-            sy += 1.72
+            sy += card_h + card_gap
 
     if data.get('warning'):
         rc(slide, 1.0, 8.60, 17.5, 0.72, fill=_rgb([0x3A, 0x08, 0x08]))
@@ -547,29 +562,29 @@ def render_scenario_cards(slide, data, st, num, total):
              data.get('title', ''), blue=blue, st=st)
 
     if data.get('subtitle'):
-        bx(slide, 1.0, ct - 0.05, 17, 0.28, data['subtitle'], sz=12,
+        bx(slide, 1.0, ct - 0.05, 17, 0.35, data['subtitle'], sz=15,
            color=st['text_dim'] if blue else st['text_gray'], font=F)
 
-    SW_C = 8.7; SH_C = 3.48
+    SW_C = 8.7; SH_C = 4.0
     for i, scen in enumerate(data.get('scenarios', [])[:4]):
         col = i % 2; row = i // 2
         x = 1.0 + col * (SW_C + 0.5)
-        y = ct + 0.35 + row * (SH_C + 0.28)
+        y = ct + 0.25 + row * (SH_C + 0.25)
         bg = st['card'] if blue else st['card_white']
         rc(slide, x, y, SW_C, SH_C, fill=bg)
-        rc(slide, x, y, SW_C, 0.08, fill=st['accent'])
-        bx(slide, x + 0.2, y + 0.18, 2.5, 0.28,
-           f"Scenario {scen.get('num', '')}", sz=9, bold=True,
+        rc(slide, x, y, SW_C, 0.09, fill=st['accent'])
+        bx(slide, x + 0.25, y + 0.20, 3.0, 0.35,
+           f"Scenario {scen.get('num', '')}", sz=12, bold=True,
            color=st['accent'], font=F)
-        bx(slide, x + 0.2, y + 0.52, SW_C - 0.4, 0.58,
-           f"{scen.get('icon', '')}  {scen.get('title', '')}", sz=15,
+        bx(slide, x + 0.25, y + 0.58, SW_C - 0.5, 0.65,
+           f"{scen.get('icon', '')}  {scen.get('title', '')}", sz=20,
            bold=True, color=st['white'] if blue else st['text_dark'], font=F)
-        bx(slide, x + 0.2, y + 1.18, SW_C - 0.4, 1.88,
-           scen.get('desc', ''), sz=13,
+        bx(slide, x + 0.25, y + 1.35, SW_C - 0.5, 2.0,
+           scen.get('desc', ''), sz=18,
            color=st['text_dim'] if blue else st['text_gray'], font=F)
-        rc(slide, x + 0.2, y + SH_C - 0.55, 2.5, 0.38, fill=st['card_side'])
-        bx(slide, x + 0.26, y + SH_C - 0.51, 2.35, 0.28,
-           scen.get('tag', ''), sz=9, color=st['accent'], font=F)
+        rc(slide, x + 0.25, y + SH_C - 0.55, 2.5, 0.38, fill=st['card_side'])
+        bx(slide, x + 0.31, y + SH_C - 0.51, 2.35, 0.32,
+           scen.get('tag', ''), sz=12, color=st['accent'], font=F)
 
 
 def render_survey(slide, data, st, num, total):
@@ -632,8 +647,8 @@ def render_stat_highlight(slide, data, st, num, total):
 
     gap   = 0.4
     CW    = (SW - 2.0 - gap * (n - 1)) / n
-    CH    = SH - ct - 0.7
-    y     = ct + 0.4
+    CH    = SH - ct - 0.5
+    y     = ct + 0.25
 
     for i, stat in enumerate(stats):
         x  = 1.0 + i * (CW + gap)
@@ -641,17 +656,17 @@ def render_stat_highlight(slide, data, st, num, total):
         rc(slide, x, y, CW, CH, fill=bg)
         rc(slide, x, y, CW, 0.12, fill=st['accent'])
 
-        bx(slide, x + 0.15, y + 0.35, CW - 0.3, CH * 0.42,
-           stat.get('value', ''), sz=60, bold=True,
+        bx(slide, x + 0.15, y + CH * 0.12, CW - 0.3, CH * 0.35,
+           stat.get('value', ''), sz=72, bold=True,
            color=st['accent'], align=PP_ALIGN.CENTER, font=F)
 
-        bx(slide, x + 0.15, y + CH * 0.55, CW - 0.3, CH * 0.18,
-           stat.get('label', ''), sz=16, bold=True,
+        bx(slide, x + 0.15, y + CH * 0.50, CW - 0.3, CH * 0.18,
+           stat.get('label', ''), sz=24, bold=True,
            color=st['white'] if blue else st['text_dark'],
            align=PP_ALIGN.CENTER, font=F)
 
-        bx(slide, x + 0.15, y + CH * 0.76, CW - 0.3, CH * 0.20,
-           stat.get('desc', ''), sz=12,
+        bx(slide, x + 0.15, y + CH * 0.68, CW - 0.3, CH * 0.20,
+           stat.get('desc', ''), sz=17,
            color=st['text_dim'] if blue else st['text_gray'],
            align=PP_ALIGN.CENTER, font=F)
 
@@ -659,7 +674,7 @@ def render_stat_highlight(slide, data, st, num, total):
 # ── NEW: timeline ─────────────────────────────────────────────────────────────
 
 def render_timeline(slide, data, st, num, total):
-    """Horizontal timeline: phase label → connector → dot → title + desc."""
+    """Horizontal timeline with cards: dot on line, card below with content."""
     blue   = data.get('background', 'blue') == 'blue'
     F      = st['font']
     M      = st['motifs']
@@ -670,44 +685,59 @@ def render_timeline(slide, data, st, num, total):
     n      = len(items)
     if n == 0: return
 
-    line_y = ct + 4.2
-    slot_w = 18.0 / n
-    dot_r  = 0.28
     lc     = st['accent']
     nc     = _rgb(M.get('number_color', st['accent']))
     tc     = st['white'] if blue else st['text_dark']
     dc     = st['text_dim'] if blue else st['text_gray']
+    card_bg = st['card'] if blue else st['card_white']
+
+    # Layout — center the whole assembly vertically
+    dot_r    = 0.28
+    gap      = 0.35
+    slot_w   = 18.0 / n
+    card_w   = slot_w - gap
+    card_h   = 3.8                # fixed height, enough for content
+    assembly_h = dot_r * 2 + 0.30 + card_h  # dot + gap + card
+    avail_h  = SH - ct - 0.3
+    top_pad  = (avail_h - assembly_h) / 2.0
+    line_y   = ct + top_pad + dot_r
+    card_top = line_y + dot_r + 0.30
 
     # Horizontal line
     rc(slide, 1.0, line_y - 0.045, 18.0, 0.09, fill=lc)
 
     for i, item in enumerate(items):
         cx = 1.0 + slot_w * i + slot_w / 2.0
+        card_x = cx - card_w / 2.0
 
-        # Phase label (above)
-        bx(slide, cx - slot_w / 2 + 0.1, ct + 0.25, slot_w - 0.2, 0.55,
-           item.get('phase', ''), sz=11, bold=True,
-           color=nc, align=PP_ALIGN.CENTER, font=F)
-
-        # Vertical connector phase→dot
-        rc(slide, cx - 0.03, ct + 0.9, 0.06,
-           max(0.05, line_y - ct - 0.9 - dot_r), fill=lc)
-
-        # Dot
+        # Dot on line
         s = slide.shapes.add_shape(9,
             I(cx - dot_r), I(line_y - dot_r),
             I(dot_r * 2),  I(dot_r * 2))
         s.fill.solid(); s.fill.fore_color.rgb = lc
         s.line.fill.background()
 
-        # Title (below line)
-        bx(slide, cx - slot_w / 2 + 0.1, line_y + 0.42, slot_w - 0.2, 0.65,
-           item.get('title', ''), sz=15, bold=True,
+        # Card below
+        rc(slide, card_x, card_top, card_w, card_h, fill=card_bg)
+        rc(slide, card_x, card_top, card_w, 0.08, fill=lc)
+
+        # Phase label (inside card top)
+        bx(slide, card_x + 0.2, card_top + 0.25, card_w - 0.4, 0.50,
+           item.get('phase', ''), sz=14, bold=True,
+           color=nc, align=PP_ALIGN.CENTER, font=F)
+
+        # Title (large, centered in card)
+        bx(slide, card_x + 0.2, card_top + 0.85, card_w - 0.4, 1.0,
+           item.get('title', ''), sz=24, bold=True,
            color=tc, align=PP_ALIGN.CENTER, font=F)
 
+        # Accent divider inside card
+        div_w = 0.8
+        rc(slide, cx - div_w / 2, card_top + 1.95, div_w, 0.05, fill=lc)
+
         # Description
-        bx(slide, cx - slot_w / 2 + 0.1, line_y + 1.2, slot_w - 0.2, 4.5,
-           item.get('desc', ''), sz=12,
+        bx(slide, card_x + 0.2, card_top + 2.15, card_w - 0.4, card_h - 2.4,
+           item.get('desc', ''), sz=17,
            color=dc, align=PP_ALIGN.CENTER, font=F)
 
 
@@ -783,8 +813,8 @@ def render_center_focus(slide, data, st, num, total):
 
     # Optional context line
     if data.get('context'):
-        bx(slide, 1.5, 7.6, 17.0, 0.65,
-           data['context'], sz=13,
+        bx(slide, 1.5, 7.6, 17.0, 0.75,
+           data['context'], sz=16,
            color=st['text_dim'] if blue else st['text_gray'],
            align=PP_ALIGN.CENTER, font=F)
 
@@ -816,12 +846,12 @@ def render_comparison_table(slide, data, st, num, total):
     tbl_left = 1.0
     tbl_top  = ct + 0.3
     tbl_w    = SW - 2.0  # 18" usable
-    avail_h  = SH - tbl_top - 0.4
-    row_h    = min(1.35, max(0.55, avail_h / n_data_rows))
+    avail_h  = SH - tbl_top - 0.3
+    row_h    = min(1.55, max(0.65, avail_h / n_data_rows))
     tbl_h    = row_h * n_data_rows
 
     # Column widths: label column + N data columns
-    label_w = 3.0
+    label_w = 3.5
     data_w  = (tbl_w - label_w) / nc
 
     # Create native table
@@ -848,7 +878,7 @@ def render_comparison_table(slide, data, st, num, total):
         sc.set('val', f'{r:02X}{g:02X}{b:02X}')
 
     # Helper: set cell text
-    def _cell_text(cell, text, bold=False, sz=13, align=PP_ALIGN.LEFT,
+    def _cell_text(cell, text, bold=False, sz=19, align=PP_ALIGN.LEFT,
                    color=None):
         cell.text = ''
         p = cell.text_frame.paragraphs[0]
@@ -861,10 +891,10 @@ def render_comparison_table(slide, data, st, num, total):
         if color:
             run.font.color.rgb = _rgb(color)
         cell.vertical_anchor = MSO_ANCHOR.MIDDLE
-        cell.margin_left  = I(0.1)
-        cell.margin_right = I(0.1)
-        cell.margin_top   = I(0.05)
-        cell.margin_bottom= I(0.05)
+        cell.margin_left  = I(0.15)
+        cell.margin_right = I(0.15)
+        cell.margin_top   = I(0.08)
+        cell.margin_bottom= I(0.08)
 
     # Helper: set thin borders on a cell
     def _cell_border(cell, color_hex='3A3A45'):
@@ -892,7 +922,7 @@ def render_comparison_table(slide, data, st, num, total):
         cell = table.cell(0, ci + 1)
         hdr_bg = st['accent2'] if ci % 2 == 0 else st['card_side']
         _cell_fill(cell, hdr_bg)
-        _cell_text(cell, col_title, bold=True, sz=13,
+        _cell_text(cell, col_title, bold=True, sz=20,
                    align=PP_ALIGN.CENTER, color=txt_hdr)
         _cell_border(cell, border_c)
 
@@ -906,7 +936,7 @@ def render_comparison_table(slide, data, st, num, total):
         # Label cell
         cell = table.cell(ri + 1, 0)
         _cell_fill(cell, row_bg)
-        _cell_text(cell, row.get('label', ''), bold=True, sz=13,
+        _cell_text(cell, row.get('label', ''), bold=True, sz=19,
                    color=txt_body)
         _cell_border(cell, border_c)
 
@@ -914,7 +944,7 @@ def render_comparison_table(slide, data, st, num, total):
         for ci, val in enumerate(row.get('values', [])[:nc]):
             cell = table.cell(ri + 1, ci + 1)
             _cell_fill(cell, row_bg)
-            _cell_text(cell, val, sz=13, align=PP_ALIGN.CENTER,
+            _cell_text(cell, val, sz=19, align=PP_ALIGN.CENTER,
                        color=txt_body)
             _cell_border(cell, border_c)
 

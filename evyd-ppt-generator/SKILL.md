@@ -25,16 +25,15 @@ Always consult this file when deciding:
 - Whether to use `"blue"` or `"white"` background
 - How to write concise titles and bullets
 
-### Optional upstream skills (style brainstorming)
+### Design direction brainstorming (style & color)
 
-When the user's style direction is vague ("做个好看的"、"科技感一点") and the built-in
-`design-guidelines.md` style mapping is not enough, check if the **ui-ux-pro-max** skill
-is available. If installed, use it **before** Phase 2 (content.json generation) to
-explore palettes, font pairings, and design directions. If not installed, fall back
-to `design-guidelines.md` — the core workflow does not depend on it.
+When discussing design direction, style, or color palette with the user — **always use
+the `ui-ux-pro-max` skill first** to brainstorm palettes, font pairings, and visual
+direction. Run `--design-system` with relevant keywords before settling on a style.
 
-> **Key rule**: This skill is an **optional enhancement**, not a dependency. Never fail
-> or ask the user to install it. If unavailable, silently use built-in guidelines.
+If `ui-ux-pro-max` is not installed, fall back to the built-in
+`references/design-guidelines.md` style mapping and color psychology tables.
+The core workflow does not depend on it — never fail or ask the user to install it.
 
 ---
 
@@ -62,7 +61,7 @@ Three-layer separation:
 2. **Audience** (internal team, external client, MOH, etc.)
 3. **Key sections** / what needs to be covered
 4. **Date, venue, presenter** (for cover slide)
-5. **Style** preference (consult `references/design-guidelines.md` to recommend)
+5. **Style** preference — use `ui-ux-pro-max` skill (if available) to brainstorm palettes and design direction, then map to a built-in style or create a new one. Fall back to `references/design-guidelines.md` if the skill is not installed.
 
 ### Phase 2 — Generate content.json
 
@@ -218,6 +217,7 @@ Hex colors without `#` prefix. Style files are pure data — portable.
 | `morandi` | Slate `5C7080` | Dusty rose `C4857A` | Culture, brand |
 | `warm` | Espresso `2C1810` | Coral `E8622A` | Education, training |
 | `monochrome` | Charcoal `111111` | Grey `EEEEEE` | Executive, editorial |
+| `sunrise` | Medium navy `1B2838` | Coral `E8634A` + Amber `F5A623` | Progress, AI transformation, hopeful narratives |
 
 ---
 
@@ -530,7 +530,8 @@ evyd-ppt-generator/
 │   ├── cooltech.json                 # Space blue + cyan + purple
 │   ├── morandi.json                  # Muted pastels
 │   ├── warm.json                     # Espresso + coral + amber
-│   └── monochrome.json               # Black/white/grey
+│   ├── monochrome.json               # Black/white/grey
+│   └── sunrise.json                  # Navy + coral + amber (progress/AI)
 └── examples/
     ├── bruai-focusgroup.json
     ├── evyd-1person-fullstack.json
