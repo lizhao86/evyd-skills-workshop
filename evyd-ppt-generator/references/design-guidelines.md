@@ -10,14 +10,18 @@ into actionable guidance for our slide types, styles, and content decisions.
 
 All styles use **Aptos** font. Follow this size hierarchy strictly:
 
-| Level | Size (pt) | Weight | Purpose |
-|-------|-----------|--------|---------|
-| Cover title | 36–44 | Bold | First slide, maximum impact |
-| Section title | 24–32 | Bold | `section_divider` large text |
-| Slide title | 22–26 | Bold | Header bar title in content slides |
-| Card/row heading | 14–16 | Bold | `cards_grid` num, `criteria_rows` label |
-| Body text | 12–15 | Regular | Main content in bullets, cards, steps |
-| Caption/annotation | 9–11 | Regular/Italic | Section tag, slide number, footnote |
+| Level | Size (pt) | Projection floor | Weight | Purpose |
+|-------|-----------|-----------------|--------|---------|
+| Cover title | 36–44 | 36 | Bold | First slide, maximum impact |
+| Section title | 24–32 | 24 | Bold | `section_divider` large text |
+| Slide title | 22–26 | 36 | Bold | Header bar title in content slides |
+| Card/row heading | 14–16 | 18 | Bold | `cards_grid` num, `criteria_rows` label |
+| Body text | 12–15 | 18 | Regular | Main content in bullets, cards, steps |
+| Caption/annotation | 9–11 | 12 | Regular/Italic | Section tag, slide number, footnote |
+
+> **"Projection floor"** = the minimum size enforced by `gen_pptx.py` on the
+> 20″ × 11.25″ canvas. The "Size" column is the design-intent range for
+> `content.json`; the renderer clamps upward to the floor.
 
 ### Alignment rules
 
@@ -224,3 +228,47 @@ Use these dimensions to select the closest available style, or suggest creating 
 - Don't create text-only slides — add visual elements (cards, panels, colored rows)
 - NEVER use accent lines under titles — use whitespace or background color contrast instead
 - Don't use more than one visual motif per deck — pick ONE distinctive element (rounded cards, colored left bars, icon circles) and repeat it across every content slide
+
+---
+
+## 10. Rendering Implementation Rules (for gen_pptx.py)
+
+Hard-won lessons from real QA sessions — these are non-negotiable:
+
+### Always use native tables for `comparison_table`
+
+**Never** build tables by assembling rectangles (`rc()`) and textboxes (`bx()`).
+Pseudo-tables have compounding problems:
+- Font size changes break alignment (text box and background rect are separate objects)
+- Cannot be resized or edited in PowerPoint — users must recreate from scratch
+- Cell overlap/gap bugs are invisible in code but obvious on screen
+
+Always use `slide.shapes.add_table()` — native tables can be directly edited,
+resized, and reflowed in PowerPoint by the end user.
+
+### Font sizes must scale with canvas dimensions
+
+The standard canvas is 20″ × 11.25″ (2× the width of a standard 10″ slide).
+Font sizes that work on a 10″ slide are **unreadable** on a 20″ widescreen when
+projected. Use this floor:
+
+| Element | Minimum size (20″ canvas) |
+|---------|---------------------------|
+| Body text / table cells | 18pt |
+| Slide title | 36pt |
+| Breadcrumb / section tag | 12pt |
+| Card heading / row label | 18pt bold |
+
+If the style JSON specifies smaller sizes, override them upward to these floors.
+The typography hierarchy in §1 targets **content authoring** (content.json);
+the renderer must enforce the **projection-safe floors** above.
+
+### Overview slides: control information density
+
+A single-row layout with 7+ narrow columns of Chinese text is unreadable.
+When a slide has more than 5 data columns:
+- Split into a **two-tier layout** (e.g. 4 columns on top, 3 on bottom)
+- Or split across two slides
+
+Each table cell must be wide enough for at least 10 Chinese characters
+per line at the body font size. At 18pt that means ≥ 3.5″ column width.

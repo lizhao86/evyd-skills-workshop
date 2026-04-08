@@ -794,7 +794,11 @@ def render_center_focus(slide, data, st, num, total):
 # ── NEW: comparison_table ─────────────────────────────────────────────────────
 
 def render_comparison_table(slide, data, st, num, total):
-    """Structured comparison table: label column + N value columns."""
+    """Structured comparison table using native PowerPoint table object."""
+    from pptx.enum.text import MSO_ANCHOR
+    from pptx.oxml.ns import qn
+    from lxml import etree
+
     blue = data.get('background', 'white') == 'blue'
     F    = st['font']
     ct   = hdr(slide, data.get('section', ''), _slide_num(data, num, total),
@@ -804,51 +808,115 @@ def render_comparison_table(slide, data, st, num, total):
     rows = data.get('rows', [])
     if not cols or not rows: return
 
-    nc      = len(cols)
-    label_w = 3.8
-    col_gap = 0.05
-    data_w  = (SW - 2.0 - label_w - col_gap * nc) / nc
-    x0      = 1.0
+    nc     = len(cols)
+    n_rows = len(rows)
+    n_data_rows = n_rows + 1  # +1 for header
 
-    n_rows  = len(rows)
-    avail_h = SH - ct - 0.4
-    RH      = min(1.35, max(0.55, (avail_h - 0.72) / (n_rows + 1)))  # +1 for header
+    # Table geometry
+    tbl_left = 1.0
+    tbl_top  = ct + 0.3
+    tbl_w    = SW - 2.0  # 18" usable
+    avail_h  = SH - tbl_top - 0.4
+    row_h    = min(1.35, max(0.55, avail_h / n_data_rows))
+    tbl_h    = row_h * n_data_rows
 
-    y = ct + 0.3
+    # Column widths: label column + N data columns
+    label_w = 3.0
+    data_w  = (tbl_w - label_w) / nc
 
-    # Header row
-    rc(slide, x0, y, label_w, RH, fill=st['accent'])
+    # Create native table
+    tbl_shape = slide.shapes.add_table(
+        n_data_rows, nc + 1,
+        I(tbl_left), I(tbl_top), I(tbl_w), I(tbl_h))
+    table = tbl_shape.table
+
+    # Set column widths
+    table.columns[0].width = I(label_w)
+    for ci in range(nc):
+        table.columns[ci + 1].width = I(data_w)
+
+    # Set row heights
+    for ri in range(n_data_rows):
+        table.rows[ri].height = I(row_h)
+
+    # Helper: set cell fill
+    def _cell_fill(cell, color):
+        tcPr = cell._tc.get_or_add_tcPr()
+        sf = etree.SubElement(tcPr, qn('a:solidFill'))
+        sc = etree.SubElement(sf, qn('a:srgbClr'))
+        r, g, b = color
+        sc.set('val', f'{r:02X}{g:02X}{b:02X}')
+
+    # Helper: set cell text
+    def _cell_text(cell, text, bold=False, sz=13, align=PP_ALIGN.LEFT,
+                   color=None):
+        cell.text = ''
+        p = cell.text_frame.paragraphs[0]
+        p.alignment = align
+        run = p.add_run()
+        run.text = text
+        run.font.name = F
+        run.font.size = P(sz)
+        run.font.bold = bold
+        if color:
+            run.font.color.rgb = _rgb(color)
+        cell.vertical_anchor = MSO_ANCHOR.MIDDLE
+        cell.margin_left  = I(0.1)
+        cell.margin_right = I(0.1)
+        cell.margin_top   = I(0.05)
+        cell.margin_bottom= I(0.05)
+
+    # Helper: set thin borders on a cell
+    def _cell_border(cell, color_hex='3A3A45'):
+        tcPr = cell._tc.get_or_add_tcPr()
+        for tag in ['a:lnL', 'a:lnR', 'a:lnT', 'a:lnB']:
+            ln = etree.SubElement(tcPr, qn(tag))
+            ln.set('w', str(int(P(0.5))))
+            sf = etree.SubElement(ln, qn('a:solidFill'))
+            sc = etree.SubElement(sf, qn('a:srgbClr'))
+            sc.set('val', color_hex)
+
+    # Determine text/bg colors
+    txt_hdr  = st['white']
+    txt_body = st['white'] if blue else st['text_dark']
+    border_c = '%02X%02X%02X' % (st['line_gray'][0], st['line_gray'][1],
+                                  st['line_gray'][2]) if hasattr(st['line_gray'], '__getitem__') else '3A3A45'
+
+    # Fill header row
+    hdr_cell = table.cell(0, 0)
+    _cell_fill(hdr_cell, st['accent'])
+    _cell_text(hdr_cell, '', bold=True, color=txt_hdr)
+    _cell_border(hdr_cell, border_c)
+
     for ci, col_title in enumerate(cols):
-        cx = x0 + label_w + col_gap + ci * (data_w + col_gap)
-        hdr_col = st['accent2'] if ci % 2 == 0 else st['card_side']
-        rc(slide, cx, y, data_w, RH, fill=hdr_col)
-        bx(slide, cx + 0.12, y + RH * 0.18, data_w - 0.24, RH * 0.64,
-           col_title, sz=13, bold=True,
-           color=st['white'], align=PP_ALIGN.CENTER, font=F)
+        cell = table.cell(0, ci + 1)
+        hdr_bg = st['accent2'] if ci % 2 == 0 else st['card_side']
+        _cell_fill(cell, hdr_bg)
+        _cell_text(cell, col_title, bold=True, sz=13,
+                   align=PP_ALIGN.CENTER, color=txt_hdr)
+        _cell_border(cell, border_c)
 
-    y += RH + col_gap
-
-    # Data rows
+    # Fill data rows
     for ri, row in enumerate(rows):
         if blue:
             row_bg = st['card'] if ri % 2 == 0 else st['card_side']
         else:
             row_bg = _rgb('EEF4FC') if ri % 2 == 0 else st['card_white']
 
-        rc(slide, x0, y, label_w, RH - col_gap, fill=row_bg)
-        bx(slide, x0 + 0.15, y + RH * 0.18, label_w - 0.3, RH * 0.64,
-           row.get('label', ''), sz=13, bold=True,
-           color=st['white'] if blue else st['text_dark'], font=F)
+        # Label cell
+        cell = table.cell(ri + 1, 0)
+        _cell_fill(cell, row_bg)
+        _cell_text(cell, row.get('label', ''), bold=True, sz=13,
+                   color=txt_body)
+        _cell_border(cell, border_c)
 
+        # Value cells
         for ci, val in enumerate(row.get('values', [])[:nc]):
-            cx = x0 + label_w + col_gap + ci * (data_w + col_gap)
-            rc(slide, cx, y, data_w, RH - col_gap, fill=row_bg)
-            bx(slide, cx + 0.12, y + RH * 0.18, data_w - 0.24, RH * 0.64,
-               val, sz=13,
-               color=st['white'] if blue else st['text_dark'],
-               align=PP_ALIGN.CENTER, font=F)
-
-        y += RH
+            cell = table.cell(ri + 1, ci + 1)
+            _cell_fill(cell, row_bg)
+            _cell_text(cell, val, sz=13, align=PP_ALIGN.CENTER,
+                       color=txt_body)
+            _cell_border(cell, border_c)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
