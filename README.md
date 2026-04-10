@@ -278,6 +278,23 @@ python3 gen_pptx.py content.json --style evyd_blue --output output.pptx
 
 ---
 
+### 9. 项目初始化 (Project Init)
+
+**目录**：`evyd-project-init/`
+
+标准化 EVYD 项目脚手架工具。在 `evydProject-XXX` 目录下一键完成：创建标准目录结构（`sourcecode/`、`requirementgathering/`）、初始化 Git、创建 GitHub 私有仓库、自动邀请团队协作者（write 权限）。
+
+**适用场景**：新建 EVYD 项目时，快速搭建标准化项目结构并配置 GitHub 仓库
+
+**触发词**：`初始化项目`、`project init`、`帮我把这个项目标准化`
+
+**标准协作者**：alvinbjl、lmh521571-ai、lynnwu10504、CY246588
+
+**核心文件**：
+- `SKILL.md` — 完整初始化流程
+
+---
+
 ### 8. PPT 生成器 (PPT Generator)
 
 **目录**：`evyd-ppt-generator/`
@@ -332,6 +349,7 @@ content.json（模型生成，约 400 tokens / 15 页）
 [医疗 AI 意图架构师] — 独立使用，AI 产品规划阶段
 [PD 路线图作业台] — 独立使用，路线图维护 / 去重 / 排期
 [PPT 生成器] — 独立使用，从内容 JSON 生成 EVYD 品牌 PPTX
+[项目初始化] — 独立使用，新项目标准化脚手架 + GitHub + 协作者
 ```
 
 ## 项目结构
@@ -371,6 +389,8 @@ content.json（模型生成，约 400 tokens / 15 页）
 │   ├── SKILL.md
 │   ├── references/
 │   └── scripts/
+├── evyd-project-init/              # 项目初始化脚手架
+│   └── SKILL.md
 └── evyd-remote-repo-rules/         # 远程仓库工作流规则
 ```
 
