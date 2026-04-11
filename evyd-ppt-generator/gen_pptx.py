@@ -1247,6 +1247,38 @@ def render_freeform(slide, data, st, num, total):
             if img_path and os.path.exists(img_path):
                 slide.shapes.add_picture(img_path, I(x), I(y), I(w), I(h))
 
+        elif kind == 'gradient':
+            # Gradient rectangle: 2+ color stops, linear direction
+            from pptx.oxml.ns import qn
+            from lxml import etree
+            s = slide.shapes.add_shape(1, I(x), I(y), I(w), I(h))
+            s.line.fill.background()
+            gf = s.fill
+            gf.gradient()
+            colors = el.get('colors', ['navy', 'accent'])
+            angle = el.get('angle', 0)
+            gf.gradient_angle = angle
+            stops = gf.gradient_stops
+            # Set first two stops (always exist after gradient())
+            stops[0].position = 0.0
+            stops[0].color.rgb = _resolve_color(colors[0], st)
+            stops[1].position = 1.0
+            stops[1].color.rgb = _resolve_color(colors[1], st)
+            # Add extra stops via XML for 3+ colors
+            if len(colors) >= 3:
+                gs_lst = s._element.find(qn('p:spPr')).find(qn('a:gradFill')).find(qn('a:gsLst'))
+                for i, c in enumerate(colors[2:], 2):
+                    pos = int((i / (len(colors) - 1)) * 100000)
+                    gs = etree.SubElement(gs_lst, qn('a:gs'))
+                    gs.set('pos', str(pos))
+                    srgb = etree.SubElement(gs, qn('a:srgbClr'))
+                    rgb = _resolve_color(c, st)
+                    srgb.set('val', f'{rgb[0]:02X}{rgb[1]:02X}{rgb[2]:02X}')
+                # Fix stop 1 position for even distribution
+                stops[1].position = 1.0
+            if el.get('transparency'):
+                _set_transparency(s, el['transparency'])
+
         elif kind == 'line':
             color = _resolve_color(el.get('color', 'accent'), st)
             rc(slide, x, y, w, h, fill=color)

@@ -740,7 +740,15 @@ Use for layouts that don't fit any fixed type. Colors can reference style keys.
   ]
 }
 ```
-Element kinds: `text` (textbox), `rect` (rectangle), `oval`, `image`, `line` (thin rect).
+Element kinds: `text` (textbox), `rect` (rectangle), `oval`, `image`, `line` (thin rect), `gradient`.
+
+**Gradient** creates a rectangle with linear color gradient:
+```json
+{ "kind": "gradient", "x": 0, "y": 0, "w": 20, "h": 11.25,
+  "colors": ["navy", "0D1B2A", "accent"], "angle": 135, "transparency": 0 }
+```
+`colors`: 2–3 color stops (style keys or hex). `angle`: 0=left→right, 90=top→bottom, 135=diagonal.
+Use as full-slide background for the "premium" look that Kimi/Manus achieve with CSS gradients.
 Colors accept style key names (`"accent"`, `"card"`, `"text_dim"`) or hex strings (`"FF6600"`).
 `title` is optional — omit it for a headerless full-canvas layout.
 
