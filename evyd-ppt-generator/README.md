@@ -62,7 +62,7 @@ Each style includes `chart_colors` (5-color palette for chart series) and `best_
 
 **Aliases**: `key_metrics` → `stat_highlight` · `quote_highlight` → `quote_full`
 
-The `freeform` type gives AI full creative control — specify exact element positions, sizes, and colors for layouts that don't fit any fixed type. Output is still 100% native editable PPTX.
+The `freeform` type gives AI full creative control — specify exact element positions, sizes, and colors for layouts that don't fit any fixed type. Supports gradient backgrounds (2-3 color stops, any angle) for the premium look of CSS gradients, but output is still 100% native editable PPTX.
 
 ## Adding a new style
 
