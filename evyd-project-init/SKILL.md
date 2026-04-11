@@ -77,7 +77,7 @@ gh repo create "$(basename "$(pwd)")" --private --source=. --push
 
 ## Step 4: Add Standard Collaborators
 
-Four collaborators with write permission:
+Five collaborators with write permission:
 
 ```bash
 REPO="lizhao86/$(basename "$(pwd)")"
@@ -85,6 +85,7 @@ gh api "repos/$REPO/collaborators/alvinbjl" -X PUT -f permission=push
 gh api "repos/$REPO/collaborators/lmh521571-ai" -X PUT -f permission=push
 gh api "repos/$REPO/collaborators/lynnwu10504" -X PUT -f permission=push
 gh api "repos/$REPO/collaborators/CY246588" -X PUT -f permission=push
+gh api "repos/$REPO/collaborators/PeiyanLai" -X PUT -f permission=push
 ```
 
 ## Step 5: Report Results
