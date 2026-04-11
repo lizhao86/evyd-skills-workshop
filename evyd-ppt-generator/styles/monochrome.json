@@ -1,6 +1,8 @@
 {
   "name": "monochrome",
   "description": "Black, white, and grey — minimal, editorial, high-end.",
+  "best_for": "Executive briefings, editorial, minimalist",
+  "chart_colors": ["666666", "999999", "111111", "BBBBBB", "444444"],
   "font": "Aptos",
 
   "accent":     "EEEEEE",

@@ -15,6 +15,8 @@ from pptx import Presentation
 from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN
+from pptx.chart.data import CategoryChartData
+from pptx.enum.chart import XL_CHART_TYPE
 
 # ── Slide dimensions (20″ × 11.25″, 16:9) ────────────────────────────────────
 SW = 20.0
@@ -84,6 +86,12 @@ def load_style(name):
     st['warning_bg']  = st['navy']
 
     st['motifs'] = raw.get('motifs', {})
+
+    # Chart series colors (fallback to accent, accent2, navy)
+    cc = raw.get('chart_colors', [raw.get('accent', '2CD5C3'),
+                                   raw.get('accent2', '0076B3'),
+                                   raw.get('navy', '172E41')])
+    st['chart_colors'] = [_rgb(c) for c in cc]
 
     return st
 
@@ -670,6 +678,17 @@ def render_stat_highlight(slide, data, st, num, total):
            color=st['text_dim'] if blue else st['text_gray'],
            align=PP_ALIGN.CENTER, font=F)
 
+        # Trend arrow (optional)
+        trend = stat.get('trend', '')
+        if trend:
+            arrow_map = {'up': ('▲', '27AE60'), 'down': ('▼', 'E74C3C'),
+                         'flat': ('—', '999999')}
+            sym, clr = arrow_map.get(trend, ('', '999999'))
+            if sym:
+                bx(slide, x + 0.15, y + CH * 0.88, CW - 0.3, CH * 0.10,
+                   sym, sz=18, bold=True, color=_rgb(clr),
+                   align=PP_ALIGN.CENTER, font=F)
+
 
 # ── NEW: timeline ─────────────────────────────────────────────────────────────
 
@@ -1006,6 +1025,136 @@ def validate_and_fix(prs):
         print("validate_and_fix: no overflow detected \u2713")
 
 
+# ── NEW: chart ────────────────────────────────────────────────────────────────
+
+_CHART_TYPE_MAP = {
+    'bar':      XL_CHART_TYPE.COLUMN_CLUSTERED,
+    'line':     XL_CHART_TYPE.LINE,
+    'pie':      XL_CHART_TYPE.PIE,
+    'doughnut': XL_CHART_TYPE.DOUGHNUT,
+}
+
+def render_chart(slide, data, st, num, total):
+    """Data chart: bar, line, pie, or doughnut using native python-pptx charts."""
+    blue = data.get('background', 'white') == 'blue'
+    F = st['font']
+    ct = hdr(slide, data.get('section', ''), _slide_num(data, num, total),
+             data.get('title', ''), blue=blue, st=st)
+
+    chart_type_str = data.get('chart_type', 'bar')
+    xl_type = _CHART_TYPE_MAP.get(chart_type_str, XL_CHART_TYPE.COLUMN_CLUSTERED)
+    categories = data.get('categories', [])
+    series_list = data.get('series', [])
+    if not categories or not series_list:
+        return
+
+    is_pie = chart_type_str in ('pie', 'doughnut')
+
+    chart_data = CategoryChartData()
+    chart_data.categories = categories
+    for s in series_list:
+        chart_data.add_series(s.get('name', ''), s.get('values', []))
+
+    chart_left = I(1.5)
+    chart_top  = I(ct + 0.3)
+    chart_w    = I(17.0)
+    chart_h    = I(SH - ct - 1.2)
+
+    graphic = slide.shapes.add_chart(xl_type, chart_left, chart_top,
+                                     chart_w, chart_h, chart_data)
+    chart = graphic.chart
+
+    # Apply style colors to chart series / points
+    colors = st.get('chart_colors', [st['accent'], st['accent2'], st['navy']])
+    if is_pie:
+        # Color individual points on the first (only) series
+        plot = chart.plots[0]
+        for i, pt in enumerate(plot.series[0].points):
+            pt.format.fill.solid()
+            pt.format.fill.fore_color.rgb = colors[i % len(colors)]
+    elif chart_type_str == 'line':
+        for i, s in enumerate(chart.series):
+            s.format.line.color.rgb = colors[i % len(colors)]
+            s.format.line.width = P(2.5)
+    else:
+        for i, s in enumerate(chart.series):
+            s.format.fill.solid()
+            s.format.fill.fore_color.rgb = colors[i % len(colors)]
+
+    # Chart styling: font, legend, gridlines
+    chart.font.name = F
+    chart.font.size = P(14)
+    if not is_pie:
+        chart.font.color.rgb = st['white'] if blue else st['text_dark']
+    chart.has_legend = len(series_list) > 1 or is_pie
+    if chart.has_legend:
+        chart.legend.font.name = F
+        chart.legend.font.size = P(14)
+        chart.legend.include_in_layout = False
+
+    # Category / value axis styling (not available for pie)
+    if not is_pie:
+        cat_ax = chart.category_axis
+        cat_ax.tick_labels.font.name = F
+        cat_ax.tick_labels.font.size = P(14)
+        cat_ax.tick_labels.font.color.rgb = st['white'] if blue else st['text_dark']
+        cat_ax.has_major_gridlines = False
+
+        val_ax = chart.value_axis
+        val_ax.tick_labels.font.name = F
+        val_ax.tick_labels.font.size = P(14)
+        val_ax.tick_labels.font.color.rgb = st['white'] if blue else st['text_dark']
+        val_ax.major_gridlines.format.line.color.rgb = _rgb('3A5570') if blue else _rgb('CCCCCC')
+        val_ax.major_gridlines.format.line.width = P(0.5)
+
+    # Optional footnote
+    footnote = data.get('footnote', '')
+    if footnote:
+        bx(slide, 1.5, SH - 0.65, 17.0, 0.45, footnote, sz=12, italic=True,
+           color=st['text_dim'] if blue else st['text_gray'],
+           align=PP_ALIGN.RIGHT, font=F)
+
+
+# ── NEW: image_full ──────────────────────────────────────────────────────────
+
+def render_image_full(slide, data, st, num, total):
+    """Full-bleed image with semi-transparent overlay and centered text."""
+    F = st['font']
+    img_path = data.get('image_path', '')
+    overlay = data.get('overlay', 'dark')
+
+    # Background image or placeholder
+    if img_path and os.path.exists(img_path):
+        slide.shapes.add_picture(img_path, I(0), I(0), I(SW), I(SH))
+    else:
+        # Gradient-like placeholder
+        rc(slide, 0, 0, SW, SH, fill=st['navy'])
+        if img_path:
+            bx(slide, 2, SH - 1.0, SW - 4, 0.6,
+               f'(Image not found: {img_path})', sz=14, italic=True,
+               color=_rgb('FF6666'), align=PP_ALIGN.CENTER, font=F)
+
+    # Semi-transparent overlay
+    if overlay == 'dark':
+        ovl = rc(slide, 0, 0, SW, SH, fill=st['navy'])
+        _set_transparency(ovl, 60)  # 40% opaque
+    else:
+        ovl = rc(slide, 0, 0, SW, SH, fill=_rgb('FFFFFF'))
+        _set_transparency(ovl, 50)  # 50% opaque
+
+    # Centered text
+    title = data.get('title', '')
+    subtitle = data.get('subtitle', '')
+    txt_color = st['white'] if overlay == 'dark' else st['text_dark']
+
+    if title:
+        bx(slide, 2.0, SH * 0.32, SW - 4.0, 2.0, title, sz=36, bold=True,
+           color=txt_color, align=PP_ALIGN.CENTER, font=F)
+    if subtitle:
+        bx(slide, 2.0, SH * 0.52, SW - 4.0, 1.5, subtitle, sz=20,
+           color=txt_color, align=PP_ALIGN.CENTER, font=F)
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Routing tables
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1034,6 +1183,11 @@ CONTENT_RENDERERS = {
     'quote_full':         render_quote_full,
     'center_focus':       render_center_focus,
     'comparison_table':   render_comparison_table,
+    # New 2 + aliases
+    'chart':              render_chart,
+    'image_full':         render_image_full,
+    'key_metrics':        render_stat_highlight,    # alias
+    'quote_highlight':    render_quote_full,         # alias
 }
 
 

@@ -56,6 +56,13 @@ Match content type to the right slide type:
 | Process / steps (before-during-after) | `two_column_steps` | 2 cols x 4 steps | Dense |
 | Scenarios / use cases | `scenario_cards` | 4 cards (2x2) | Medium |
 | Survey / QR feedback | `survey` | 4 steps | Medium |
+| Data visualization (bar/line/pie/doughnut) | `chart` | 5 series / 8 slices | Medium |
+| Full-bleed image with text overlay | `image_full` | 1 image | Minimal |
+| 2–4 key statistics / big numbers | `stat_highlight` | 4 metrics | Medium |
+| Timeline or roadmap with phases | `timeline` | 5 items | Medium |
+| One impactful quote or statement | `quote_full` | — | Minimal |
+| Single key message / strategic focus | `center_focus` | — | Minimal |
+| Multi-column structured comparison | `comparison_table` | 4 cols × 8 rows | Dense |
 | Thank you / CTA | `ending` | 2 actions | Minimal |
 
 ### Whitespace rules
@@ -298,6 +305,17 @@ an explicit `sz=` value will override it. After changing any font size default:
 - **Do**: place dots on a horizontal line, hang cards below each dot
   (card background + accent top bar, content inside: phase / title / divider / desc)
 - Vertically center the whole assembly: `top_pad = (avail_h - assembly_h) / 2`
+
+### Chart design rules
+
+- **Axis label font**: minimum 14pt on 20″ canvas
+- **Max series**: 5 for bar/line, 8 slices for pie/doughnut
+- **Always include a footnote** with data source attribution
+- **Chart colors**: use the style's `chart_colors` array (5 colors), not random colors
+- **Pie/doughnut**: use only one series; label each slice clearly
+- **Bar/line**: keep category labels short (max 8 characters) to avoid overlap
+- **Prefer `"white"` background** for chart slides — better readability for data
+- Chart occupies the full content area below the header; do not add other elements alongside
 
 ### Extended font size floor table
 

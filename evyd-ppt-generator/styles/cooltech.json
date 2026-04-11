@@ -1,6 +1,8 @@
 {
   "name": "cooltech",
   "description": "Deep space navy with tech cyan + electric purple. Futuristic, confident.",
+  "best_for": "AI/SaaS/healthtech, innovation topics, data-heavy",
+  "chart_colors": ["00C9C8", "3A8FD6", "0D1B2A", "66E0D3", "5588BB"],
   "font": "Aptos",
 
   "accent":     "00C9C8",

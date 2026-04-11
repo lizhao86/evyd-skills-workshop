@@ -1,6 +1,8 @@
 {
   "name": "evyd_blue",
   "description": "Navy header + blue backgrounds. Default for EVYD internal/MOH presentations.",
+  "best_for": "EVYD internal, MOH, government, default",
+  "chart_colors": ["2CD5C3", "0076B3", "172E41", "CCE8F5", "446688"],
   "font": "Aptos",
 
   "accent":     "2CD5C3",

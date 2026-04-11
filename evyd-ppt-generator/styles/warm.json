@@ -1,6 +1,8 @@
 {
   "name": "warm",
   "description": "Coral + amber on deep espresso. Energetic, approachable, human.",
+  "best_for": "Education, training, workshops, team building",
+  "chart_colors": ["E8622A", "C4883A", "2C1810", "F09040", "8B6B3E"],
   "font": "Aptos",
 
   "accent":     "E8622A",

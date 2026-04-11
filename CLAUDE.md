@@ -43,7 +43,7 @@ cd evyd-ppt-generator
 python3 gen_pptx.py content.json --style evyd_blue --output output.pptx
 ```
 
-可用风格：`evyd_blue`（默认）/ `evyd_white` / `evyd_teal` / `dark_navy` / `cooltech` / `morandi` / `warm` / `monochrome`
+可用风格（10 套）：`evyd_blue`（默认）/ `evyd_white` / `evyd_teal` / `dark_navy` / `cooltech` / `morandi` / `warm` / `monochrome` / `sunrise` / `charcoal_gold`
 
 ### 插件打包
 

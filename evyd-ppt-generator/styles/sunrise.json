@@ -1,6 +1,8 @@
 {
   "name": "sunrise",
   "description": "Medium navy + coral + amber. Warm, hopeful, high-contrast. For AI/progress narratives.",
+  "best_for": "Progress reports, AI transformation, hopeful narratives",
+  "chart_colors": ["E8634A", "F5A623", "1B2838", "F09068", "FFCC66"],
   "font": "Aptos",
 
   "accent":     "E8634A",

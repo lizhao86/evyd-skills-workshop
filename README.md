@@ -57,12 +57,18 @@
 
 **触发词**：`生成PPT`、`做幻灯片`、`演示文稿`、`ppt generator`、`EVYD ppt`
 
-**可用幻灯片类型（14 种）**：
+**v2 新增能力**：叙事模板引导（5种结构）、受众分析矩阵、可选内容研究（WebSearch + 交叉验证）、数据图表（bar/line/pie/doughnut）、全出血图片、趋势箭头、样式自动推荐、11项视觉QA检查
+
+**可用幻灯片类型（21 种）**：
 - **Chrome 框架**：`cover` / `agenda` / `section_divider` / `ending`
 - **内容布局**：`bullets_with_panel` / `two_column_check` / `cards_grid` / `criteria_rows` / `scope_tiers` / `two_panel` / `two_column_steps` / `scenario_cards` / `survey`
-- **新增**：`stat_highlight`（数字统计）/ `timeline`（时间轴）/ `quote_full`（金句全屏）/ `center_focus`（中心强调）/ `comparison_table`（对比表格）
+- **数据可视化**：`stat_highlight`（数字统计）/ `timeline`（时间轴）/ `chart`（数据图表）/ `comparison_table`（对比表格）
+- **视觉强调**：`quote_full`（金句全屏）/ `center_focus`（中心强调）/ `image_full`（全出血图片）
+- **别名**：`key_metrics` → `stat_highlight` / `quote_highlight` → `quote_full`
 
-**可用风格预设（8 套）**：`evyd_blue`（默认）/ `evyd_white` / `evyd_teal` / `dark_navy` / `cooltech` / `morandi` / `warm` / `monochrome`
+**可用风格预设（10 套）**：`evyd_blue`（默认）/ `evyd_white` / `evyd_teal` / `dark_navy` / `cooltech` / `morandi` / `warm` / `monochrome` / `sunrise` / `charcoal_gold`
+
+每套样式包含 `chart_colors`（5色图表配色）和 `best_for`（场景推荐元数据）。
 
 **用法**：
 ```bash
@@ -70,13 +76,14 @@ cd "evyd-ppt-generator"
 python3 gen_pptx.py content.json --style evyd_blue --output output.pptx
 ```
 
-**示例文件**：`examples/bruai-focusgroup.json`（MOH BruAI Focus Group 完整 15 张幻灯片）
+**示例文件**：`examples/fullstack-v2.json`（17 页综合示例，覆盖所有新 slide 类型）
 
 **核心文件**：
-- `SKILL.md` — 完整 JSON schema + 布局选型指南 + 扩展说明
-- `gen_pptx.py` — 统一渲染器（固定，不重新生成）
-- `styles/` — 风格预设目录（添加新风格只需新建 JSON）
-- `examples/` — 示例 content.json 文件
+- `SKILL.md` — 完整 JSON schema + 叙事模板 + 布局选型指南 + 5 阶段工作流
+- `gen_pptx.py` — 统一渲染器（含 validate_and_fix 溢出检测）
+- `styles/` — 10 套风格预设（添加新风格只需新建 JSON）
+- `references/design-guidelines.md` — 排版、配色、图表设计规范
+- `examples/` — 4 个示例 content.json 文件
 
 ---
 
@@ -363,35 +370,40 @@ python3 gen_pptx.py content.json --style evyd_blue --output output.pptx
 
 ---
 
-### 8. PPT 生成器 (PPT Generator)
+### 8. PPT 生成器 v2 (PPT Generator)
 
 **目录**：`evyd-ppt-generator/`
 
 从内容 JSON 生成 EVYD 品牌风格的 PPTX 演示文稿，纯程序化 free-mode 渲染，输出真实可编辑的形状和文字（非截图）。布局类型由 AI 自动选择，无需手动指定。
 
-**适用场景**：内部汇报、客户提案、MOH 演讲、焦点小组等
+**v2 新增**：叙事模板引导（5种结构）、受众分析矩阵、可选内容研究（WebSearch）、数据图表（bar/line/pie/doughnut）、全出血图片、趋势箭头、样式自动推荐、11项QA检查
 
 **架构**：
 ```
-content.json（模型生成，约 400 tokens / 15 页）
+用户需求 → 受众分析 + 叙事模板 → 可选内容研究（WebSearch）
+    → content.json（模型生成，约 400 tokens / 15 页）
     → gen_pptx.py + styles/（固定渲染器，不重新生成）
     → .pptx（PowerPoint 可直接编辑）
+    → QA 验证（soffice 转图 + 11项 checklist）
 ```
 
-**可用幻灯片类型（18 种）**：
+**可用幻灯片类型（21 种）**：
 - **Chrome 框架**：`cover` / `agenda` / `section_divider` / `ending`
 - **内容布局**：`bullets_with_panel` / `two_column_check` / `cards_grid` / `criteria_rows` / `scope_tiers` / `two_panel` / `two_column_steps` / `scenario_cards` / `survey`
-- **新增**：`stat_highlight` / `timeline` / `quote_full` / `center_focus` / `comparison_table`
+- **数据可视化**：`stat_highlight` / `timeline` / `chart` / `comparison_table`
+- **视觉强调**：`quote_full` / `center_focus` / `image_full`
+- **别名**：`key_metrics` → `stat_highlight` / `quote_highlight` → `quote_full`
 
-**可用风格预设（8 套）**：`evyd_blue`（默认）/ `evyd_white` / `evyd_teal` / `dark_navy` / `cooltech` / `morandi` / `warm` / `monochrome`
+**可用风格预设（10 套）**：`evyd_blue`（默认）/ `evyd_white` / `evyd_teal` / `dark_navy` / `cooltech` / `morandi` / `warm` / `monochrome` / `sunrise` / `charcoal_gold`
 
 **触发词**：`生成PPT`、`做幻灯片`、`演示文稿`、`EVYD ppt`
 
 **核心文件**：
-- `SKILL.md` — 完整 JSON schema、布局选型指引与 workflow
-- `gen_pptx.py` — 渲染器（含 validate_and_fix 溢出检测）
-- `styles/` — 样式预设
-- `examples/` — 示例 JSON
+- `SKILL.md` — 完整 JSON schema、叙事模板、布局选型指引与 5 阶段 workflow
+- `gen_pptx.py` — 渲染器（含 validate_and_fix 溢出检测 + 原生图表）
+- `styles/` — 10 套样式预设（含 chart_colors + best_for 元数据）
+- `references/design-guidelines.md` — 排版、配色、图表设计规范
+- `examples/` — 4 个示例 JSON
 
 ---
 
@@ -427,7 +439,7 @@ content.json（模型生成，约 400 tokens / 15 页）
 ```
 技能 skills 作坊/
 ├── README.md
-├── evyd-ppt-generator/             # EVYD PPT 生成器（JSON → 原生可编辑 PPTX，18 种布局）
+├── evyd-ppt-generator/             # EVYD PPT 生成器 v2（JSON → 原生可编辑 PPTX，21 种布局 + 图表 + 叙事模板）
 │   ├── SKILL.md
 │   ├── gen_pptx.py
 │   ├── styles/

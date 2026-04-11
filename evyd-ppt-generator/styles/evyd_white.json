@@ -1,6 +1,8 @@
 {
   "name": "evyd_white",
   "description": "White backgrounds throughout. Good for printed handouts.",
+  "best_for": "Printed handouts, light projection, white-background presentations",
+  "chart_colors": ["0076B3", "2CD5C3", "172E41", "99C4E2", "446688"],
   "font": "Aptos",
 
   "accent":     "0076B3",

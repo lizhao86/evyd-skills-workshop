@@ -9,7 +9,7 @@ description: >
 # EVYD PPT Generator Skill
 
 Generates native-PPTX presentations from a compact content JSON file.
-One renderer (`gen_pptx.py`), 14 slide types, eight pluggable styles.
+One renderer (`gen_pptx.py`), 21 slide types (17 content + 4 chrome), ten pluggable styles.
 All slides are drawn from code — no template file required.
 
 **Skill location**: `/Users/Li.ZHAO/我的代码/技能 skills 作坊/evyd-ppt-generator/`
@@ -63,7 +63,76 @@ Three-layer separation:
 4. **Date, venue, presenter** (for cover slide)
 5. **Style** preference — use `ui-ux-pro-max` skill (if available) to brainstorm palettes and design direction, then map to a built-in style or create a new one. Fall back to `references/design-guidelines.md` if the skill is not installed.
 
-### Phase 2 — Generate content.json
+#### Audience analysis matrix
+
+| Audience type | Structure | Slide density | Key slide types |
+|---|---|---|---|
+| Decision-makers (高管/政府) | Conclusion-first, pyramid | Low (3-4 points/page) | `stat_highlight`, `chart`, `center_focus` |
+| Executors (团队/工程师) | Process steps, detailed plan | Medium-high (5-6 points) | `two_column_steps`, `scope_tiers`, `comparison_table` |
+| External clients (MOH/partners) | Problem → solution, trust-building | Medium (4-5 points) | `bullets_with_panel`, `cards_grid`, `chart` |
+| Mixed audience | Overview structure, breadth + depth | Medium (4-5 points) | `cards_grid`, `two_panel`, `stat_highlight` |
+
+#### Narrative templates
+
+Based on audience and purpose, recommend one of these templates.
+User confirms with "OK" or "switch to B/C/D/E".
+
+**A. Problem → Solution** (客户提案、项目启动)
+```
+cover → agenda → section_divider("背景") → bullets_with_panel(痛点) →
+scope_tiers(问题分层) → section_divider("方案") → cards_grid(方案要点) →
+two_column_steps(实施路径) → criteria_rows(预期效果) → ending
+```
+
+**B. Timeline** (项目回顾、季度汇报)
+```
+cover → agenda → section_divider("回顾") → timeline(关键里程碑) →
+stat_highlight(KPI达成) → chart(趋势数据) → section_divider("下一步") →
+two_column_steps(行动计划) → ending
+```
+
+**C. Comparison** (竞品分析、方案评估)
+```
+cover → agenda → section_divider("现状") → two_column_check(对比维度) →
+comparison_table(详细对比) → chart(数据对比) → section_divider("建议") →
+bullets_with_panel(推荐方案) → ending
+```
+
+**D. Process / Training** (操作指南、培训材料)
+```
+cover → agenda → section_divider("准备") → scope_tiers(适用范围) →
+section_divider("步骤") → two_column_steps(具体操作) →
+scenario_cards(场景演练) → survey(反馈收集) → ending
+```
+
+**E. Pyramid / Executive** (管理层汇报、战略规划)
+```
+cover → stat_highlight(核心结论) → section_divider("支撑论据") →
+chart(数据支撑) → cards_grid(关键发现) → two_panel(风险与机会) →
+section_divider("行动") → two_column_steps(下一步) → ending
+```
+
+#### Content density controls
+
+- **3–5 key points per page**, hard maximum 7
+- Bullet text: max 2 lines per bullet
+- Title: max 8 words (English) / 16 characters (Chinese)
+- If content overflows limits, split into two slides
+
+### Phase 2 (optional) — Content research
+
+**Trigger**: user says "帮我查一下" / "我不确定数据" / "需要补充素材" / "help me research"
+
+1. Based on the outline, list material needs per slide (facts / data / cases / trends)
+2. Use `WebSearch` to find sources. Cross-validate key data with **2+ independent sources**
+3. Output a material list (Markdown):
+   - Each item: source URL + confidence (高/中/低)
+   - Mark items as "必用" or "备选"
+4. User confirms materials → proceed to Phase 3
+
+**When not triggered**: skip directly to Phase 3.
+
+### Phase 3 — Generate content.json
 
 Generate ONLY the JSON file. Do NOT regenerate `gen_pptx.py` or style files.
 
@@ -82,7 +151,7 @@ Use the layout selector guide below — the user does not need to specify types.
 
 Save to `/tmp/<project-name>/content.json` or `examples/<project-name>.json`.
 
-### Phase 3 — Run renderer
+### Phase 4 — Run renderer
 
 ```bash
 cd "/Users/Li.ZHAO/我的代码/技能 skills 作坊/evyd-ppt-generator"
@@ -94,7 +163,7 @@ python3 gen_pptx.py content.json --style evyd_blue \
 `--style` and `--output` override `meta` values. The renderer runs `validate_and_fix()`
 automatically before saving — font sizes are shrunk up to 4pt if overflow is detected.
 
-### Phase 4 — QA & verification loop
+### Phase 5 — QA & verification loop
 
 After generating, always do a full pass before delivering.
 
@@ -128,6 +197,9 @@ Assume there are problems — your job is to find them:
 - Leftover placeholder content or template dummy text
 - Columns or similar elements not aligned consistently
 - Text boxes too narrow causing excessive wrapping
+- Emoji / icons not rendering or displaying as tofu (□)
+- Slide numbering not continuous or sequential
+- Colors inconsistent with selected style (e.g. wrong accent color)
 
 Fix coordinates in `gen_pptx.py` or adjust content.json, then re-run.
 Repeat until a full pass finds no new issues.
@@ -163,9 +235,13 @@ Only the final `.pptx` goes to the user's output directory.
 | **One impactful quote or statement** | `quote_full` |
 | **Single key message / strategic focus** | `center_focus` |
 | **Multi-column structured comparison** | `comparison_table` |
+| **Data visualization (bar/line/pie/doughnut)** | `chart` |
+| **Full-bleed image with text overlay** | `image_full` |
+
+Aliases: `key_metrics` → `stat_highlight`, `quote_highlight` → `quote_full`.
 
 **Background rhythm**: alternate `"blue"` and `"white"` slides. Start and end with blue.
-Use `"white"` for data-heavy slides (`comparison_table`, `two_column_check`).
+Use `"white"` for data-heavy slides (`comparison_table`, `two_column_check`, `chart`).
 
 ---
 
@@ -218,6 +294,23 @@ Hex colors without `#` prefix. Style files are pure data — portable.
 | `warm` | Espresso `2C1810` | Coral `E8622A` | Education, training |
 | `monochrome` | Charcoal `111111` | Grey `EEEEEE` | Executive, editorial |
 | `sunrise` | Medium navy `1B2838` | Coral `E8634A` + Amber `F5A623` | Progress, AI transformation, hopeful narratives |
+| `charcoal_gold` | Charcoal `1C1C22` | Gold `C9A96E` | Strategic workshops, board meetings |
+
+### Style auto-recommendation
+
+During Phase 1, after identifying audience and topic, recommend a style:
+
+| Scenario | Recommended style |
+|---|---|
+| EVYD internal / MOH / government | `evyd_blue` (default) |
+| Printed materials / handouts | `evyd_white` |
+| External speaking / conference | `evyd_teal` |
+| Executive / formal report | `dark_navy` or `charcoal_gold` |
+| AI / tech / SaaS / data topic | `cooltech` |
+| Culture / brand / design | `morandi` |
+| Education / training / workshop | `warm` |
+| Minimal / editorial / executive | `monochrome` |
+| Progress / hopeful / AI transformation | `sunrise` |
 
 ---
 
@@ -472,6 +565,43 @@ Supports 2–4 columns, 2–8 rows.
 
 ---
 
+#### `chart` *(new)*
+Data chart using native PowerPoint chart objects. Supports bar, line, pie, doughnut.
+```json
+{
+  "type": "chart",
+  "section": "02 — Data", "title": "Monthly Growth", "background": "white",
+  "chart_type": "bar",
+  "categories": ["Jan", "Feb", "Mar", "Apr", "May"],
+  "series": [
+    { "name": "New Users", "values": [120, 180, 240, 310, 400] },
+    { "name": "Active Users", "values": [80, 130, 190, 260, 350] }
+  ],
+  "footnote": "Source: Internal analytics"
+}
+```
+`chart_type`: `bar` | `line` | `pie` | `doughnut`. Chart colors from style `chart_colors`.
+For pie/doughnut, use only one series. Max 5 series (bar/line), 8 slices (pie/doughnut).
+
+---
+
+#### `image_full` *(new)*
+Full-bleed image with semi-transparent overlay and centered text.
+```json
+{
+  "type": "image_full",
+  "section": "...",
+  "title": "Our Vision",
+  "subtitle": "Accessible healthcare for everyone",
+  "image_path": "/path/to/image.jpg",
+  "overlay": "dark"
+}
+```
+`overlay`: `"dark"` (navy tint) or `"light"` (white tint). Image fills entire slide.
+If `image_path` does not exist, renders a placeholder with error note.
+
+---
+
 #### `ending`
 Thank-you / call-to-action slide.
 ```json
@@ -519,7 +649,7 @@ python3 gen_pptx.py content.json --style dark_navy \
 ```
 evyd-ppt-generator/
 ├── SKILL.md                          # This file
-├── gen_pptx.py                       # Free-mode renderer (14 slide types)
+├── gen_pptx.py                       # Free-mode renderer (21 slide types)
 ├── references/
 │   └── design-guidelines.md          # Design rules for content.json generation
 ├── styles/
@@ -531,9 +661,11 @@ evyd-ppt-generator/
 │   ├── morandi.json                  # Muted pastels
 │   ├── warm.json                     # Espresso + coral + amber
 │   ├── monochrome.json               # Black/white/grey
-│   └── sunrise.json                  # Navy + coral + amber (progress/AI)
+│   ├── sunrise.json                  # Navy + coral + amber (progress/AI)
+│   └── charcoal_gold.json            # Charcoal + gold (strategic/premium)
 └── examples/
     ├── bruai-focusgroup.json
     ├── evyd-1person-fullstack.json
-    └── evyd-skills-fullstack.json
+    ├── evyd-skills-fullstack.json
+    └── fullstack-v2.json
 ```

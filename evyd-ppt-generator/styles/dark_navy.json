@@ -1,6 +1,8 @@
 {
   "name": "dark_navy",
   "description": "Deep navy + teal + orange. Premium look for strategy/research decks.",
+  "best_for": "Strategy decks, research presentations, finance",
+  "chart_colors": ["E87722", "3A8FD6", "0B1F3A", "F5A623", "6BAFDB"],
   "font": "Aptos",
 
   "accent":     "E87722",

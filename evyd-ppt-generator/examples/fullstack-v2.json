@@ -1,0 +1,177 @@
+{
+  "meta": {
+    "style": "evyd_blue",
+    "output": "/tmp/fullstack-v2.pptx"
+  },
+  "slides": [
+    {
+      "type": "cover",
+      "title": "EVYD AI 医疗平台\n季度业务回顾",
+      "subtitle": "2025 Q1 — 关键指标达成与下阶段规划",
+      "tag": "QUARTERLY REVIEW",
+      "logo": "EVYD Technology · 2025"
+    },
+    {
+      "type": "agenda",
+      "items": [
+        { "num": "1", "title": "核心指标总览", "time": "10:00–10:10  ·  10 min" },
+        { "num": "2", "title": "用户增长趋势", "time": "10:10–10:25  ·  15 min" },
+        { "num": "3", "title": "产品里程碑", "time": "10:25–10:35  ·  10 min" },
+        { "num": "4", "title": "竞品对比分析", "time": "10:35–10:50  ·  15 min" },
+        { "num": "5", "title": "下季度行动计划", "time": "10:50–11:00  ·  10 min" }
+      ]
+    },
+    {
+      "type": "section_divider",
+      "num": "01",
+      "title": "核心指标总览"
+    },
+    {
+      "type": "stat_highlight",
+      "section": "01 — 核心指标",
+      "title": "Q1 关键业务数据",
+      "background": "blue",
+      "stats": [
+        { "value": "98.5%", "label": "系统可用率", "desc": "SLA 目标 99.5%", "trend": "up" },
+        { "value": "2.1s", "label": "平均响应时间", "desc": "较上季度降低 40%", "trend": "down" },
+        { "value": "45K", "label": "月活用户", "desc": "环比增长 32%", "trend": "up" },
+        { "value": "91", "label": "NPS 得分", "desc": "行业平均 67", "trend": "up" }
+      ]
+    },
+    {
+      "type": "chart",
+      "section": "01 — 核心指标",
+      "title": "月度用户增长趋势",
+      "background": "white",
+      "chart_type": "bar",
+      "categories": ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+      "series": [
+        { "name": "新注册用户", "values": [1200, 1800, 2400, 3100, 4000, 4500] },
+        { "name": "活跃用户", "values": [800, 1300, 1900, 2600, 3500, 4200] }
+      ],
+      "footnote": "数据来源：EVYD 内部统计系统（截至 2025-03-31）"
+    },
+    {
+      "type": "chart",
+      "section": "01 — 核心指标",
+      "title": "用户分布",
+      "background": "blue",
+      "chart_type": "pie",
+      "categories": ["医生", "护士", "药剂师", "管理人员", "其他"],
+      "series": [
+        { "name": "占比", "values": [35, 28, 18, 12, 7] }
+      ],
+      "footnote": "数据来源：用户注册信息统计"
+    },
+    {
+      "type": "section_divider",
+      "num": "02",
+      "title": "产品里程碑"
+    },
+    {
+      "type": "timeline",
+      "section": "02 — 里程碑",
+      "title": "2025 产品路线图",
+      "background": "blue",
+      "items": [
+        { "phase": "Q1", "title": "基础平台上线", "desc": "核心功能交付 + MOH 验收" },
+        { "phase": "Q2", "title": "AI 助手集成", "desc": "智能问诊 + 药物查询" },
+        { "phase": "Q3", "title": "数据分析平台", "desc": "BI 仪表盘 + 预警系统" },
+        { "phase": "Q4", "title": "全国推广", "desc": "多省部署 + 培训体系" }
+      ]
+    },
+    {
+      "type": "quote_full",
+      "section": "02 — 里程碑",
+      "background": "blue",
+      "quote": "AI 不是取代医生 — 而是赋予他们超能力。",
+      "attribution": "— Dr. Sarah Chen, Chief Medical Officer"
+    },
+    {
+      "type": "section_divider",
+      "num": "03",
+      "title": "竞品对比分析"
+    },
+    {
+      "type": "comparison_table",
+      "section": "03 — 竞品对比",
+      "title": "核心功能对比",
+      "background": "white",
+      "columns": ["传统方案", "竞品 A", "EVYD 方案"],
+      "rows": [
+        { "label": "部署时间", "values": ["6 个月", "3 个月", "4 周"] },
+        { "label": "AI 诊断准确率", "values": ["N/A", "85%", "97%"] },
+        { "label": "多语言支持", "values": ["英文", "英/中", "英/中/马来"] },
+        { "label": "数据安全等级", "values": ["ISO 27001", "SOC 2", "ISO 27001 + HIPAA"] },
+        { "label": "总成本 (TCO)", "values": ["高", "中", "低"] }
+      ]
+    },
+    {
+      "type": "two_column_check",
+      "section": "03 — 竞品对比",
+      "title": "EVYD 方案优势 vs 不足",
+      "background": "white",
+      "left":  { "title": "✅  优势", "color": [39,174,96], "light_color": "green", "marker": "✓", "items": ["本地化部署，数据不出境", "AI 模型持续优化", "端到端培训支持", "灵活定价模式"] },
+      "right": { "title": "⚠️  待改进", "color": [231,76,60], "light_color": "red", "marker": "✗", "items": ["移动端体验需优化", "第三方 API 集成较少", "文档英文覆盖不足"] }
+    },
+    {
+      "type": "section_divider",
+      "num": "04",
+      "title": "下季度行动计划"
+    },
+    {
+      "type": "center_focus",
+      "section": "04 — 行动计划",
+      "background": "blue",
+      "title": "Q2 战略焦点",
+      "message": "以患者为中心的智能医疗生态",
+      "context": "连接医生、患者和数据，打造统一健康平台"
+    },
+    {
+      "type": "two_column_steps",
+      "section": "04 — 行动计划",
+      "title": "Q2 关键行动",
+      "background": "blue",
+      "columns": [
+        {
+          "title": "🏗️  产品建设",
+          "steps": [
+            { "bold": "AI 助手 MVP", "normal": "完成智能问诊核心功能开发" },
+            { "bold": "移动端优化", "normal": "响应式重构，提升移动体验" },
+            { "bold": "API 开放平台", "normal": "发布 v1 开发者文档和 SDK" }
+          ]
+        },
+        {
+          "title": "📈  市场拓展",
+          "steps": [
+            { "bold": "MOH 二期签约", "normal": "完成合同谈判和技术对接" },
+            { "bold": "新加坡试点", "normal": "启动 2 家医院 POC 项目" },
+            { "bold": "品牌建设", "normal": "医疗 AI 峰会演讲 + 白皮书发布" }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "chart",
+      "section": "04 — 行动计划",
+      "title": "Q2 预期增长曲线",
+      "background": "white",
+      "chart_type": "line",
+      "categories": ["Apr", "May", "Jun", "Jul", "Aug", "Sep"],
+      "series": [
+        { "name": "预期用户数 (K)", "values": [48, 55, 65, 78, 92, 110] },
+        { "name": "保守估计 (K)", "values": [46, 50, 56, 62, 70, 80] }
+      ],
+      "footnote": "基于 Q1 增长率 + 新渠道预估"
+    },
+    {
+      "type": "ending",
+      "title": "Thank You",
+      "subtitle": "让每个人都能获得优质医疗",
+      "actions": [
+        { "icon": "📧", "title": "联系我们", "desc": "contact@evyd.com" },
+        { "icon": "🌐", "title": "了解更多", "desc": "www.evydtech.com" }
+      ]
+    }
+  ]
+}

@@ -1,6 +1,8 @@
 {
   "name": "morandi",
   "description": "Muted grey-toned pastels — slate, dusty rose, sage. Calm and refined.",
+  "best_for": "Culture, brand, design, artistic presentations",
+  "chart_colors": ["C4857A", "7BA3A8", "5C7080", "D4A89A", "8FB8AD"],
   "font": "Aptos",
 
   "accent":     "C4857A",

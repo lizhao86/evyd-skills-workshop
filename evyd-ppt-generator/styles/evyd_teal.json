@@ -1,6 +1,8 @@
 {
   "name": "evyd_teal",
   "description": "Dark navy + teal accent. High-contrast for external events.",
+  "best_for": "External events, conferences, high-contrast projection",
+  "chart_colors": ["2CD5C3", "0076B3", "0A1E30", "66E0D3", "336699"],
   "font": "Aptos",
 
   "accent":     "2CD5C3",
