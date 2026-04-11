@@ -25,18 +25,17 @@ content.json  →  gen_pptx.py  →  Output.pptx
 - **Renderer** (`gen_pptx.py`) — 21 slide types (17 content + 4 chrome), all drawn from code via python-pptx
 - **Style** (`styles/*.json`) — pluggable color/font/motif configs, no code changes needed
 
-## v2.1 Features
+## v2.2 Features
 
 - **7 narrative templates** (A–G): problem→solution, timeline, comparison, process, pyramid, spatial/market, comprehensive review — with audience-driven auto-selection
+- **Direct user profiling**: asks user's industry/role explicitly — no guessing
 - **3-round content research**: broad scan → deep search → verification, with 5-level credibility rating (★–★★★★★)
 - **10 chart types**: bar, bar_stacked, bar_horizontal, line, line_marker, area, pie, doughnut, radar, scatter — all native PowerPoint charts
-- **Image sourcing**: WebSearch→download→verify workflow for `image_full` slides
+- **Image sourcing + aesthetic check**: WebSearch→download→Claude vision evaluation (composition, resolution, color harmony, relevance)
 - **Data pipeline**: `scripts/data_to_chart.py` converts CSV/Excel to chart JSON via pandas
-- **Full-bleed images**: `image_full` slide type with overlay text
-- **Trend indicators**: `stat_highlight` supports up/down/flat trend arrows
-- **Style recommendation**: auto-suggests style based on audience and topic
+- **Narrative coherence check**: QA verifies story flow, transitions, data placement, and conclusion consistency
 - **Delivery summary**: structured handoff with editing tips and source attribution
-- **QA verification**: 11-item visual checklist with soffice→image conversion
+- **QA verification**: 11-item visual checklist + coherence check with soffice→image conversion
 
 ## Available styles (10)
 

@@ -57,7 +57,7 @@
 
 **触发词**：`生成PPT`、`做幻灯片`、`演示文稿`、`ppt generator`、`EVYD ppt`
 
-**v2.1 新增能力**：7 种叙事模板（含空间布局/综述）、三轮搜索 + 5 级可信度研究策略、10 种图表（+scatter/radar/area/bar_stacked/bar_horizontal/line_marker）、图片搜索下载流程、CSV/Excel 数据管道（pandas）、交付报告模板、11 项视觉 QA
+**v2.2 能力**：7 种叙事模板、直接用户画像（问不猜）、三轮搜索 + 5 级可信度、10 种原生图表、图片搜索 + Claude 视觉审美判断、CSV/Excel 数据管道、叙事连贯性检查、交付报告、11 项视觉 QA
 
 **可用幻灯片类型（21 种）**：
 - **Chrome 框架**：`cover` / `agenda` / `section_divider` / `ending`
@@ -371,13 +371,13 @@ python3 gen_pptx.py content.json --style evyd_blue --output output.pptx
 
 ---
 
-### 8. PPT 生成器 v2.1 (PPT Generator)
+### 8. PPT 生成器 v2.2 (PPT Generator)
 
 **目录**：`evyd-ppt-generator/`
 
 从内容 JSON 生成 EVYD 品牌风格的 PPTX 演示文稿，纯程序化 free-mode 渲染，输出真实可编辑的形状和文字（非截图）。布局类型由 AI 自动选择，无需手动指定。
 
-**v2.1 能力**：7 种叙事模板（含空间布局/综述）、三轮搜索 + 5 级可信度研究策略、10 种原生图表、图片搜索下载、CSV/Excel 数据管道、交付报告、11 项视觉 QA
+**v2.2 能力**：7 种叙事模板、直接用户画像、三轮搜索 + 5 级可信度、10 种原生图表、图片搜索 + 视觉审美判断、CSV/Excel 数据管道、叙事连贯性检查、交付报告、11 项视觉 QA
 
 **架构**：
 ```
@@ -402,7 +402,7 @@ python3 gen_pptx.py content.json --style evyd_blue --output output.pptx
 **触发词**：`生成PPT`、`做幻灯片`、`演示文稿`、`EVYD ppt`
 
 **核心文件**：
-- `SKILL.md` — 完整 JSON schema、7 种叙事模板、布局选型指引与 5 阶段 workflow
+- `SKILL.md` — 完整 JSON schema、7 种叙事模板、布局选型指引与 5 阶段 workflow（含视觉审美 + 连贯性检查）
 - `gen_pptx.py` — 渲染器（10 种图表 + validate_and_fix 溢出检测）
 - `styles/` — 10 套样式预设（含 chart_colors + best_for 元数据）
 - `scripts/data_to_chart.py` — CSV/Excel → chart JSON 转换器
