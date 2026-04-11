@@ -1195,6 +1195,63 @@ def render_image_full(slide, data, st, num, total):
            color=txt_color, align=PP_ALIGN.CENTER, font=F)
 
 
+# ── NEW: freeform ─────────────────────────────────────────────────────────────
+
+def _resolve_color(val, st):
+    """Resolve a color value: style key name, hex string, or [r,g,b] list."""
+    if isinstance(val, str) and val in st:
+        return st[val]
+    return _rgb(val)
+
+def render_freeform(slide, data, st, num, total):
+    """Freeform slide: AI specifies exact element positions for creative layouts."""
+    blue = data.get('background', 'blue') == 'blue'
+    F = st['font']
+
+    # Optional standard header (skip if no title)
+    if data.get('title'):
+        hdr(slide, data.get('section', ''), _slide_num(data, num, total),
+            data.get('title', ''), blue=blue, st=st)
+
+    for el in data.get('elements', []):
+        kind = el.get('kind', '')
+        x, y = el.get('x', 0), el.get('y', 0)
+        w, h = el.get('w', 1), el.get('h', 1)
+
+        if kind == 'text':
+            color = _resolve_color(el.get('color', 'white' if blue else 'text_dark'), st)
+            align_map = {'left': PP_ALIGN.LEFT, 'center': PP_ALIGN.CENTER,
+                         'right': PP_ALIGN.RIGHT}
+            bx(slide, x, y, w, h, el.get('text', ''),
+               sz=el.get('sz', 18), bold=el.get('bold', False),
+               italic=el.get('italic', False),
+               color=color,
+               align=align_map.get(el.get('align', 'left'), PP_ALIGN.LEFT),
+               font=F)
+
+        elif kind == 'rect':
+            fill = _resolve_color(el.get('fill', 'card'), st) if el.get('fill') else None
+            line = _resolve_color(el.get('line', None), st) if el.get('line') else None
+            shape = rc(slide, x, y, w, h, fill=fill, line=line,
+                       rd=el.get('radius', False))
+            if el.get('transparency'):
+                _set_transparency(shape, el['transparency'])
+
+        elif kind == 'oval':
+            fill = _resolve_color(el.get('fill', 'accent'), st) if el.get('fill') else None
+            shape = ov(slide, x, y, w, h, fill=fill,
+                       transparency=el.get('transparency', 0))
+
+        elif kind == 'image':
+            img_path = el.get('path', '')
+            if img_path and os.path.exists(img_path):
+                slide.shapes.add_picture(img_path, I(x), I(y), I(w), I(h))
+
+        elif kind == 'line':
+            color = _resolve_color(el.get('color', 'accent'), st)
+            rc(slide, x, y, w, h, fill=color)
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Routing tables
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1228,6 +1285,8 @@ CONTENT_RENDERERS = {
     'image_full':         render_image_full,
     'key_metrics':        render_stat_highlight,    # alias
     'quote_highlight':    render_quote_full,         # alias
+    # Freeform
+    'freeform':           render_freeform,
 }
 
 

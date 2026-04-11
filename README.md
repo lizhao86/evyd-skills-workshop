@@ -59,11 +59,12 @@
 
 **v2.2 能力**：7 种叙事模板、直接用户画像（问不猜）、三轮搜索 + 5 级可信度、10 种原生图表、图片搜索 + Claude 视觉审美判断、CSV/Excel 数据管道、叙事连贯性检查、交付报告、11 项视觉 QA
 
-**可用幻灯片类型（21 种）**：
+**可用幻灯片类型（22 种）**：
 - **Chrome 框架**：`cover` / `agenda` / `section_divider` / `ending`
 - **内容布局**：`bullets_with_panel` / `two_column_check` / `cards_grid` / `criteria_rows` / `scope_tiers` / `two_panel` / `two_column_steps` / `scenario_cards` / `survey`
 - **数据可视化**：`stat_highlight` / `timeline` / `chart`（10 种图表类型）/ `comparison_table`
 - **视觉强调**：`quote_full` / `center_focus` / `image_full`（支持图片搜索下载）
+- **自由布局**：`freeform`（AI 指定元素坐标，任意创意布局，仍输出原生可编辑 PPTX）
 - **别名**：`key_metrics` → `stat_highlight` / `quote_highlight` → `quote_full`
 
 **可用风格预设（10 套）**：`evyd_blue`（默认）/ `evyd_white` / `evyd_teal` / `dark_navy` / `cooltech` / `morandi` / `warm` / `monochrome` / `sunrise` / `charcoal_gold`
@@ -390,11 +391,12 @@ python3 gen_pptx.py content.json --style evyd_blue --output output.pptx
     → QA 验证（soffice 转图 + 11项 checklist）→ 交付摘要
 ```
 
-**可用幻灯片类型（21 种）**：
+**可用幻灯片类型（22 种）**：
 - **Chrome 框架**：`cover` / `agenda` / `section_divider` / `ending`
 - **内容布局**：`bullets_with_panel` / `two_column_check` / `cards_grid` / `criteria_rows` / `scope_tiers` / `two_panel` / `two_column_steps` / `scenario_cards` / `survey`
 - **数据可视化**：`stat_highlight` / `timeline` / `chart`（10 种图表） / `comparison_table`
-- **视觉强调**：`quote_full` / `center_focus` / `image_full`（支持图片搜索）
+- **视觉强调**：`quote_full` / `center_focus` / `image_full`
+- **自由布局**：`freeform`（任意元素坐标，创意无限，仍原生可编辑）
 - **别名**：`key_metrics` → `stat_highlight` / `quote_highlight` → `quote_full`
 
 **可用风格预设（10 套）**：`evyd_blue`（默认）/ `evyd_white` / `evyd_teal` / `dark_navy` / `cooltech` / `morandi` / `warm` / `monochrome` / `sunrise` / `charcoal_gold`
@@ -443,7 +445,7 @@ python3 gen_pptx.py content.json --style evyd_blue --output output.pptx
 ```
 技能 skills 作坊/
 ├── README.md
-├── evyd-ppt-generator/             # EVYD PPT 生成器 v2（JSON → 原生可编辑 PPTX，21 种布局 + 图表 + 叙事模板）
+├── evyd-ppt-generator/             # EVYD PPT 生成器 v2.2（JSON → 原生可编辑 PPTX，22 种布局 + freeform + 10 种图表）
 │   ├── SKILL.md
 │   ├── gen_pptx.py
 │   ├── styles/

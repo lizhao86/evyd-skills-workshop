@@ -9,7 +9,7 @@ description: >
 # EVYD PPT Generator Skill
 
 Generates native-PPTX presentations from a compact content JSON file.
-One renderer (`gen_pptx.py`), 21 slide types (17 content + 4 chrome), ten pluggable styles.
+One renderer (`gen_pptx.py`), 22 slide types (18 content + 4 chrome), ten pluggable styles.
 All slides are drawn from code — no template file required.
 
 **Skill location**: `/Users/Li.ZHAO/我的代码/技能 skills 作坊/evyd-ppt-generator/`
@@ -341,6 +341,7 @@ Only the final `.pptx` goes to the user's output directory.
 | **Multi-column structured comparison** | `comparison_table` |
 | **Data visualization (bar/line/pie/doughnut)** | `chart` |
 | **Full-bleed image with text overlay** | `image_full` |
+| **Creative / non-standard layout** | `freeform` |
 
 Aliases: `key_metrics` → `stat_highlight`, `quote_highlight` → `quote_full`.
 
@@ -722,6 +723,29 @@ If `image_path` does not exist, renders a placeholder with error note.
 
 ---
 
+#### `freeform` *(new)*
+Creative free-layout slide. AI specifies exact position and size of every element.
+Use for layouts that don't fit any fixed type. Colors can reference style keys.
+```json
+{
+  "type": "freeform",
+  "section": "05 — Vision", "title": "Custom Layout", "background": "blue",
+  "elements": [
+    { "kind": "rect", "x": 1.0, "y": 2.0, "w": 8.0, "h": 7.5, "fill": "card", "radius": true },
+    { "kind": "text", "x": 1.5, "y": 2.5, "w": 7.0, "h": 1.2, "text": "Big Idea", "sz": 36, "bold": true, "color": "accent" },
+    { "kind": "text", "x": 1.5, "y": 4.0, "w": 7.0, "h": 3.0, "text": "Supporting details here...", "sz": 18, "color": "text_dim" },
+    { "kind": "image", "x": 10.0, "y": 2.0, "w": 9.0, "h": 7.5, "path": "/tmp/photo.jpg" },
+    { "kind": "oval", "x": 16.0, "y": 0.0, "w": 6.0, "h": 6.0, "fill": "accent2", "transparency": 92 },
+    { "kind": "line", "x": 1.5, "y": 3.7, "w": 2.0, "h": 0.06, "color": "accent" }
+  ]
+}
+```
+Element kinds: `text` (textbox), `rect` (rectangle), `oval`, `image`, `line` (thin rect).
+Colors accept style key names (`"accent"`, `"card"`, `"text_dim"`) or hex strings (`"FF6600"`).
+`title` is optional — omit it for a headerless full-canvas layout.
+
+---
+
 #### `ending`
 Thank-you / call-to-action slide.
 ```json
@@ -769,7 +793,7 @@ python3 gen_pptx.py content.json --style dark_navy \
 ```
 evyd-ppt-generator/
 ├── SKILL.md                          # This file
-├── gen_pptx.py                       # Free-mode renderer (21 slide types)
+├── gen_pptx.py                       # Free-mode renderer (22 slide types)
 ├── references/
 │   └── design-guidelines.md          # Design rules for content.json generation
 ├── styles/

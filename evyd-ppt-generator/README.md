@@ -54,13 +54,15 @@ content.json  →  gen_pptx.py  →  Output.pptx
 
 Each style includes `chart_colors` (5-color palette for chart series) and `best_for` metadata for auto-recommendation.
 
-## Slide types (21)
+## Slide types (22)
 
 **Chrome**: `cover` · `agenda` · `section_divider` · `ending`
 
-**Content**: `bullets_with_panel` · `two_column_check` · `cards_grid` · `criteria_rows` · `scope_tiers` · `two_panel` · `two_column_steps` · `scenario_cards` · `survey` · `stat_highlight` · `timeline` · `quote_full` · `center_focus` · `comparison_table` · `chart` · `image_full`
+**Content**: `bullets_with_panel` · `two_column_check` · `cards_grid` · `criteria_rows` · `scope_tiers` · `two_panel` · `two_column_steps` · `scenario_cards` · `survey` · `stat_highlight` · `timeline` · `quote_full` · `center_focus` · `comparison_table` · `chart` · `image_full` · `freeform`
 
 **Aliases**: `key_metrics` → `stat_highlight` · `quote_highlight` → `quote_full`
+
+The `freeform` type gives AI full creative control — specify exact element positions, sizes, and colors for layouts that don't fit any fixed type. Output is still 100% native editable PPTX.
 
 ## Adding a new style
 
