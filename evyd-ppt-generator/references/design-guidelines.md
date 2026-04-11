@@ -309,13 +309,24 @@ an explicit `sz=` value will override it. After changing any font size default:
 ### Chart design rules
 
 - **Axis label font**: minimum 14pt on 20″ canvas
-- **Max series**: 5 for bar/line, 8 slices for pie/doughnut
+- **Max series**: 5 for bar/line/area, 8 slices for pie/doughnut, 6 dimensions for radar
 - **Always include a footnote** with data source attribution
 - **Chart colors**: use the style's `chart_colors` array (5 colors), not random colors
 - **Pie/doughnut**: use only one series; label each slice clearly
 - **Bar/line**: keep category labels short (max 8 characters) to avoid overlap
 - **Prefer `"white"` background** for chart slides — better readability for data
 - Chart occupies the full content area below the header; do not add other elements alongside
+
+### Chart type selection guide
+
+| Data pattern | Recommended chart_type |
+|---|---|
+| Compare categories | `bar` or `bar_horizontal` |
+| Show composition / proportion | `pie` or `doughnut` |
+| Trend over time | `line` or `line_marker` or `area` |
+| Part-of-whole accumulation | `bar_stacked` |
+| Multi-dimensional comparison | `radar` |
+| Correlation between two variables | `scatter` |
 
 ### Extended font size floor table
 

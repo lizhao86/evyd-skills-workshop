@@ -112,6 +112,23 @@ chart(数据支撑) → cards_grid(关键发现) → two_panel(风险与机会) 
 section_divider("行动") → two_column_steps(下一步) → ending
 ```
 
+**F. Spatial / Market Layout** (市场布局、地域分析、组织架构)
+```
+cover → agenda → section_divider("全景") → image_full(地图/架构图) →
+cards_grid(各区域/部门概况) → comparison_table(跨区域对比) →
+chart(数据对比) → section_divider("聚焦") → bullets_with_panel(重点区域) →
+two_column_steps(行动计划) → ending
+```
+
+**G. Comprehensive Review** (综述报告、年度总结、白皮书)
+```
+cover → agenda → section_divider("背景") → bullets_with_panel(背景概述) →
+stat_highlight(关键数字) → section_divider("分析") → chart(趋势数据) →
+comparison_table(多维对比) → scope_tiers(分层发现) →
+section_divider("结论") → center_focus(核心结论) →
+two_column_steps(建议行动) → ending
+```
+
 #### Content density controls
 
 - **3–5 key points per page**, hard maximum 7
@@ -121,20 +138,73 @@ section_divider("行动") → two_column_steps(下一步) → ending
 
 ### Phase 2 (optional) — Content research
 
-**Trigger**: user says "帮我查一下" / "我不确定数据" / "需要补充素材" / "help me research"
-
-1. Based on the outline, list material needs per slide (facts / data / cases / trends)
-2. Use `WebSearch` to find sources. Cross-validate key data with **2+ independent sources**
-3. Output a material list (Markdown):
-   - Each item: source URL + confidence (高/中/低)
-   - Mark items as "必用" or "备选"
-4. User confirms materials → proceed to Phase 3
+**Trigger**: user says "帮我查一下" / "需要数据" / "help me research",
+or AI judges user-provided content is insufficient (missing data, cases, or trends).
 
 **When not triggered**: skip directly to Phase 3.
+
+#### Three-round search strategy
+
+**Round 1 — Broad scan (20% of effort)**
+- 5–8 keywords, establish topic framework
+- Map the information landscape: which dimensions have ready data, which need deep research
+
+**Round 2 — Deep search (50% of effort)**
+- Per-slide material needs, 3–5 precise keywords each
+- Prioritize official sources and industry reports
+- Use `WebSearch` for each query
+
+**Round 3 — Verification (30% of effort)**
+- Key data must have **2+ independent sources** cross-validated
+- When sources contradict, flag both and let user decide
+
+#### 5-level credibility rating
+
+| Level | Source type | Action |
+|-------|-----------|--------|
+| ★★★★★ | Government / international org (WHO, MOH, World Bank) | Use directly |
+| ★★★★ | Authoritative reports (Gartner, McKinsey, academic papers) | Cite source |
+| ★★★ | Major media / corporate disclosures (Reuters, annual reports) | Cite source |
+| ★★ | Industry blogs / analyst opinions | Mark as opinion |
+| ★ | Unverified / single source | Backup only, do not use directly |
+
+#### Material list format
+
+Output Markdown table for user confirmation:
+
+| Slide | Material | Source | Credibility | Usage |
+|-------|----------|--------|-------------|-------|
+| #4 KPI | SG healthcare IT spend $2.1B | MOH Annual Report 2024 | ★★★★★ | Must-use |
+| #6 Trend | SEA AI healthcare CAGR 42.8% | Grand View Research | ★★★ | Backup |
+
+User confirms → proceed to Phase 3.
 
 ### Phase 3 — Generate content.json
 
 Generate ONLY the JSON file. Do NOT regenerate `gen_pptx.py` or style files.
+
+#### Image sourcing (when using `image_full` slides)
+
+1. Based on the slide topic, use `WebSearch` to find high-quality images:
+   - Keywords: `[topic] + [scene] + "high resolution" OR "wide"`
+   - Prefer royalty-free sources: Unsplash, Pexels, Pixabay
+2. Download to local temp:
+   ```bash
+   mkdir -p /tmp/<project>/images
+   curl -L -o /tmp/<project>/images/slide_N.jpg "<url>"
+   ```
+3. Verify: file size > 50KB, format is jpg/png
+4. Use local path in content.json: `"image_path": "/tmp/<project>/images/slide_N.jpg"`
+
+Skip this step for slides that don't use `image_full`.
+
+#### Data-driven chart slides (when user provides CSV/Excel)
+
+If the user provides a data file, use the helper script:
+```bash
+python3 scripts/data_to_chart.py <data.csv> --type bar --title "Title"
+```
+Paste the output JSON fragment directly into content.json's slides array.
 
 **You (Claude) decide the slide type for each slide** based on the content.
 Use the layout selector guide below — the user does not need to specify types.
@@ -203,6 +273,20 @@ Assume there are problems — your job is to find them:
 
 Fix coordinates in `gen_pptx.py` or adjust content.json, then re-run.
 Repeat until a full pass finds no new issues.
+
+#### Delivery summary (after QA passes)
+
+When delivering the PPTX, include this information:
+
+1. **File info**: path, slide count, style used
+2. **Content overview**: section titles and slide distribution
+3. **Data sources** (if research phase was used): key data with source attribution
+4. **Editing tips**:
+   - All text and charts are natively editable in PowerPoint
+   - Chart data: double-click any chart to modify the underlying data
+   - Restyle: re-run with `--style <name>` to switch visual theme
+   - Font: Aptos (built into macOS / Windows)
+5. **Known limitations** (if any): e.g. backup-source data, placeholder images
 
 #### File hygiene
 
@@ -580,8 +664,24 @@ Data chart using native PowerPoint chart objects. Supports bar, line, pie, dough
   "footnote": "Source: Internal analytics"
 }
 ```
-`chart_type`: `bar` | `line` | `pie` | `doughnut`. Chart colors from style `chart_colors`.
-For pie/doughnut, use only one series. Max 5 series (bar/line), 8 slices (pie/doughnut).
+`chart_type`: `bar` | `bar_stacked` | `bar_horizontal` | `line` | `line_marker` | `area` | `pie` | `doughnut` | `radar` | `scatter`
+
+Chart colors from style `chart_colors`. For pie/doughnut, use only one series.
+Max 5 series (bar/line/area), 8 slices (pie/doughnut), 6 dimensions (radar).
+
+**Scatter** uses a different data format (`x_values` / `y_values` instead of `categories` / `values`):
+```json
+{
+  "type": "chart",
+  "chart_type": "scatter",
+  "section": "03 — Analysis", "title": "Response Time vs Load", "background": "white",
+  "series": [
+    { "name": "Server A", "x_values": [10, 20, 30, 40], "y_values": [1.2, 1.8, 2.5, 4.1] },
+    { "name": "Server B", "x_values": [10, 20, 30, 40], "y_values": [0.8, 1.2, 1.9, 3.0] }
+  ],
+  "footnote": "Load in concurrent requests; time in seconds"
+}
+```
 
 ---
 

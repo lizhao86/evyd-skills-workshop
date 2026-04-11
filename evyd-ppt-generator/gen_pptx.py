@@ -1028,14 +1028,20 @@ def validate_and_fix(prs):
 # ── NEW: chart ────────────────────────────────────────────────────────────────
 
 _CHART_TYPE_MAP = {
-    'bar':      XL_CHART_TYPE.COLUMN_CLUSTERED,
-    'line':     XL_CHART_TYPE.LINE,
-    'pie':      XL_CHART_TYPE.PIE,
-    'doughnut': XL_CHART_TYPE.DOUGHNUT,
+    'bar':            XL_CHART_TYPE.COLUMN_CLUSTERED,
+    'bar_stacked':    XL_CHART_TYPE.COLUMN_STACKED,
+    'bar_horizontal': XL_CHART_TYPE.BAR_CLUSTERED,
+    'line':           XL_CHART_TYPE.LINE,
+    'line_marker':    XL_CHART_TYPE.LINE_MARKERS,
+    'area':           XL_CHART_TYPE.AREA,
+    'pie':            XL_CHART_TYPE.PIE,
+    'doughnut':       XL_CHART_TYPE.DOUGHNUT,
+    'radar':          XL_CHART_TYPE.RADAR_FILLED,
+    'scatter':        XL_CHART_TYPE.XY_SCATTER,
 }
 
 def render_chart(slide, data, st, num, total):
-    """Data chart: bar, line, pie, or doughnut using native python-pptx charts."""
+    """Data chart using native python-pptx charts. Supports 10 chart types."""
     blue = data.get('background', 'white') == 'blue'
     F = st['font']
     ct = hdr(slide, data.get('section', ''), _slide_num(data, num, total),
@@ -1043,17 +1049,29 @@ def render_chart(slide, data, st, num, total):
 
     chart_type_str = data.get('chart_type', 'bar')
     xl_type = _CHART_TYPE_MAP.get(chart_type_str, XL_CHART_TYPE.COLUMN_CLUSTERED)
-    categories = data.get('categories', [])
     series_list = data.get('series', [])
-    if not categories or not series_list:
+    if not series_list:
         return
 
     is_pie = chart_type_str in ('pie', 'doughnut')
+    is_xy  = chart_type_str in ('scatter',)
 
-    chart_data = CategoryChartData()
-    chart_data.categories = categories
-    for s in series_list:
-        chart_data.add_series(s.get('name', ''), s.get('values', []))
+    # Build chart data — scatter uses XyChartData, others use CategoryChartData
+    if is_xy:
+        from pptx.chart.data import XyChartData
+        chart_data = XyChartData()
+        for s in series_list:
+            xy_series = chart_data.add_series(s.get('name', ''))
+            for x, y in zip(s.get('x_values', []), s.get('y_values', [])):
+                xy_series.add_data_point(x, y)
+    else:
+        categories = data.get('categories', [])
+        if not categories:
+            return
+        chart_data = CategoryChartData()
+        chart_data.categories = categories
+        for s in series_list:
+            chart_data.add_series(s.get('name', ''), s.get('values', []))
 
     chart_left = I(1.5)
     chart_top  = I(ct + 0.3)
@@ -1072,10 +1090,24 @@ def render_chart(slide, data, st, num, total):
         for i, pt in enumerate(plot.series[0].points):
             pt.format.fill.solid()
             pt.format.fill.fore_color.rgb = colors[i % len(colors)]
-    elif chart_type_str == 'line':
+    elif chart_type_str in ('line', 'line_marker'):
         for i, s in enumerate(chart.series):
             s.format.line.color.rgb = colors[i % len(colors)]
             s.format.line.width = P(2.5)
+    elif chart_type_str == 'radar':
+        for i, s in enumerate(chart.series):
+            s.format.line.color.rgb = colors[i % len(colors)]
+            s.format.line.width = P(2.0)
+            s.format.fill.solid()
+            s.format.fill.fore_color.rgb = colors[i % len(colors)]
+            _set_transparency(s, 70)
+    elif is_xy:
+        for i, s in enumerate(chart.series):
+            s.format.line.color.rgb = colors[i % len(colors)]
+            s.marker.style = 8  # circle
+            s.marker.size = 10
+            s.marker.format.fill.solid()
+            s.marker.format.fill.fore_color.rgb = colors[i % len(colors)]
     else:
         for i, s in enumerate(chart.series):
             s.format.fill.solid()
@@ -1092,8 +1124,9 @@ def render_chart(slide, data, st, num, total):
         chart.legend.font.size = P(14)
         chart.legend.include_in_layout = False
 
-    # Category / value axis styling (not available for pie)
-    if not is_pie:
+    # Category / value axis styling (not available for pie/radar)
+    has_axes = not is_pie and chart_type_str != 'radar'
+    if has_axes and not is_xy:
         cat_ax = chart.category_axis
         cat_ax.tick_labels.font.name = F
         cat_ax.tick_labels.font.size = P(14)
@@ -1106,6 +1139,13 @@ def render_chart(slide, data, st, num, total):
         val_ax.tick_labels.font.color.rgb = st['white'] if blue else st['text_dark']
         val_ax.major_gridlines.format.line.color.rgb = _rgb('3A5570') if blue else _rgb('CCCCCC')
         val_ax.major_gridlines.format.line.width = P(0.5)
+
+    # Scatter: style both X and Y value axes
+    if is_xy:
+        for ax in (chart.value_axis,):
+            ax.tick_labels.font.name = F
+            ax.tick_labels.font.size = P(14)
+            ax.tick_labels.font.color.rgb = st['white'] if blue else st['text_dark']
 
     # Optional footnote
     footnote = data.get('footnote', '')
