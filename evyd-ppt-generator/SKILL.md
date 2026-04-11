@@ -59,9 +59,10 @@ Three-layer separation:
 ### Phase 1 — Gather requirements (ask user)
 1. **Topic / purpose** of the presentation
 2. **Audience** (internal team, external client, MOH, etc.)
-3. **Key sections** / what needs to be covered
-4. **Date, venue, presenter** (for cover slide)
-5. **Style** preference — use `ui-ux-pro-max` skill (if available) to brainstorm palettes and design direction, then map to a built-in style or create a new one. Fall back to `references/design-guidelines.md` if the skill is not installed.
+3. **User background** — ask directly: "你的行业/角色是什么？PPT 给谁看的？" Do NOT guess or infer from context. Use the answer to select narrative template and slide density.
+4. **Key sections** / what needs to be covered
+5. **Date, venue, presenter** (for cover slide)
+6. **Style** preference — use `ui-ux-pro-max` skill (if available) to brainstorm palettes and design direction, then map to a built-in style or create a new one. Fall back to `references/design-guidelines.md` if the skill is not installed.
 
 #### Audience analysis matrix
 
@@ -193,8 +194,14 @@ Generate ONLY the JSON file. Do NOT regenerate `gen_pptx.py` or style files.
    mkdir -p /tmp/<project>/images
    curl -L -o /tmp/<project>/images/slide_N.jpg "<url>"
    ```
-3. Verify: file size > 50KB, format is jpg/png
-4. Use local path in content.json: `"image_path": "/tmp/<project>/images/slide_N.jpg"`
+3. Verify file: size > 50KB, format is jpg/png
+4. **Aesthetic check** — Read the downloaded image and evaluate:
+   - Composition: is the subject clear? Enough whitespace for text overlay?
+   - Resolution: sharp enough for 20″ canvas? No visible compression artifacts?
+   - Color harmony: does it clash with the selected style palette?
+   - Relevance: does it match the slide topic, not just the keyword?
+   - If the image fails any check, search again with refined keywords
+5. Use local path in content.json: `"image_path": "/tmp/<project>/images/slide_N.jpg"`
 
 Skip this step for slides that don't use `image_full`.
 
@@ -270,6 +277,19 @@ Assume there are problems — your job is to find them:
 - Emoji / icons not rendering or displaying as tofu (□)
 - Slide numbering not continuous or sequential
 - Colors inconsistent with selected style (e.g. wrong accent color)
+
+#### Narrative coherence check
+
+After visual QA, review the slide sequence as a story:
+
+- Does the deck follow the selected narrative template (A–G)?
+- Is there a clear transition between sections (section_divider before topic shifts)?
+- Does each slide logically follow from the previous one (no abrupt jumps)?
+- Are data slides placed near the claims they support?
+- Is the conclusion/ending consistent with the arguments presented?
+- Would a first-time viewer understand the flow without verbal explanation?
+
+If coherence issues are found, reorder slides or add bridging content in content.json.
 
 Fix coordinates in `gen_pptx.py` or adjust content.json, then re-run.
 Repeat until a full pass finds no new issues.
