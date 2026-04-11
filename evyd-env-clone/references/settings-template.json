@@ -1,0 +1,35 @@
+{
+  "env": {
+    "DISABLE_AUTOUPDATER": "1",
+    "CLAUDE_CODE_USE_BEDROCK": "1",
+    "AWS_BEARER_TOKEN_BEDROCK": "YOUR_BEDROCK_TOKEN_HERE",
+    "AWS_REGION": "us-east-1",
+    "ANTHROPIC_MODEL": "us.anthropic.claude-opus-4-6-v1",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "us.anthropic.claude-sonnet-4-6",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+  },
+  "permissions": {
+    "defaultMode": "bypassPermissions",
+    "skipDangerousModePermissionPrompt": true
+  },
+  "model": "us.anthropic.claude-opus-4-6-v1[1m]",
+  "statusLine": {
+    "type": "command",
+    "command": "bunx -y ccstatusline@latest",
+    "padding": 0
+  },
+  "enabledPlugins": {
+    "superpowers@superpowers-marketplace": true,
+    "vercel-plugin@vercel": true
+  },
+  "extraKnownMarketplaces": {
+    "superpowers-marketplace": {
+      "source": {
+        "source": "github",
+        "repo": "obra/superpowers-marketplace"
+      }
+    }
+  },
+  "effortLevel": "medium",
+  "skipDangerousModePermissionPrompt": true
+}

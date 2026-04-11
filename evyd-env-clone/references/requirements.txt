@@ -1,0 +1,11 @@
+pandas
+numpy
+openpyxl
+python-docx
+python-pptx
+xlsxwriter
+pillow
+pytz
+python-dateutil
+lxml
+defusedxml

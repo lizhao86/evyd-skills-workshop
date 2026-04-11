@@ -1,0 +1,10 @@
+{
+  "_comment": "中国办公环境代理配置。将以下 env 字段合并到 ~/.claude/settings.json 的 env 块中。",
+  "_usage": "替换 YOUR_PROXY_IP 和 PORT 为实际代理地址，如 172.16.96.4:8123",
+  "env": {
+    "HTTP_PROXY": "http://YOUR_PROXY_IP:PORT",
+    "HTTPS_PROXY": "http://YOUR_PROXY_IP:PORT"
+  },
+  "_pip_mirror": "pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple",
+  "_npm_mirror": "npm config set registry https://registry.npmmirror.com"
+}

@@ -328,6 +328,41 @@ python3 gen_pptx.py content.json --style evyd_blue --output output.pptx
 
 ---
 
+### 11. 环境克隆 (Environment Clone)
+
+**目录**：`evyd-env-clone/`
+
+一键复制 EVYD 团队 Claude Code 工作环境到新设备。自检当前环境状态，自动安装可自动化的组件（skill symlinks、Python 包、gh CLI、插件配置），对需要手动操作的部分（Bedrock 凭证、MCP OAuth 连接）给出逐步指引。
+
+**前提**：Claude Code 已安装，evyd-skills-workshop 仓库已 clone
+
+**完整支持**：macOS + Windows（双平台命令分支）
+
+**适用场景**：新成员 onboarding、跨设备迁移、环境一致性审计
+
+**触发词**：`/evyd-env-clone`、`配置环境`、`环境克隆`、`onboard`、`检查我的环境`
+
+**10 步工作流**：
+1. 平台检测 + 前置工具检查
+2. 创建 skill symlinks（动态发现，幂等）
+3. 安装 Python 包
+4. 安装 GitHub CLI
+5. Claude Code 插件配置
+6. Git 全局配置
+7. GitHub 认证
+8. SSH Key 设置
+9. settings.json 模板（含中国代理配置）
+10. MCP 连接 + 环境审计汇总表
+
+**核心文件**：
+- `SKILL.md` — 完整交互式工作流
+- `references/requirements.txt` — Python 包清单
+- `references/settings-template.json` — settings.json 模板（凭证脱敏）
+- `references/settings-china-proxy.json` — 中国代理叠加配置
+- `references/mcp-connections-checklist.md` — MCP 手动连接指南
+
+---
+
 ### 8. PPT 生成器 (PPT Generator)
 
 **目录**：`evyd-ppt-generator/`
@@ -384,6 +419,7 @@ content.json（模型生成，约 400 tokens / 15 页）
 [PPT 生成器] — 独立使用，从内容 JSON 生成 EVYD 品牌 PPTX
 [项目初始化] — 独立使用，新项目标准化脚手架 + GitHub + 协作者
 [投诉提取器] — 独立使用，从录屏/录音/截图中提取结构化 bug 表格
+[环境克隆] — 独立使用，新成员跨设备环境复制 + 自检 + 自动安装
 ```
 
 ## 项目结构
@@ -427,6 +463,9 @@ content.json（模型生成，约 400 tokens / 15 页）
 │   └── SKILL.md
 ├── evyd-complains-extractor/       # 投诉/反馈提取器（媒体文件 → 结构化 bug 表格）
 │   └── SKILL.md
+├── evyd-env-clone/                 # 环境克隆（跨设备环境复制 + 自检）
+│   ├── SKILL.md
+│   └── references/
 └── evyd-remote-repo-rules/         # 远程仓库工作流规则
 ```
 
