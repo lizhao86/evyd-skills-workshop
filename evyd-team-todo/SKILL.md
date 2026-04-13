@@ -26,11 +26,15 @@ description: 团队待办管理技能。通过本地 Markdown 文件管理团队
 | 删除 TODO | ✅ | ❌ |
 | 查看全员汇总 | ✅ | ❌ |
 
-### 身份识别
+### 身份识别与自动注册
 
 1. 从会话上下文中获取发送者信息（企微 userid、飞书 userid 等）
 2. 在 `todo/members.md` 中匹配姓名或 userid
-3. 匹配不到时：告知用户未注册，请联系管理员
+3. **匹配不到时自动注册：**
+   - 问用户你叫什么名字
+   - 用户回复后，写入 `todo/members.md`（角色 = member）
+   - 同时在 `todo/team-todo.md` 新建该成员的 section
+   - 回复注册成功提示
 
 ## 四个核心操作
 
