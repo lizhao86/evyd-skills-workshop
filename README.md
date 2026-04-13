@@ -413,6 +413,27 @@ python3 gen_pptx.py content.json --style evyd_blue --output output.pptx
 
 ---
 
+### 11. 团队待办管理 (Team TODO)
+
+**目录**：`evyd-team-todo/`
+
+通过本地 Markdown 文件管理团队 TODO，支持布置任务、查看待办、自然语言更新进度、全员汇总。无外部 API 依赖（不使用企微待办/智能表格），数据存储在 `workspace/todo/team-todo.md`。
+
+**适用场景**：团队任务分配与追踪、每日待办查看、进度汇报、全员状态汇总
+
+**触发词**：`加个todo`、`我的待办`、`XX做完了`、`汇总`、`团队进度`、`给XX布置任务`
+
+**权限模型**：
+- `admin`：创建/查看/更新/删除全员 TODO，查看全员汇总
+- `member`：查看/更新仅自己的 TODO
+
+**核心文件**：
+- `SKILL.md` — 主流程与四个核心操作
+- `references/data-format.md` — 数据格式规范
+- `references/report-format.md` — 汇总报告格式
+
+---
+
 ## 完整工作流
 
 ```
@@ -438,6 +459,7 @@ python3 gen_pptx.py content.json --style evyd_blue --output output.pptx
 [项目初始化] — 独立使用，新项目标准化脚手架 + GitHub + 协作者
 [投诉提取器] — 独立使用，从录屏/录音/截图中提取结构化 bug 表格
 [环境克隆] — 独立使用，新成员跨设备环境复制 + 自检 + 自动安装
+[团队待办管理] — 独立使用，本地 Markdown 驱动的团队 TODO 管理
 ```
 
 ## 项目结构
@@ -482,6 +504,9 @@ python3 gen_pptx.py content.json --style evyd_blue --output output.pptx
 ├── evyd-complains-extractor/       # 投诉/反馈提取器（媒体文件 → 结构化 bug 表格）
 │   └── SKILL.md
 ├── evyd-env-clone/                 # 环境克隆（跨设备环境复制 + 自检）
+│   ├── SKILL.md
+│   └── references/
+├── evyd-team-todo/                  # 团队待办管理（本地 Markdown TODO）
 │   ├── SKILL.md
 │   └── references/
 └── evyd-remote-repo-rules/         # 远程仓库工作流规则

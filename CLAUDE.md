@@ -32,7 +32,7 @@ evyd-competitor-research → evyd-requirement-breakdown → evyd-user-story-writ
                                                         evyd-user-manual
 ```
 
-独立使用：`evyd-ai-intention-brainstorm`、`evyd-pd-roadmap`、`evyd-ppt-generator`、`evyd-project-init`、`evyd-complains-extractor`、`evyd-env-clone`
+独立使用：`evyd-ai-intention-brainstorm`、`evyd-pd-roadmap`、`evyd-ppt-generator`、`evyd-project-init`、`evyd-complains-extractor`、`evyd-env-clone`、`evyd-team-todo`
 
 ## 常用命令
 
