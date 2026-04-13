@@ -34,12 +34,17 @@ evyd-competitor-research → evyd-requirement-breakdown → evyd-user-story-writ
 
 独立使用：`evyd-ai-intention-brainstorm`、`evyd-pd-roadmap`、`evyd-ppt-generator`、`evyd-project-init`、`evyd-complains-extractor`、`evyd-env-clone`、`evyd-team-todo`
 
-### evyd-team-todo 数据约定
+### evyd-team-todo 数据与输出约定
 
 - 数据文件：`todo/team-todo.md`，完成即删除，不保留 `[x]` 标记
 - Due 格式：`YYYY-MM-DD`（不是 MM-DD）
-- 报告中的 🔴⚠️🔥 标记根据 Due vs 当前日期动态计算，不存储在数据中
+- 报告中的优先级标记（P0/P1/P2）根据 Due vs 当前日期动态计算，不存储在数据中
 - 无优先级字段，不要在输出中凭空添加“高优/中优”
+- **四个操作的输出格式均已锁死**，各含严格模板 + 禁止清单，不允许漂移：
+  - ① 布置：`✅ 已给{姓名}加了待办：{内容}`
+  - ② 查看：`📋 你的待办（N条未完成）：` + 编号列表 + 固定尾句
+  - ③ 更新：`✅ 已删除/已更新` 或 `❓ 匹配到N条`
+  - ④ 汇总：`📊 团队待办汇总` + 严格模板
 
 ## 常用命令
 

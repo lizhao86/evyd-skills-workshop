@@ -417,7 +417,7 @@ python3 gen_pptx.py content.json --style evyd_blue --output output.pptx
 
 **目录**：`evyd-team-todo/`
 
-通过本地 Markdown 文件管理团队 TODO，支持布置任务、查看待办、自然语言更新进度、全员汇总。无外部 API 依赖（不使用企微待办/智能表格），数据存储在 `workspace/todo/team-todo.md`。完成的 TODO 直接删除（不保留已完成标记），报告中的 🔴⚠️🔥 标记根据 Due 日期动态计算。
+通过本地 Markdown 文件管理团队 TODO，支持布置任务、查看待办、自然语言更新进度、全员汇总。无外部 API 依赖（不使用企微待办/智能表格），数据存储在 `workspace/todo/team-todo.md`。完成的 TODO 直接删除（不保留已完成标记），报告中的优先级标记（P0/P1/P2）根据 Due 日期动态计算。
 
 **适用场景**：团队任务分配与追踪、每日待办查看、进度汇报、全员状态汇总
 
@@ -428,9 +428,15 @@ python3 gen_pptx.py content.json --style evyd_blue --output output.pptx
 - `member`：查看/更新仅自己的 TODO
 
 **核心文件**：
-- `SKILL.md` — 主流程与四个核心操作
-- `references/data-format.md` — 数据格式规范
-- `references/report-format.md` — 汇总报告格式
+- `SKILL.md` — 主流程与四个核心操作（各含严格输出模板 + 禁止清单）
+- `references/data-format.md` — 数据格式规范（Due 用 YYYY-MM-DD）
+- `references/report-format.md` — 汇总报告格式（严格模板 + 动态标记规则 + 禁止清单）
+
+**四个操作的固定输出格式：**
+- ① 布置任务：`✅ 已给{姓名}加了待办：{内容}`
+- ② 查看待办：`📋 你的待办（N条未完成）：` + 编号列表 + 固定尾句
+- ③ 自然语言更新：`✅ 已删除：{内容}` / `✅ 已更新：{内容}` / `❓ 匹配到N条`
+- ④ 全员汇总：`📊 团队待办汇总` + 严格模板
 
 ---
 
