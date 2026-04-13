@@ -34,6 +34,13 @@ evyd-competitor-research → evyd-requirement-breakdown → evyd-user-story-writ
 
 独立使用：`evyd-ai-intention-brainstorm`、`evyd-pd-roadmap`、`evyd-ppt-generator`、`evyd-project-init`、`evyd-complains-extractor`、`evyd-env-clone`、`evyd-team-todo`
 
+### evyd-team-todo 数据约定
+
+- 数据文件：`todo/team-todo.md`，完成即删除，不保留 `[x]` 标记
+- Due 格式：`YYYY-MM-DD`（不是 MM-DD）
+- 报告中的 🔴⚠️🔥 标记根据 Due vs 当前日期动态计算，不存储在数据中
+- 无优先级字段，不要在输出中凭空添加“高优/中优”
+
 ## 常用命令
 
 ### PPT 生成器（唯一含可执行代码的 skill）

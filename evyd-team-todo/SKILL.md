@@ -18,12 +18,12 @@ description: 团队待办管理技能。通过本地 Markdown 文件管理团队
 
 每条 TODO 一行：
 ```
-- [ ] 任务内容 | Created:YYYY-MM-DD | Due:MM-DD
+- [ ] 任务内容 | Created:YYYY-MM-DD | Due:YYYY-MM-DD
 - [ ] 任务内容 | Created:YYYY-MM-DD
 ```
 
-- `Created`：必填，创建日期
-- `Due`：可选，截止日期
+- `Created`：必填，YYYY-MM-DD 格式
+- `Due`：可选，YYYY-MM-DD 格式
 - **无其他字段**（无来源、无优先级、无备注）
 - 完成的 TODO **直接从文件中删除**，不保留
 
@@ -59,7 +59,7 @@ description: 团队待办管理技能。通过本地 Markdown 文件管理团队
 1. 解析：目标成员、任务内容、截止日期（可选）
 2. 校验权限：仅 admin 可创建
 3. 读取 `todo/team-todo.md`
-4. 在目标成员的 section 下追加：`- [ ] 任务内容 | Created:YYYY-MM-DD | Due:MM-DD`（Due 可选）
+4. 在目标成员的 section 下追加：`- [ ] 任务内容 | Created:YYYY-MM-DD | Due:YYYY-MM-DD`（Due 可选）
 5. 若目标成员 section 不存在，新建 `## 姓名` section
 6. 写回文件，回复确认
 
@@ -76,14 +76,14 @@ description: 团队待办管理技能。通过本地 Markdown 文件管理团队
 **输出格式：**
 - 按 Due 从近到远排序（无 Due 的放最后）
 - 每条用 ` | ` 分隔
-- 有 Due 显示日期，无 Due 显示 "No Due Time"
+- 有 Due 显示日期 + 动态标记（🔥逾期 / 🔴今天截止 / ⚠️明天截止），无 Due 不加标记
 
 ```
 📋 你的待办（N条未完成）：
 
-1. 任务A | Created:04-13 | Due:04-15
-2. 任务B | Created:04-13 | Due:04-18
-3. 任务C | Created:04-13 | No Due Time
+1. 任务A | Due:2026-04-14 ⚠️
+2. 任务B | Due:2026-04-18
+3. 任务C | No Due
 
 搞完了跟我说，我帮你删。
 ```
@@ -100,7 +100,7 @@ description: 团队待办管理技能。通过本地 Markdown 文件管理团队
 5. 若多条匹配：列出让用户确认
 6. 支持的操作：
    - **标记完成：** 直接从文件中删除该行
-   - **改截止日：** 更新 Due 字段
+   - **改截止日：** 更新 Due 字段（YYYY-MM-DD 格式）
 7. 写回文件，回复确认
 
 ### ④ 全员汇总

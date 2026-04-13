@@ -417,7 +417,7 @@ python3 gen_pptx.py content.json --style evyd_blue --output output.pptx
 
 **目录**：`evyd-team-todo/`
 
-通过本地 Markdown 文件管理团队 TODO，支持布置任务、查看待办、自然语言更新进度、全员汇总。无外部 API 依赖（不使用企微待办/智能表格），数据存储在 `workspace/todo/team-todo.md`。
+通过本地 Markdown 文件管理团队 TODO，支持布置任务、查看待办、自然语言更新进度、全员汇总。无外部 API 依赖（不使用企微待办/智能表格），数据存储在 `workspace/todo/team-todo.md`。完成的 TODO 直接删除（不保留已完成标记），报告中的 🔴⚠️🔥 标记根据 Due 日期动态计算。
 
 **适用场景**：团队任务分配与追踪、每日待办查看、进度汇报、全员状态汇总
 
