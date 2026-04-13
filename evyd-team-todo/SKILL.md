@@ -7,6 +7,30 @@ description: 团队待办管理技能。通过本地 Markdown 文件管理团队
 
 通过读写本地 Markdown 文件 `todo/team-todo.md` 管理团队待办事项。无外部 API 依赖。
 
+## 语言规则
+
+本 skill 的模板以中文为权威源。输出时跟随用户语言：
+
+1. **检测用户输入语言** — 中文输入 → 中文输出；英文输入 → 英文输出；其他语言同理
+2. **结构不变** — 前缀（📋✅❓📊）、分隔符（`|`）、编号、换行、分隔线、排序规则、标记（P0/P1/P2）严格不变
+3. **只翻译自然语言部分** — 即固定词句（如尾句、标题行、统计行），任务内容、姓名原样保留
+4. **字段名不翻译** — `Due:`、`Created:`、`No Due Date` 始终用英文，不随语言变
+
+**英文输出示例（对照中文模板）：**
+
+| 中文模板 | 英文输出 |
+|---|---|
+| 📋 你的待办（{N}条未完成）： | 📋 Your TODOs ({N} pending): |
+| 搞完了跟我说，我帮你删。 | Done? Tell me and I'll remove it. |
+| ✅ 已给{姓名}加了待办：{内容} | ✅ Added TODO for {姓名}: {内容} |
+| ✅ 已删除：{内容} | ✅ Removed: {内容} |
+| ✅ 已更新：{内容} | ✅ Updated: {内容} |
+| ❓ 匹配到{N}条，你说的是哪个？ | ❓ Matched {N} items, which one? |
+| 回复编号即可。 | Reply with the number. |
+| 📊 团队待办汇总 {date} | 📊 Team TODO Summary {date} |
+| {N}条未完成（{M}项逾期） | {N} pending ({M} overdue) |
+| 全员统计：{X}条未完成 / {Y}项逾期 | Total: {X} pending / {Y} overdue |
+
 ## 数据文件
 
 - **主数据：** `todo/team-todo.md` — 所有成员的 TODO（workspace 根目录下）
