@@ -46,7 +46,7 @@ description: 团队待办管理技能。通过本地 Markdown 文件管理团队
 1. 解析：目标成员、任务内容、截止日期（可选）、优先级（可选，默认"中"）
 2. 校验权限：仅 admin 可创建
 3. 读取 `todo/team-todo.md`
-4. 在目标成员的 section 下追加一行：`- [ ] 任务内容 | 优先级:X | 截止:MM-DD | 创建人:XX | 创建:YYYY-MM-DD`
+4. 在目标成员的 section 下追加一行：`- [ ] 任务内容 | 截止:MM-DD | 来源:XX | 创建:YYYY-MM-DD`（优先级可选，高优时加 `| 优先级:高`）
 5. 若目标成员 section 不存在，新建 `## 姓名 (userid: xxx)` section
 6. 写回文件，回复确认
 
