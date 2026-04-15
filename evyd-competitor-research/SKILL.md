@@ -47,18 +47,21 @@ description: |-
 
 1. 确认竞品名称和调研范围
 2. 读取 `references/single-prompt.md` 获取 5 个 Agent 的 prompt 模板
-3. 并行 spawn 5 个 sub-agents（`sessions_spawn`, `mode="run"`），替换 `{COMPETITOR}` 和 `{SLICE}`：
+3. 读取 `references/writing-rules.md`，将写作规则注入每个 Agent 的 system context，所有 Agent 输出必须遵守
+4. 并行 spawn 5 个 sub-agents（`sessions_spawn`, `mode="run"`），替换 `{COMPETITOR}` 和 `{SLICE}`：
    - **Agent A**：产品定位 & 核心能力 & 商业模式
    - **Agent B**：合规安全
    - **Agent C**：互操作集成
    - **Agent D**：交付运营
    - **Agent E**：市场足迹 & 调研背景
-4. 等待全部完成，合并输出 + 生成 Normalized Summary
-5. 读取 `references/report-template.md` 获取文档结构模板
-6. 读取 `references/taxonomy.md` 确定 System/Module 归类
-7. 按 `../evyd-output-channels/SKILL.md` 中 active channel 的协议输出文档，目标文件夹 `G1tGfI3wFldgE3d2JKscrj1InHc`
+5. 等待全部完成，合并输出 + 生成 Normalized Summary
+6. 读取 `references/report-template.md` 获取文档结构模板
+7. 读取 `references/taxonomy.md` 确定 System/Module 归类
+8. 填写 Cross-Axis Insights 节：基于已合并的全部 Agent 输出，从时间和竞争两个维度交叉分析。此节不应重复前文，而是提炼新洞察
+9. 交付前质检：逐条执行 `references/quality-checklist.md` 中的 14 项检查。任何不通过项必须修正后再交付。将检查结果以内部注释形式记录（不输出给用户）
+10. 按 `../evyd-output-channels/SKILL.md` 中 active channel 的协议输出文档，目标文件夹 `G1tGfI3wFldgE3d2JKscrj1InHc`
    - 文件名：`For {User昵称} - 👊「Research」{System} - {Company_ProductName} - {Module} {date}`
-8. 进入追问模式：读取 `references/followup-prompt.md`，生成 3 个深挖问题
+11. 进入追问模式：读取 `references/followup-prompt.md`，生成 3 个深挖问题
 
 ### 文件名示例
 
@@ -106,6 +109,8 @@ description: |-
 | `references/landscape-prompt.md` | 全景汇总输出模板 | Mode 2 启动时 |
 | `references/followup-prompt.md` | 追问模式详细流程 | 调研完成后 / 用户追问时 |
 | `references/taxonomy.md` | System & Module 归类指南 | 生成文件名时 |
+| `references/writing-rules.md` | 反 AI 腔写作规则 & 风格要求 | Mode 1/2 启动时，注入所有 Agent |
+| `references/quality-checklist.md` | 14 项交付前质检清单 | 输出到目标渠道前 |
 
 ## 快速示例
 

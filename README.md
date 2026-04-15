@@ -99,6 +99,9 @@ python3 gen_pptx.py content.json --style evyd_blue --output output.pptx
 - **Mode 1 — 单个竞品深度调研**：并行召唤 5 个子 Agent，分别调研产品定位、合规安全、互操作集成、交付运营、市场足迹，合并输出结构化报告
 - **Mode 2 — 竞品全景汇总**：读取飞书文件夹内已有调研文档，综合生成全景分析报告
 - **追问模式**：调研完成后主动提 3 个深挖问题，用户追问后追加到原文档
+- **写作规则**：内置反 AI 腔禁用词表 + 6 条写作风格要求（观点先行、事实紧跟、长短交替等），注入所有 Agent 的 system context
+- **交叉洞察**：报告包含 Cross-Axis Insights 章节——从时间+竞争两维度交叉分析，含路径依赖分析和三种未来情景
+- **质检清单**：交付前逐条执行 14 项检查（内容质量 7 项 + 结构完整性 4 项 + 可操作性 3 项）
 
 **触发词**：`竞品调研`、`competitor research`、`竞品汇总`、`competitive landscape`
 
@@ -487,7 +490,7 @@ python3 gen_pptx.py content.json --style evyd_blue --output output.pptx
 │   ├── SKILL.md
 │   ├── Scope-Layer-Templates.md
 │   └── Scoring-Framework.md
-├── evyd-competitor-research/       # 竞品调研
+├── evyd-competitor-research/       # 竞品调研（含反 AI 腔写作规则 + 交叉洞察 + 质检清单）
 │   ├── SKILL.md
 │   └── references/
 ├── evyd-lofi-figma-maker/          # 低保真 Figma 脚本生成器
