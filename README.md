@@ -53,19 +53,11 @@
 
 将内容 JSON 文件渲染为原生可编辑的 PPTX 演示文稿。所有幻灯片均为真实形状和文本框（可在 PowerPoint 中编辑），非截图。无需外部模板文件。
 
-**架构**：内容（JSON）/ 布局（渲染器）/ 风格（JSON 预设）三层分离——模型只需生成 content.json（约 400 tokens/15 张幻灯片），**布局由 Claude 自动根据内容选择**，换风格改一行字，无需重新生成代码。渲染后自动运行溢出检测，智能缩小字号修复排版问题。
+**架构**：内容（JSON）/ 布局（渲染器）/ 风格（JSON 预设）三层分离——模型只需生成 content.json（约 400 tokens/15 张幻灯片），换风格改一行字，无需重新生成代码。渲染后自动运行溢出检测，智能缩小字号修复排版问题。
+
+**Freeform-First 策略（v3）**：所有幻灯片默认使用 `freeform` 类型——包括封面、议程、分节页和结尾页。AI 自由控制每个元素的位置、大小、颜色和渐变，生成杂志级视觉品质。仅 `chart`（原生图表对象）和 `comparison_table`（原生表格对象）保留固定渲染器。
 
 **触发词**：`生成PPT`、`做幻灯片`、`演示文稿`、`ppt generator`、`EVYD ppt`
-
-**v2.2 能力**：7 种叙事模板、直接用户画像（问不猜）、三轮搜索 + 5 级可信度、10 种原生图表、图片搜索 + Claude 视觉审美判断、CSV/Excel 数据管道、叙事连贯性检查、交付报告、11 项视觉 QA
-
-**可用幻灯片类型（22 种）**：
-- **Chrome 框架**：`cover` / `agenda` / `section_divider` / `ending`
-- **内容布局**：`bullets_with_panel` / `two_column_check` / `cards_grid` / `criteria_rows` / `scope_tiers` / `two_panel` / `two_column_steps` / `scenario_cards` / `survey`
-- **数据可视化**：`stat_highlight` / `timeline` / `chart`（10 种图表类型）/ `comparison_table`
-- **视觉强调**：`quote_full` / `center_focus` / `image_full`（支持图片搜索下载）
-- **自由布局**：`freeform`（AI 指定元素坐标 + 渐变背景，任意创意布局，仍原生可编辑 PPTX）
-- **别名**：`key_metrics` → `stat_highlight` / `quote_highlight` → `quote_full`
 
 **可用风格预设（10 套）**：`evyd_blue`（默认）/ `evyd_white` / `evyd_teal` / `dark_navy` / `cooltech` / `morandi` / `warm` / `monochrome` / `sunrise` / `charcoal_gold`
 
@@ -77,11 +69,9 @@ cd "evyd-ppt-generator"
 python3 gen_pptx.py content.json --style evyd_blue --output output.pptx
 ```
 
-**示例文件**：`examples/fullstack-v2.json`（20 页综合示例，覆盖 radar/scatter/area 等全部新图表）
-
 **核心文件**：
-- `SKILL.md` — 完整 JSON schema + 7 种叙事模板 + 布局选型指南 + 5 阶段工作流
-- `gen_pptx.py` — 统一渲染器（10 种图表 + validate_and_fix 溢出检测）
+- `SKILL.md` — 完整 JSON schema + 7 种叙事模板 + Freeform-First 选型指南 + 5 阶段工作流
+- `gen_pptx.py` — 统一渲染器（freeform + 10 种图表 + validate_and_fix 溢出检测）
 - `styles/` — 10 套风格预设（含 chart_colors + best_for 元数据）
 - `scripts/data_to_chart.py` — CSV/Excel → chart JSON 转换器（pandas）
 - `references/design-guidelines.md` — 排版、配色、图表设计规范
@@ -375,40 +365,32 @@ python3 gen_pptx.py content.json --style evyd_blue --output output.pptx
 
 ---
 
-### 8. PPT 生成器 v2.2 (PPT Generator)
+### 8. PPT 生成器 v3 — Freeform-First (PPT Generator)
 
 **目录**：`evyd-ppt-generator/`
 
-从内容 JSON 生成 EVYD 品牌风格的 PPTX 演示文稿，纯程序化 free-mode 渲染，输出真实可编辑的形状和文字（非截图）。布局类型由 AI 自动选择，无需手动指定。
+从内容 JSON 生成 EVYD 品牌风格的 PPTX 演示文稿，纯程序化 freeform 渲染，输出真实可编辑的形状和文字（非截图）。
 
-**v2.2 能力**：7 种叙事模板、直接用户画像、三轮搜索 + 5 级可信度、10 种原生图表、图片搜索 + 视觉审美判断、CSV/Excel 数据管道、叙事连贯性检查、交付报告、11 项视觉 QA
+**v3 Freeform-First 策略**：所有幻灯片（包括封面、议程、分节页、结尾页）默认使用 `freeform` 类型。AI 自由控制每个元素的位置、大小、颜色、渐变背景和装饰形状，生成杂志级视觉品质。仅 `chart`（原生图表对象）和 `comparison_table`（原生表格对象）保留固定渲染器。
 
 **架构**：
 ```
 用户需求 → 受众分析 + 叙事模板(7种) → 可选内容研究（三轮搜索 + 5级可信度）
     → 可选图片搜索（WebSearch + 下载验证）
     → 可选数据处理（CSV/Excel → pandas → chart JSON）
-    → content.json（模型生成，约 400 tokens / 15 页）
-    → gen_pptx.py + styles/（固定渲染器，不重新生成）
+    → content.json（模型生成，约 400 tokens / 15 页，几乎全部 freeform）
+    → gen_pptx.py + styles/（渲染器，不重新生成）
     → .pptx（PowerPoint 可直接编辑）
     → QA 验证（soffice 转图 + 11项 checklist）→ 交付摘要
 ```
-
-**可用幻灯片类型（22 种）**：
-- **Chrome 框架**：`cover` / `agenda` / `section_divider` / `ending`
-- **内容布局**：`bullets_with_panel` / `two_column_check` / `cards_grid` / `criteria_rows` / `scope_tiers` / `two_panel` / `two_column_steps` / `scenario_cards` / `survey`
-- **数据可视化**：`stat_highlight` / `timeline` / `chart`（10 种图表） / `comparison_table`
-- **视觉强调**：`quote_full` / `center_focus` / `image_full`
-- **自由布局**：`freeform`（任意元素坐标 + 渐变背景，创意无限，仍原生可编辑）
-- **别名**：`key_metrics` → `stat_highlight` / `quote_highlight` → `quote_full`
 
 **可用风格预设（10 套）**：`evyd_blue`（默认）/ `evyd_white` / `evyd_teal` / `dark_navy` / `cooltech` / `morandi` / `warm` / `monochrome` / `sunrise` / `charcoal_gold`
 
 **触发词**：`生成PPT`、`做幻灯片`、`演示文稿`、`EVYD ppt`
 
 **核心文件**：
-- `SKILL.md` — 完整 JSON schema、7 种叙事模板、布局选型指引与 5 阶段 workflow（含视觉审美 + 连贯性检查）
-- `gen_pptx.py` — 渲染器（10 种图表 + validate_and_fix 溢出检测）
+- `SKILL.md` — 完整 JSON schema、7 种叙事模板、Freeform-First 选型指引与 5 阶段 workflow
+- `gen_pptx.py` — 渲染器（freeform + 10 种图表 + validate_and_fix 溢出检测）
 - `styles/` — 10 套样式预设（含 chart_colors + best_for 元数据）
 - `scripts/data_to_chart.py` — CSV/Excel → chart JSON 转换器
 - `references/design-guidelines.md` — 排版、配色、图表设计规范
@@ -478,7 +460,7 @@ python3 gen_pptx.py content.json --style evyd_blue --output output.pptx
 ```
 技能 skills 作坊/
 ├── README.md
-├── evyd-ppt-generator/             # EVYD PPT 生成器 v2.2（JSON → 原生可编辑 PPTX，22 种布局 + freeform + 10 种图表）
+├── evyd-ppt-generator/             # EVYD PPT 生成器 v3 Freeform-First（JSON → 原生可编辑 PPTX，全 freeform + 10 种图表）
 │   ├── SKILL.md
 │   ├── gen_pptx.py
 │   ├── styles/

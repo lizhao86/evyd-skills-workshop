@@ -315,38 +315,60 @@ Only the final `.pptx` goes to the user's output directory.
 
 ---
 
-## Layout Selector Guide
+## Layout Selector Guide — Freeform-First Strategy
 
-**Claude auto-selects the slide type** based on content. Use this table:
+**`freeform` is the DEFAULT type for ALL slides — including covers, agendas,
+section dividers, and endings.** Claude must use freeform unless the content
+falls into one of the few structured exceptions below.
 
-| Content characteristics | → Use type |
-|---|---|
-| Topic title / opening of entire deck | `cover` |
-| List of agenda items with times | `agenda` |
-| Transition between major sections | `section_divider` |
-| Final slide, thank-you, call-to-action | `ending` |
-| **Bullets + pull-quote or ground rules on the side** | `bullets_with_panel` |
-| **Two opposing lists (✓ vs ✗, scope in/out)** | `two_column_check` |
-| **6–8 parallel numbered items** | `cards_grid` |
-| **2–6 rows with number + label + description** | `criteria_rows` |
-| **Classification levels / tiers with color coding** | `scope_tiers` |
-| **Two topic panels with bullet items each** | `two_panel` |
-| **Numbered step cards in two columns** | `two_column_steps` |
-| **2–4 scenario cases with tags** | `scenario_cards` |
-| **Survey/activity with QR code** | `survey` |
-| **2–4 key statistics / big numbers** | `stat_highlight` |
-| **Timeline or roadmap with phases** | `timeline` |
-| **One impactful quote or statement** | `quote_full` |
-| **Single key message / strategic focus** | `center_focus` |
-| **Multi-column structured comparison** | `comparison_table` |
-| **Data visualization (bar/line/pie/doughnut)** | `chart` |
-| **Full-bleed image with text overlay** | `image_full` |
-| **Creative / non-standard layout** | `freeform` |
+Freeform gives AI full control over element positions, sizes, colors, and gradients,
+producing visually superior results compared to the fixed-coordinate renderers.
+Use gradient backgrounds, decorative shapes, deliberate whitespace, and layered
+composition to create polished, magazine-quality slides.
+
+### Decision flow
+
+```
+Does the content REQUIRE a structured renderer? (see table below)
+  → YES: use that structured type
+  → NO: use `freeform` (covers, agendas, dividers, endings, and all content)
+```
+
+### Structured types (use ONLY when freeform cannot replicate the functionality)
+
+| Content REQUIRES... | → Type | Why not freeform |
+|---|---|---|
+| Native editable chart (bar/line/pie/doughnut/scatter) | `chart` | Needs python-pptx chart objects |
+| Native editable table with sortable columns | `comparison_table` | Needs python-pptx table objects |
+
+### Everything else → `freeform`
+
+**ALL** of the following should be rendered as **freeform** with creative, bespoke layouts:
+
+- **Cover / title slides** — gradient background, bold typography, decorative shapes
+- **Agenda slides** — styled numbered items, accent bars, visual rhythm
+- **Section dividers** — large typography, gradient or full-color background, decorative motifs
+- **Ending / thank-you slides** — centered message, CTA actions, decorative composition
+- Bullet points, key messages, quotes, statistics
+- Step-by-step processes, numbered items, cards
+- Timelines, roadmaps, tier/scope breakdowns
+- Two-column comparisons (non-table), panels
+- Scenario descriptions, feature highlights
+- Survey / QR code layouts
+- Any narrative or conceptual content
+
+**Freeform design principles:**
+- Use `gradient` backgrounds for premium feel (diagonal or vertical, 2–3 color stops)
+- Layer decorative `oval` shapes with high transparency (88–95%) for depth
+- Maintain consistent margins (min 0.8" from edges)
+- Use accent `line` elements as visual dividers
+- Vary layouts across slides — avoid repeating the same element grid
+- For "white" background slides, use subtle card `rect` shapes with `card_white` fill
 
 Aliases: `key_metrics` → `stat_highlight`, `quote_highlight` → `quote_full`.
 
 **Background rhythm**: alternate `"blue"` and `"white"` slides. Start and end with blue.
-Use `"white"` for data-heavy slides (`comparison_table`, `two_column_check`, `chart`).
+Use `"white"` for data-heavy slides (`comparison_table`, `chart`).
 
 ---
 

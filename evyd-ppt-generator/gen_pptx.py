@@ -43,6 +43,12 @@ def _rgb(v):
         return RGBColor(int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16))
     raise ValueError(f"Cannot parse color: {v!r}")
 
+def _is_light(color):
+    """Return True if an RGBColor has relative luminance > 0.4 (perceptually light)."""
+    r, g, b = color[0] / 255, color[1] / 255, color[2] / 255
+    lum = 0.2126 * r + 0.7152 * g + 0.0722 * b
+    return lum > 0.4
+
 def list_styles():
     """Return sorted list of available style names."""
     return sorted(
@@ -84,6 +90,21 @@ def load_style(name):
     st['slide_num_dk']= st['line_gray']
     st['slide_num_lt']= _rgb('AAAAAA')
     st['warning_bg']  = st['navy']
+
+    # ── Light-background detection ────────────────────────────────────────────
+    # If bg_content is perceptually light, the "blue" pages need dark text
+    # instead of light text.  Chrome slides (cover, ending, section_divider)
+    # always render on st['navy'] which stays dark — they use st['chrome_text'].
+    st['blue_is_light'] = _is_light(st['bg_content'])
+    st['chrome_text']   = st['white']           # always light — for dark chrome bg
+    st['chrome_muted']  = st['text_gray'] if st['blue_is_light'] else st['text_dim']
+    if st['blue_is_light']:
+        st['text_white']   = st['text_dark']    # titles on "blue" bg → dark
+        st['text_primary'] = st['text_gray']    # body on "blue" bg → medium-dark
+        st['text_muted']   = st['text_gray']
+        st['text_dim']     = st['text_gray']    # dim text → readable on light bg
+        st['slide_num_dk'] = st['text_gray']
+        st['slide_num_lt'] = st['line_gray']
 
     st['motifs'] = raw.get('motifs', {})
 
@@ -180,7 +201,7 @@ def hdr(slide, section, num, title, blue=True, tsz=34, st=None):
     F = st['font'] if st else 'Aptos'
     lc = st['accent']   if st else _rgb('2CD5C3')
     nc = st['text_num'] if st else (_rgb('CCE8F5') if blue else _rgb('AAAAAA'))
-    tc = st['white']    if st else (_rgb('FFFFFF') if blue else _rgb('172E41'))
+    tc = st['text_white'] if st else (_rgb('FFFFFF') if blue else _rgb('172E41'))
     if not blue and st: tc = st['text_dark']
     if not blue and st: lc = st['accent2']
     bx(slide, 1.0, 0.30, 10,   0.35, section, sz=11,  color=lc,  font=F)
@@ -223,11 +244,11 @@ def render_cover(slide, data, st, n, total):
        align=PP_ALIGN.CENTER, font=F)
 
     bx(slide, 1.1, 2.6, 14.4, 3.8,
-       data.get('title', ''), sz=40 * 2, color=st['text_white'], font=F)
+       data.get('title', ''), sz=40 * 2, color=st['chrome_text'], font=F)
 
     rc(slide, 1.1, 6.7, 0.1, 1.36, fill=st['accent2'])
     bx(slide, 1.4, 6.7, 11.6, 1.36,
-       data.get('subtitle', ''), sz=14 * 2, color=st['text_muted'], font=F)
+       data.get('subtitle', ''), sz=14 * 2, color=st['chrome_muted'], font=F)
 
     bx(slide, 15.0, 10.2, 4.4, 0.6,
        data.get('logo', 'EVYD  ·  2025'), sz=9 * 2,
@@ -242,7 +263,7 @@ def render_agenda(slide, data, st, _n, _total):
     rc(slide, 0, 0, SW, SH, fill=st['navy'])
 
     bx(slide, 1.0, 0.6, 10, 1.0, 'AGENDA', sz=28 * 2, bold=True,
-       color=st['text_white'], font=F)
+       color=st['chrome_text'], font=F)
     rc(slide, 1.0, 1.6, 1.1, 0.09,
        fill=_rgb(M.get('divider_color', '0076B3')))
 
@@ -257,10 +278,12 @@ def render_agenda(slide, data, st, _n, _total):
            color=_rgb(M.get('number_color', '0076B3')),
            align=PP_ALIGN.CENTER, font=F)
         rc(slide, 2.8, y + 0.35, 0.04, 0.7, fill=st['header_sep'])
+        _card_text = st['text_dark'] if _is_light(st['card']) else st['chrome_text']
+        _card_sub  = st['text_gray'] if _is_light(st['card']) else st['chrome_muted']
         bx(slide, 3.1, y + 0.1, 10, 0.7, item.get('title', ''),
-           sz=15 * 2, bold=True, color=st['text_white'], font=F)
+           sz=15 * 2, bold=True, color=_card_text, font=F)
         bx(slide, 3.1, y + 0.75, 10, 0.5, item.get('time', ''),
-           sz=11 * 2, color=st['text_muted'], font=F)
+           sz=11 * 2, color=_card_sub, font=F)
 
 
 def render_section_divider(slide, data, st, _n, _total):
@@ -277,7 +300,7 @@ def render_section_divider(slide, data, st, _n, _total):
        fill=_rgb(M.get('divider_color', '0076B3')))
 
     bx(slide, 1.0, 6.2, 18, 2.0, data.get('title', 'Section'),
-       sz=28 * 2, bold=True, color=st['text_white'], font=F)
+       sz=28 * 2, bold=True, color=st['chrome_text'], font=F)
 
 
 def render_ending(slide, data, st, n, total):
@@ -288,14 +311,14 @@ def render_ending(slide, data, st, n, total):
     ov(slide, 5.0, 0.6, 10, 5.6, fill=st['accent2'], transparency=93)
 
     bx(slide, 1.0, 1.4, 18, 2.2, data.get('title', 'Thank You'),
-       sz=36 * 2, color=st['text_white'], align=PP_ALIGN.CENTER, font=F)
+       sz=36 * 2, color=st['chrome_text'], align=PP_ALIGN.CENTER, font=F)
 
     rc(slide, 8.9, 3.8, 2.2, 0.1,
        fill=_rgb(M.get('divider_color', '0076B3')))
 
     if data.get('subtitle'):
         bx(slide, 2.0, 4.1, 16, 0.9, data['subtitle'],
-           sz=14 * 2, color=st['text_muted'], align=PP_ALIGN.CENTER, font=F)
+           sz=14 * 2, color=st['chrome_muted'], align=PP_ALIGN.CENTER, font=F)
 
     rc(slide, 0, 7.1, SW, 0.03, fill=_rgb('FFFFFF'))
     _set_transparency(
@@ -315,7 +338,7 @@ def render_ending(slide, data, st, n, total):
                a.get('title', ''), sz=12 * 2, bold=True,
                color=_rgb(M.get('number_color', '0076B3')), font=F)
             bx(slide, ax + 2.0, 8.14, aw - 2.2, 1.3,
-               a.get('desc', ''), sz=10.5 * 2, color=st['text_muted'], font=F)
+               a.get('desc', ''), sz=10.5 * 2, color=st['chrome_muted'], font=F)
 
     _slide_num_free(slide, n, total, st=st)
 
@@ -331,21 +354,30 @@ def render_bullets_with_panel(slide, data, st, num, total):
              data.get('title', ''), blue=blue, st=st)
 
     bullets = data.get('bullets', [])
-    by = ct + 0.1
-    for b in bullets:
-        rc(slide, 1.0, by + 0.07, 0.12, 0.12, fill=st['accent'])
-        bx(slide, 1.28, by, 9.0, 0.55, b, sz=14,
-           color=st['white'] if blue else st['text_dark'], font=F)
-        by += 0.65
-
     panel = data.get('side_panel', {})
-    if panel.get('type') == 'quote':
-        rc(slide, 11.0, ct + 0.1, 7.9, 7.65, fill=st['card_side'])
-        rc(slide, 11.0, ct + 0.1, 0.12, 7.65, fill=st['accent'])
+    has_panel = panel.get('type') == 'quote' and panel.get('text')
+    bullet_w = 9.0 if has_panel else 17.0  # full width when no panel
+
+    n_bullets = len(bullets)
+    avail_h = SH - ct - 0.4
+    bullet_spacing = avail_h / max(n_bullets, 1)
+    bullet_spacing = min(bullet_spacing, 2.0)
+    block_h = n_bullets * bullet_spacing
+    by = ct + (avail_h - block_h) / 2 + 0.1
+    for b in bullets:
+        rc(slide, 1.0, by + 0.12, 0.14, 0.14, fill=st['accent'])
+        bx(slide, 1.32, by, bullet_w, 0.8, b, sz=20,
+           color=st['text_white'] if blue else st['text_dark'], font=F)
+        by += bullet_spacing
+
+    if has_panel:
+        panel_h = SH - ct - 0.4
+        rc(slide, 11.0, ct + 0.1, 7.9, panel_h, fill=st['card_side'])
+        rc(slide, 11.0, ct + 0.1, 0.12, panel_h, fill=st['accent'])
         bx(slide, 11.35, ct + 0.4, 7.3, 1.1, '\u201C', sz=80, italic=True,
            color=_rgb([0x33, 0x88, 0xBB]), font=F)
-        bx(slide, 11.35, ct + 1.5, 7.3, 4.8,
-           panel.get('text', ''), sz=22, italic=True,
+        bx(slide, 11.35, ct + 1.5, 7.3, panel_h - 1.8,
+           panel.get('text', ''), sz=24, italic=True,
            color=st['white'], font=F)
 
     rules = data.get('ground_rules', [])
@@ -423,8 +455,8 @@ def render_cards_grid(slide, data, st, num, total):
         bx(slide, x + 0.2, y + CH * 0.06, 1.5, CH * 0.38, card.get('num', ''),
            sz=32, bold=True, color=st['card_num'], font=F)
         bx(slide, x + 0.2, y + CH * 0.48, CW - 0.4, CH * 0.48,
-           card.get('text', ''), sz=14,
-           color=st['white'] if blue else st['text_dark'], font=F)
+           card.get('text', ''), sz=18,
+           color=st['text_white'] if blue else st['text_dark'], font=F)
 
 
 def render_criteria_rows(slide, data, st, num, total):
@@ -440,12 +472,14 @@ def render_criteria_rows(slide, data, st, num, total):
     rows = data.get('criteria', [])
     n = len(rows)
     if n == 0: return
-    gap = 0.18
+    gap = 0.25
     avail_h = SH - ct - 0.3
-    RH = min(2.2, max(1.0, (avail_h - gap * (n - 1)) / n))
+    RH = min(2.6, max(1.2, (avail_h - gap * (n - 1)) / n))
+    block_h = n * RH + (n - 1) * gap
+    start_y = ct + (avail_h - block_h) / 2 + 0.1
 
     for i, row in enumerate(rows):
-        y = ct + 0.4 + i * (RH + gap)
+        y = start_y + i * (RH + gap)
         bg = st['card'] if blue else st['card_white']
         rc(slide, 1.0, y, 17.5, RH, fill=bg)
         bx(slide, 1.1, y + RH * 0.15, 1.5, RH * 0.54, row.get('num', ''),
@@ -454,7 +488,7 @@ def render_criteria_rows(slide, data, st, num, total):
         bx(slide, 2.9, y + RH * 0.08, 5.5, RH * 0.32, row.get('label', ''),
            sz=14, bold=True, color=st['accent'], font=F)
         bx(slide, 2.9, y + RH * 0.40, 15.0, RH * 0.55, row.get('text', ''),
-           sz=20, color=st['white'] if blue else st['text_dark'], font=F)
+           sz=20, color=st['text_white'] if blue else st['text_dark'], font=F)
 
     if data.get('footnote'):
         fn_y = ct + 0.4 + n * (RH + gap) - 0.15
@@ -491,7 +525,7 @@ def render_scope_tiers(slide, data, st, num, total):
         bx(slide, 2.45, y + BH * 0.06, 15.3, BH * 0.20, tier.get('label', ''),
            sz=9, bold=True, color=st['accent'], font=F)
         bx(slide, 2.45, y + BH * 0.28, 15.3, BH * 0.26, tier.get('desc', ''),
-           sz=13.5, color=st['white'] if blue else st['text_dark'], font=F)
+           sz=13.5, color=st['text_white'] if blue else st['text_dark'], font=F)
         bx(slide, 2.45, y + BH * 0.58, 15.3, BH * 0.30, tier.get('example', ''),
            sz=11, italic=True,
            color=st['text_dim'] if blue else st['text_gray'], font=F)
@@ -515,13 +549,16 @@ def render_two_panel(slide, data, st, num, total):
            bold=True, color=st['white'], font=F)
         items = panel.get('items', [])
         n_items = len(items)
-        item_space = (panel_h - 0.85) / max(n_items, 1)
-        iy = ct + 0.95
+        content_area = panel_h - 0.85
+        item_space = content_area / max(n_items, 1)
+        item_space = min(item_space, 2.0)  # cap spacing
+        block_h = n_items * item_space
+        iy = ct + 0.95 + (content_area - block_h) / 2
         for item in items:
             bx(slide, x + 0.15, iy, 0.40, 0.40, '▸', sz=19, bold=True,
                color=hc, font=F)
             bx(slide, x + 0.60, iy, 8.0, 0.85, item, sz=19,
-               color=st['white'] if blue else st['text_dark'], font=F)
+               color=st['text_white'] if blue else st['text_dark'], font=F)
             iy += item_space
 
 
@@ -551,7 +588,7 @@ def render_two_column_steps(slide, data, st, num, total):
                bold=True, color=st['white'], align=PP_ALIGN.CENTER, font=F)
             tb = bx(slide, x + 0.72, sy + card_h * 0.12, 7.9, card_h * 0.76,
                     step.get('bold', ''), sz=19, bold=True,
-                    color=st['white'] if blue else st['text_dark'], font=F)
+                    color=st['text_white'] if blue else st['text_dark'], font=F)
             ap(tb.text_frame, step.get('normal', ''), sz=17,
                color=st['text_dim'] if blue else st['text_gray'], font=F)
             sy += card_h + card_gap
@@ -586,7 +623,7 @@ def render_scenario_cards(slide, data, st, num, total):
            color=st['accent'], font=F)
         bx(slide, x + 0.25, y + 0.58, SW_C - 0.5, 0.65,
            f"{scen.get('icon', '')}  {scen.get('title', '')}", sz=20,
-           bold=True, color=st['white'] if blue else st['text_dark'], font=F)
+           bold=True, color=st['text_white'] if blue else st['text_dark'], font=F)
         bx(slide, x + 0.25, y + 1.35, SW_C - 0.5, 2.0,
            scen.get('desc', ''), sz=18,
            color=st['text_dim'] if blue else st['text_gray'], font=F)
@@ -670,7 +707,7 @@ def render_stat_highlight(slide, data, st, num, total):
 
         bx(slide, x + 0.15, y + CH * 0.50, CW - 0.3, CH * 0.18,
            stat.get('label', ''), sz=24, bold=True,
-           color=st['white'] if blue else st['text_dark'],
+           color=st['text_white'] if blue else st['text_dark'],
            align=PP_ALIGN.CENTER, font=F)
 
         bx(slide, x + 0.15, y + CH * 0.68, CW - 0.3, CH * 0.20,
@@ -706,7 +743,7 @@ def render_timeline(slide, data, st, num, total):
 
     lc     = st['accent']
     nc     = _rgb(M.get('number_color', st['accent']))
-    tc     = st['white'] if blue else st['text_dark']
+    tc     = st['text_white'] if blue else st['text_dark']
     dc     = st['text_dim'] if blue else st['text_gray']
     card_bg = st['card'] if blue else st['card_white']
 
@@ -785,7 +822,7 @@ def render_quote_full(slide, data, st, num, total):
     # Quote body
     bx(slide, 1.5, 3.0, 16.5, 5.2,
        data.get('quote', ''), sz=28, italic=True,
-       color=st['white'] if blue else st['text_dark'],
+       color=st['text_white'] if blue else st['text_dark'],
        align=PP_ALIGN.LEFT, font=F)
 
     # Attribution
@@ -823,7 +860,7 @@ def render_center_focus(slide, data, st, num, total):
     # Main message — large, centered
     bx(slide, 1.5, 3.3, 17.0, 3.8,
        data.get('message', ''), sz=36, bold=True,
-       color=st['white'] if blue else st['text_dark'],
+       color=st['text_white'] if blue else st['text_dark'],
        align=PP_ALIGN.CENTER, font=F)
 
     # Accent divider
@@ -927,7 +964,7 @@ def render_comparison_table(slide, data, st, num, total):
 
     # Determine text/bg colors
     txt_hdr  = st['white']
-    txt_body = st['white'] if blue else st['text_dark']
+    txt_body = st['text_white'] if blue else st['text_dark']
     border_c = '%02X%02X%02X' % (st['line_gray'][0], st['line_gray'][1],
                                   st['line_gray'][2]) if hasattr(st['line_gray'], '__getitem__') else '3A3A45'
 
@@ -1117,7 +1154,7 @@ def render_chart(slide, data, st, num, total):
     chart.font.name = F
     chart.font.size = P(14)
     if not is_pie:
-        chart.font.color.rgb = st['white'] if blue else st['text_dark']
+        chart.font.color.rgb = st['text_white'] if blue else st['text_dark']
     chart.has_legend = len(series_list) > 1 or is_pie
     if chart.has_legend:
         chart.legend.font.name = F
@@ -1130,13 +1167,13 @@ def render_chart(slide, data, st, num, total):
         cat_ax = chart.category_axis
         cat_ax.tick_labels.font.name = F
         cat_ax.tick_labels.font.size = P(14)
-        cat_ax.tick_labels.font.color.rgb = st['white'] if blue else st['text_dark']
+        cat_ax.tick_labels.font.color.rgb = st['text_white'] if blue else st['text_dark']
         cat_ax.has_major_gridlines = False
 
         val_ax = chart.value_axis
         val_ax.tick_labels.font.name = F
         val_ax.tick_labels.font.size = P(14)
-        val_ax.tick_labels.font.color.rgb = st['white'] if blue else st['text_dark']
+        val_ax.tick_labels.font.color.rgb = st['text_white'] if blue else st['text_dark']
         val_ax.major_gridlines.format.line.color.rgb = _rgb('3A5570') if blue else _rgb('CCCCCC')
         val_ax.major_gridlines.format.line.width = P(0.5)
 
@@ -1145,7 +1182,7 @@ def render_chart(slide, data, st, num, total):
         for ax in (chart.value_axis,):
             ax.tick_labels.font.name = F
             ax.tick_labels.font.size = P(14)
-            ax.tick_labels.font.color.rgb = st['white'] if blue else st['text_dark']
+            ax.tick_labels.font.color.rgb = st['text_white'] if blue else st['text_dark']
 
     # Optional footnote
     footnote = data.get('footnote', '')

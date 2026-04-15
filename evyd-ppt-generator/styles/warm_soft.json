@@ -1,0 +1,34 @@
+{
+  "name": "warm_soft",
+  "description": "Cream + muted terracotta + amber. Low-contrast, warm, paper-like. Refined and approachable.",
+  "best_for": "Government alignment, healthcare proposals, warm professional presentations",
+  "chart_colors": ["C4785A", "D4A070", "8B6B50", "B89878", "A0836A"],
+  "font": "Aptos",
+
+  "accent":     "C4785A",
+  "accent2":    "D4A070",
+  "navy":       "5C3D28",
+  "white":      "FFF8F0",
+  "card":       "EDD8C4",
+  "card_side":  "E0C8B0",
+  "card_num":   "C4785A",
+  "text_dim":   "8A7060",
+  "text_num":   "B89070",
+  "card_white": "F5EBE0",
+  "text_gray":  "6A5040",
+  "text_dark":  "3D2418",
+  "line_gray":  "C4A888",
+
+  "bg_content": "F0E0D0",
+
+  "motifs": {
+    "left_bar_colors": ["C4785A", "D4A070"],
+    "header_tag_color": "C4785A",
+    "bullet_dot_color": "C4785A",
+    "number_color": "D4A070",
+    "row_border_color": "D0BCA8",
+    "quote_mark_color": "D4A070",
+    "divider_color": "C4785A",
+    "tier_dot_size": 14
+  }
+}
