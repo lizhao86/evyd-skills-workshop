@@ -58,7 +58,7 @@ description: |-
 6. 读取 `references/report-template.md` 获取文档结构模板
 7. 读取 `references/taxonomy.md` 确定 System/Module 归类
 8. 填写 Cross-Axis Insights 节：基于已合并的全部 Agent 输出，从时间和竞争两个维度交叉分析。此节不应重复前文，而是提炼新洞察
-9. 交付前质检：逐条执行 `references/quality-checklist.md` 中的 14 项检查。任何不通过项必须修正后再交付。将检查结果以内部注释形式记录（不输出给用户）
+9. 交付前质检：逐条执行 `references/quality-checklist.md` 中的 17 项检查（含 HITL 就绪检查）。任何不通过项必须修正后再交付。将检查结果以内部注释形式记录（不输出给用户）
 10. 按 `../evyd-output-channels/SKILL.md` 中 active channel 的协议输出文档，目标文件夹 `G1tGfI3wFldgE3d2JKscrj1InHc`
    - 文件名：`For {User昵称} - 👊「Research」{System} - {Company_ProductName} - {Module} {date}`
 11. 进入追问模式：读取 `references/followup-prompt.md`，生成 3 个深挖问题
