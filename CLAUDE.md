@@ -32,7 +32,18 @@ evyd-competitor-research → evyd-requirement-breakdown → evyd-user-story-writ
                                                         evyd-user-manual
 ```
 
-独立使用：`evyd-ai-intention-brainstorm`、`evyd-pd-roadmap`、`evyd-ppt-generator`、`evyd-project-init`、`evyd-complains-extractor`、`evyd-env-clone`、`evyd-team-todo`
+独立使用：`evyd-ai-intention-brainstorm`、`evyd-pd-roadmap`、`evyd-ppt-generator`、`evyd-project-init`、`evyd-complains-extractor`、`evyd-env-clone`、`evyd-team-todo`、`evyd-data-analysis`
+
+### evyd-data-analysis 数据分析 skill
+
+- 输入：用户提供的 Excel/CSV 数据文件
+- 三层输出结构（顺序固定，严格分离）：Data Facts → Insights → Actions
+- 统计计算：pandas + scipy/statsmodels，非纯 prompt，所有结论需有计算支撑
+- 证据标签：`[已知]` `[推断]` `[假设]` `[风险]`，混入主观判断为违规
+- PPT 联动：分析结果可自动转为 `content.json` 交给 `evyd-ppt-generator` 生成管理层汇报 PPT（Narrative Template E）
+- PPT 全 freeform：所有幻灯片使用 `freeform` 类型，不用 `stat_highlight`/`chart`/`ending` 等结构化类型
+- PPT 排版铁律：正文 sz ≥ 18，标题 sz ≥ 36，每个数据页底部必须有独立来源标注（sz 12, y ≥ 9.5, color text_dim），禁止将来源嵌入正文或卡片 body
+- 参考材料：`references/metric-playbook.md`（指标手册）、`references/examples.md`（分析案例）、`references/analysis-frameworks.md`（统计方法）
 
 ### evyd-team-todo 数据与输出约定
 
