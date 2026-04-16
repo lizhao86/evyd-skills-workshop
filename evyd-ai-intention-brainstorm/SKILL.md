@@ -93,6 +93,15 @@ Suggest up to 5 high-value intents not covered in the original request. For each
 
 ---
 
+### Post-generation Check: Rule Exclusivity
+
+Before delivering the document, verify every Scoring Dimensions & Weights cell:
+- Each Standard Response Structure rule number is cited in exactly **one** dimension
+- No rule appears in two or more dimensions
+- If conflicts are found, reassign using the priority in @Scoring-Framework.md Step 4, list the corrections made, then output the corrected document
+
+---
+
 ## Output Channel
 
 When the user requests writing output to a doc / cloud storage, read `../evyd-output-channels/SKILL.md` for the active channel's write protocol, format constraints, and naming convention.

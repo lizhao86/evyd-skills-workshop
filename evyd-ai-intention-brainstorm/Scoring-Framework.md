@@ -80,3 +80,23 @@ Apply any mandatory rules first, then distribute remaining weight by failure-cos
 3. Drop dimensions with no failure consequence to 0% (do not include them)
 4. Total must equal 100%
 5. For each dimension, write one sentence explaining why it ranks at this weight — state the failure consequence, not a rules citation
+
+### Step 4 — Verify Rule Exclusivity
+
+After allocating weights and citing rules:
+
+1. List every rule number referenced across all dimensions
+2. Confirm each rule number appears in **exactly one** dimension
+3. If a rule is cited in multiple dimensions, assign it to the dimension matching its **primary purpose**:
+
+| Rule Text Signal | Assign to Dimension |
+|---|---|
+| Prohibition / refusal / "do not" / "avoid" / "must not" | Clinical Safety |
+| Emotional acknowledgment / empathy / "non-judgmental" | Empathy & Support |
+| Action directive / referral / "consult" / "call" / "go to" | Patient Guidance |
+| Factual information / explanation / "evidence-based" | Medical Accuracy |
+| Language / format / "non-technical" / "concise" / "structured" | Clarity |
+| Context / continuity / "timeframe" / "session" / "source" | Context Awareness |
+
+4. Priority when ambiguous: Clinical Safety > Empathy & Support > Patient Guidance > Medical Accuracy > Clarity > Context Awareness
+5. A dimension may have zero rules if its importance is justified by the scenario context rather than specific response steps
