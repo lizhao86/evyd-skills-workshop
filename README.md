@@ -59,23 +59,32 @@
 
 **触发词**：`生成PPT`、`做幻灯片`、`演示文稿`、`ppt generator`、`EVYD ppt`
 
-**可用风格预设（10 套）**：`evyd_blue`（默认）/ `evyd_white` / `evyd_teal` / `dark_navy` / `cooltech` / `morandi` / `warm` / `monochrome` / `sunrise` / `charcoal_gold`
+**叙事模板与主题（v2.3）**：11 套叙事模板 A–K（problem→solution / timeline / comparison / process / pyramid / spatial / comprehensive / product launch / tech sharing / XHS post / magazine feature），28 套主题分布在 5 个类别 × 6 套 chrome 视觉身份（classic / gradient / neon-grid / magazine / minimal / brutalist）。完整目录见 `evyd-ppt-generator/references/theme-catalog.md`。
 
-每套样式包含 `chart_colors`（5色图表配色）和 `best_for`（场景推荐元数据）。
+**工作流（先模板，后内容）**：
+1. **先选模板** — 看受众 + 时长 + 是要决策还是要梳理，2 分钟敲定。模板决定后续要去找什么数据。
+2. **可选调研** — 只有用户说"帮我查一下"或素材明显不够时才触发。默认假设用户自己有内容。
+3. **写 content.json** — 按模板结构填，模板规定 slide 类型节奏，用户内容塞进格子里。
+4. **渲染** — `python3 gen_pptx.py content.json --style <theme>`
+5. **审核** — `--check-contrast` + soffice 转图 + 11 项视觉清单
+
+模板是**假设**不是合同。中途如果证据指向更强结构（如数据极强→从 A 切到 E 金字塔），AI 会显式提议切换让用户确认。
 
 **用法**：
 ```bash
 cd "evyd-ppt-generator"
 python3 gen_pptx.py content.json --style evyd_blue --output output.pptx
+python3 gen_pptx.py --check-contrast    # 审核所有 28 主题的 WCAG 对比度
 ```
 
 **核心文件**：
-- `SKILL.md` — 完整 JSON schema + 7 种叙事模板 + Freeform-First 选型指南 + 5 阶段工作流
-- `gen_pptx.py` — 统一渲染器（freeform + 10 种图表 + validate_and_fix 溢出检测）
-- `styles/` — 10 套风格预设（含 chart_colors + best_for 元数据）
+- `SKILL.md` — 完整 JSON schema + 11 种叙事模板 + 主题推荐 UX + 5 阶段工作流
+- `gen_pptx.py` — 渲染器（freeform + 10 图表 + 6 chrome 合成器 + 对比度审计）
+- `styles/` — 28 套主题（含 chart_colors + vibe_tags + chrome_style + best_for）
+- `references/theme-catalog.md` — 28 主题目录 + AI 推荐评分逻辑
 - `scripts/data_to_chart.py` — CSV/Excel → chart JSON 转换器（pandas）
 - `references/design-guidelines.md` — 排版、配色、图表设计规范
-- `examples/` — 4 个示例 content.json 文件
+- `examples/` — 4 老示例 + 4 新模板样例（H/I/J/K 各一份）
 
 ---
 
@@ -365,36 +374,47 @@ python3 gen_pptx.py content.json --style evyd_blue --output output.pptx
 
 ---
 
-### 8. PPT 生成器 v3 — Freeform-First (PPT Generator)
+### 8. PPT 生成器 v2.3 — 28 主题 + 11 模板 (PPT Generator)
 
 **目录**：`evyd-ppt-generator/`
 
-从内容 JSON 生成 EVYD 品牌风格的 PPTX 演示文稿，纯程序化 freeform 渲染，输出真实可编辑的形状和文字（非截图）。
+从内容 JSON 生成 EVYD 品牌风格的 PPTX 演示文稿，纯程序化渲染，输出真实可编辑的形状和文字（非截图）。
 
-**v3 Freeform-First 策略**：所有幻灯片（包括封面、议程、分节页、结尾页）默认使用 `freeform` 类型。AI 自由控制每个元素的位置、大小、颜色、渐变背景和装饰形状，生成杂志级视觉品质。仅 `chart`（原生图表对象）和 `comparison_table`（原生表格对象）保留固定渲染器。
+**v2.3 升级**：
+- 主题从 10 → **28**，覆盖 5 类（business / tech-dark / editorial / lifestyle / minimal）
+- Chrome 视觉身份从 1 → **6 套**（classic / gradient / neon-grid / magazine / minimal / brutalist），分层合成器架构
+- 叙事模板从 7 → **11**（新增 H product launch · I tech sharing · J XHS post · K magazine feature）
+- 主题推荐 UX：AI 提取关键词 → 评分 → 给 2-3 个候选 + 可选样片预览
+- WCAG 对比度审计 CLI（`--check-contrast`），所有 28 主题已通过
 
-**架构**：
+**架构（先模板，后内容）**：
 ```
-用户需求 → 受众分析 + 叙事模板(7种) → 可选内容研究（三轮搜索 + 5级可信度）
-    → 可选图片搜索（WebSearch + 下载验证）
-    → 可选数据处理（CSV/Excel → pandas → chart JSON）
-    → content.json（模型生成，约 400 tokens / 15 页，几乎全部 freeform）
-    → gen_pptx.py + styles/（渲染器，不重新生成）
-    → .pptx（PowerPoint 可直接编辑）
-    → QA 验证（soffice 转图 + 11项 checklist）→ 交付摘要
+Phase 1  选模板         ← 受众 + 时长 + 决策/梳理，2 min；模板决定后续找什么
+Phase 2  可选调研       ← 只在用户触发或素材不足时跑
+Phase 3  写 content.json ← 按模板结构填
+Phase 4  渲染           ← gen_pptx.py + styles/
+Phase 5  审核           ← --check-contrast + 11 项视觉清单
 ```
 
-**可用风格预设（10 套）**：`evyd_blue`（默认）/ `evyd_white` / `evyd_teal` / `dark_navy` / `cooltech` / `morandi` / `warm` / `monochrome` / `sunrise` / `charcoal_gold`
+模板**先于**内容定，因为模板决定要找什么数据；调研是**可选**的，默认假设用户自己有内容。模板是**假设**不是合同——中途证据偏移可以切。
+
+**可用主题（28 套）**：
+- business（9）：`evyd_blue`（默认）/ `evyd_white` / `evyd_teal` / `dark_navy` / `charcoal_gold` / `boardroom_slate` / `fintech_navy` / `pitch_vc` / `investor_deck`
+- tech-dark（4）：`cooltech` / `tokyo_night` / `cyberpunk_neon` / `terminal_green`
+- editorial（7）：`morandi` / `warm` / `warm_soft` / `sunrise` / `magazine_bold` / `newspaper_editorial` / `vogue_serif`
+- lifestyle（4）：`xhs_white` / `xhs_warm` / `pastel_dream` / `cafe_cream`
+- minimal（4）：`monochrome` / `nordic_minimal` / `bauhaus_primary` / `zen_mono`
 
 **触发词**：`生成PPT`、`做幻灯片`、`演示文稿`、`EVYD ppt`
 
 **核心文件**：
-- `SKILL.md` — 完整 JSON schema、7 种叙事模板、Freeform-First 选型指引与 5 阶段 workflow
-- `gen_pptx.py` — 渲染器（freeform + 10 种图表 + validate_and_fix 溢出检测）
-- `styles/` — 10 套样式预设（含 chart_colors + best_for 元数据）
+- `SKILL.md` — 完整 JSON schema、11 叙事模板、主题推荐 UX、5 阶段 workflow
+- `gen_pptx.py` — 渲染器（freeform + 10 图表 + 6 chrome 合成器 + 对比度审计）
+- `styles/` — 28 主题（v2 schema：chart_colors + vibe_tags + chrome_style + gradient + decorative_motif + best_for）
+- `references/theme-catalog.md` — 28 主题目录 + AI 推荐评分逻辑
 - `scripts/data_to_chart.py` — CSV/Excel → chart JSON 转换器
 - `references/design-guidelines.md` — 排版、配色、图表设计规范
-- `examples/` — 4 个示例 JSON
+- `examples/` — 4 老示例 + sample-product-launch / sample-tech-sharing / sample-xhs-post / sample-magazine-feature
 
 ---
 

@@ -25,34 +25,79 @@ content.json  →  gen_pptx.py  →  Output.pptx
 - **Renderer** (`gen_pptx.py`) — 21 slide types (17 content + 4 chrome), all drawn from code via python-pptx
 - **Style** (`styles/*.json`) — pluggable color/font/motif configs, no code changes needed
 
-## v2.2 Features
+## v2.3 Features
 
-- **7 narrative templates** (A–G): problem→solution, timeline, comparison, process, pyramid, spatial/market, comprehensive review — with audience-driven auto-selection
+- **11 narrative templates** (A–K): problem→solution, timeline, comparison,
+  process, pyramid, spatial, comprehensive review, product launch, tech
+  sharing, XHS post, magazine feature — picked by audience + intent + time
+- **28 themes across 5 categories** (business / tech-dark / editorial /
+  lifestyle / minimal) and **6 chrome identities** (classic / gradient /
+  neon-grid / magazine / minimal / brutalist) — see
+  `references/theme-catalog.md` for the full directory + recommendation logic
 - **Direct user profiling**: asks user's industry/role explicitly — no guessing
-- **3-round content research**: broad scan → deep search → verification, with 5-level credibility rating (★–★★★★★)
-- **10 chart types**: bar, bar_stacked, bar_horizontal, line, line_marker, area, pie, doughnut, radar, scatter — all native PowerPoint charts
-- **Image sourcing + aesthetic check**: WebSearch→download→Claude vision evaluation (composition, resolution, color harmony, relevance)
-- **Data pipeline**: `scripts/data_to_chart.py` converts CSV/Excel to chart JSON via pandas
-- **Narrative coherence check**: QA verifies story flow, transitions, data placement, and conclusion consistency
-- **Delivery summary**: structured handoff with editing tips and source attribution
-- **QA verification**: 11-item visual checklist + coherence check with soffice→image conversion
+- **3-round content research**: broad scan → deep search → verification, with
+  5-level credibility rating (★–★★★★★)
+- **10 chart types**: bar, bar_stacked, bar_horizontal, line, line_marker,
+  area, pie, doughnut, radar, scatter — all native PowerPoint charts
+- **Image sourcing + aesthetic check**: WebSearch → download → Claude vision
+  evaluation (composition, resolution, color harmony, relevance)
+- **Data pipeline**: `scripts/data_to_chart.py` converts CSV/Excel to chart
+  JSON via pandas
+- **Contrast audit**: `python3 gen_pptx.py --check-contrast` reports any
+  text/background pair below WCAG floor across all 28 themes
+- **QA verification**: 11-item visual checklist + coherence check with
+  soffice→image conversion
 
-## Available styles (10)
+## How content is sourced — workflow at a glance
 
-| Style | Base tone | Accent | Best for |
-|-------|-----------|--------|----------|
-| `evyd_blue` | Navy | Teal | Default — internal / MOH |
-| `evyd_white` | White | Blue | Printed handouts |
-| `evyd_teal` | Dark navy | Teal | External events, high-contrast |
-| `dark_navy` | Deep navy | Orange | Strategy, research |
-| `cooltech` | Space blue | Cyan | AI / SaaS / healthtech |
-| `morandi` | Slate | Dusty rose | Culture, brand |
-| `warm` | Espresso | Coral | Education, training |
-| `monochrome` | Charcoal | Grey | Executive, editorial |
-| `sunrise` | Medium navy | Coral + Amber | Progress, AI transformation |
-| `charcoal_gold` | Charcoal | Gold | Strategic workshops, board meetings |
+The narrative template is **chosen first** (Phase 1), not derived from your
+content. It then dictates what to look for if research happens.
 
-Each style includes `chart_colors` (5-color palette for chart series) and `best_for` metadata for auto-recommendation.
+```
+Phase 1  pick template       ← audience + intent + time, 2 min
+Phase 2  (optional) research ← only if you say "帮我查一下" or your input is thin
+Phase 3  write content.json  ← fill the template; research-backed where needed
+Phase 4  render              ← python3 gen_pptx.py
+```
+
+Three operating modes:
+
+| You bring | I do |
+|---|---|
+| Full content + outline | Editor / typesetter — pick template, organize your material |
+| Topic + rough outline | Ghost-writer — template guides what to research, I draft the rest |
+| Just an intent | Discover — clarify audience/time first, then template, then ask if you want me to research |
+
+The template is a **hypothesis**, not a contract. If during research the
+evidence points to a stronger structure (e.g. data is so strong we should
+flip from A *Problem→Solution* to E *Pyramid*), I'll surface the switch
+explicitly and let you confirm.
+
+**Default**: I do not auto-research. You must trigger it, otherwise I assume
+you have the content. Reason: web research is high-cost and high-noise — your
+judgment beats my generic search.
+
+## Available styles (28)
+
+Five categories, each themed for a different scenario. Full catalog with
+vibe tags and template pairings: `references/theme-catalog.md`.
+
+| Category | Themes |
+|---|---|
+| **business** | `evyd_blue` · `evyd_white` · `evyd_teal` · `dark_navy` · `charcoal_gold` · `boardroom_slate` · `fintech_navy` · `pitch_vc` · `investor_deck` |
+| **tech-dark** | `cooltech` · `tokyo_night` · `cyberpunk_neon` · `terminal_green` |
+| **editorial** | `morandi` · `warm` · `warm_soft` · `sunrise` · `magazine_bold` · `newspaper_editorial` · `vogue_serif` |
+| **lifestyle** | `xhs_white` · `xhs_warm` · `pastel_dream` · `cafe_cream` |
+| **minimal** | `monochrome` · `nordic_minimal` · `bauhaus_primary` · `zen_mono` |
+
+Each theme includes `chart_colors` (5-color palette for chart series),
+`vibe_tags` (for AI matching), `chrome_style` (one of 6 visual identities),
+and `best_for` metadata.
+
+Recommendation flow: I extract 2–4 keywords from your brief, score themes by
+match against `vibe_tags` + `category` + `best_for`, and propose 2–3 candidates
+with one-liner "why it fits". If undecided, I render the cover slide for each
+into `/tmp/preview_<theme>.pptx` so you can compare.
 
 ## Slide types (22)
 
@@ -76,11 +121,16 @@ This project is designed to be used as a [Claude Code skill](https://docs.anthro
 
 ### Workflow (5 phases)
 
-1. **Gather requirements** — audience matrix + narrative template selection + style recommendation
-2. **Content research** (optional) — WebSearch with cross-validation, triggered on demand
-3. **Generate content.json** — AI auto-selects slide types based on content
-4. **Run renderer** — `python3 gen_pptx.py content.json`
-5. **QA verification** — soffice→image conversion + 11-item visual checklist
+1. **Gather requirements & pick template** — audience matrix → narrative
+   template (A–K) → 2–3 theme candidates from `references/theme-catalog.md`.
+   Template is chosen before any content work; it dictates what to look for.
+2. **Content research** (optional, opt-in) — WebSearch with cross-validation,
+   triggered only when you say "帮我查一下" or your input is clearly thin.
+3. **Generate content.json** — AI fills the chosen template, picking slide
+   types per the template's recipe + your content density.
+4. **Run renderer** — `python3 gen_pptx.py content.json --style <theme>`
+5. **QA verification** — `--check-contrast` + soffice→image + 11-item visual
+   checklist
 
 ## Design references
 
