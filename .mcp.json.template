@@ -1,0 +1,19 @@
+{
+  "_comment": "Template for repo-level MCP servers. Copy to .mcp.json (which is gitignored) and fill in tokens. See evyd-general-research/references/mcp-setup.md for details.",
+  "mcpServers": {
+    "exa": {
+      "command": "npx",
+      "args": ["-y", "exa-mcp-server"],
+      "env": {
+        "EXA_API_KEY": "TODO-paste-exa-key-here"
+      }
+    },
+    "firecrawl": {
+      "command": "npx",
+      "args": ["-y", "firecrawl-mcp"],
+      "env": {
+        "FIRECRAWL_API_KEY": "TODO-paste-firecrawl-key-here"
+      }
+    }
+  }
+}

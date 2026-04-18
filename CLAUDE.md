@@ -32,7 +32,17 @@ evyd-competitor-research → evyd-requirement-breakdown → evyd-user-story-writ
                                                         evyd-user-manual
 ```
 
-独立使用：`evyd-ai-intention-brainstorm`、`evyd-pd-roadmap`、`evyd-ppt-generator`、`evyd-project-init`、`evyd-complains-extractor`、`evyd-env-clone`、`evyd-team-todo`、`evyd-data-analysis`
+独立使用：`evyd-ai-intention-brainstorm`、`evyd-pd-roadmap`、`evyd-ppt-generator`、`evyd-project-init`、`evyd-complains-extractor`、`evyd-env-clone`、`evyd-team-todo`、`evyd-data-analysis`、`evyd-general-research`
+
+### evyd-general-research 调研 skill（非竞品）
+
+- 适用范围：政策/监管、市场数据、学术综述、趋势分析——**非竞品**（竞品用 `evyd-competitor-research`）
+- 触发词：`帮我查一下` / `做个调研` / `research` / `desk research`（名词是话题/指标而非公司名时走这条）
+- 输出：markdown brief + 机读 JSON 块，直接喂给 `evyd-ppt-generator` 等下游 skill
+- 工具优先级：Exa MCP（语义搜索）→ Firecrawl/Jina MCP（页面提取）→ WebSearch → WebFetch（兜底）。MCP tokens 暂未配，配置模板在 `.mcp.json.template` + `evyd-general-research/references/mcp-setup.md`
+- 硬规则：每条 claim 带 `[tier · date]`、`high confidence` 需 ≥2 独立源、矛盾必须 surface 不能藏、没找到就老实说 not found
+- 三轮：scoping scan（20% 努力）→ deep dive（50%）→ cross-validation（30%）
+- 细则 refs：`source-tiers.md`（按领域分级）、`search-playbook.md`（query 模板 + 停止条件）、`brief-schema.md`（输出 schema）、`mcp-setup.md`（工具配置）
 
 ### evyd-data-analysis 数据分析 skill
 
