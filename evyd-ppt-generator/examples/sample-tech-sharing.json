@@ -1,0 +1,110 @@
+{
+  "meta": { "style": "terminal_green", "output": "sample-tech-sharing.pptx" },
+  "slides": [
+    {
+      "type": "cover",
+      "tag": "Tech Talk #24",
+      "title": "RAG Pipelines for Clinical Text",
+      "subtitle": "What worked, what didn't, and the 3 tradeoffs we keep relitigating",
+      "logo": "EVYD · Eng"
+    },
+    {
+      "type": "agenda",
+      "items": [
+        { "num": "01", "title": "Background", "time": "5 min" },
+        { "num": "02", "title": "Our architecture", "time": "10 min" },
+        { "num": "03", "title": "Three design tradeoffs", "time": "10 min" },
+        { "num": "04", "title": "Benchmarks", "time": "5 min" },
+        { "num": "05", "title": "Takeaways + Q&A", "time": "10 min" }
+      ]
+    },
+    { "type": "section_divider", "num": "01", "title": "Background", "subtitle": "Why generic RAG breaks on clinical notes" },
+    {
+      "type": "bullets_with_panel",
+      "section": "01 — CONTEXT",
+      "title": "Clinical Text Is Weird",
+      "bullets": [
+        "20–40% of tokens are abbreviations, many are context-dependent (Dr vs dr)",
+        "Temporal references matter — 'last BP' ≠ 'BP on admission'",
+        "Hierarchical structure: encounter > section > fact — flat chunking loses it"
+      ]
+    },
+    {
+      "type": "freeform",
+      "section": "02 — ARCHITECTURE",
+      "title": "The Current Pipeline",
+      "elements": [
+        { "kind": "rect", "x": 1.0, "y": 2.5, "w": 3.5, "h": 2.0, "fill": "card", "line": "accent" },
+        { "kind": "text", "x": 1.0, "y": 2.7, "w": 3.5, "h": 0.5, "text": "1. Ingest", "sz": 20, "bold": true, "color": "accent", "align": "center" },
+        { "kind": "text", "x": 1.0, "y": 3.3, "w": 3.5, "h": 1.0, "text": "HL7 / FHIR / PDF\nDe-ID + segment", "sz": 14, "color": "text_dim", "align": "center" },
+        { "kind": "rect", "x": 5.5, "y": 2.5, "w": 3.5, "h": 2.0, "fill": "card", "line": "accent" },
+        { "kind": "text", "x": 5.5, "y": 2.7, "w": 3.5, "h": 0.5, "text": "2. Chunk", "sz": 20, "bold": true, "color": "accent", "align": "center" },
+        { "kind": "text", "x": 5.5, "y": 3.3, "w": 3.5, "h": 1.0, "text": "Section-aware\n+ overlap windows", "sz": 14, "color": "text_dim", "align": "center" },
+        { "kind": "rect", "x": 10.0, "y": 2.5, "w": 3.5, "h": 2.0, "fill": "card", "line": "accent" },
+        { "kind": "text", "x": 10.0, "y": 2.7, "w": 3.5, "h": 0.5, "text": "3. Embed", "sz": 20, "bold": true, "color": "accent", "align": "center" },
+        { "kind": "text", "x": 10.0, "y": 3.3, "w": 3.5, "h": 1.0, "text": "BGE-Clinical\n+ metadata filter", "sz": 14, "color": "text_dim", "align": "center" },
+        { "kind": "rect", "x": 14.5, "y": 2.5, "w": 4.0, "h": 2.0, "fill": "card", "line": "accent" },
+        { "kind": "text", "x": 14.5, "y": 2.7, "w": 4.0, "h": 0.5, "text": "4. Retrieve+Rerank", "sz": 18, "bold": true, "color": "accent", "align": "center" },
+        { "kind": "text", "x": 14.5, "y": 3.3, "w": 4.0, "h": 1.0, "text": "Hybrid BM25+dense\nCross-encoder rerank", "sz": 14, "color": "text_dim", "align": "center" },
+        { "kind": "line", "x": 4.5, "y": 3.4, "w": 1.0, "h": 0.04, "color": "accent" },
+        { "kind": "line", "x": 9.0, "y": 3.4, "w": 1.0, "h": 0.04, "color": "accent" },
+        { "kind": "line", "x": 13.5, "y": 3.4, "w": 1.0, "h": 0.04, "color": "accent" },
+        { "kind": "rect", "x": 6.5, "y": 6.0, "w": 6.5, "h": 2.2, "fill": "card", "line": "accent2" },
+        { "kind": "text", "x": 6.5, "y": 6.2, "w": 6.5, "h": 0.5, "text": "5. Generate", "sz": 20, "bold": true, "color": "accent2", "align": "center" },
+        { "kind": "text", "x": 6.5, "y": 6.8, "w": 6.5, "h": 1.2, "text": "Claude Haiku 4.5 w/\ncitations + refusal policy", "sz": 14, "color": "text_dim", "align": "center" }
+      ]
+    },
+    {
+      "type": "comparison_table",
+      "section": "03 — TRADEOFFS",
+      "title": "Three Design Choices We Debated",
+      "columns": ["Option A", "Option B", "We picked"],
+      "rows": [
+        { "label": "Chunk size",      "values": ["fixed 512 tokens", "section-aware", "section-aware"] },
+        { "label": "Embedding",       "values": ["general (text-embed-3)", "clinical-tuned (BGE-C)", "BGE-C + fallback"] },
+        { "label": "Rerank",          "values": ["skip (cost)", "cross-encoder (slow)", "cross-encoder on top-20"] },
+        { "label": "Citations",       "values": ["span-level", "doc-level", "span-level"] }
+      ]
+    },
+    {
+      "type": "chart",
+      "section": "04 — BENCHMARK",
+      "title": "Recall@5 — Clinical QA Eval Set",
+      "chart_type": "bar",
+      "categories": ["Discharge Q", "Med history Q", "Vitals Q", "Referral Q"],
+      "series": [
+        { "name": "Generic RAG",      "values": [0.58, 0.62, 0.71, 0.55] },
+        { "name": "Clinical-tuned",   "values": [0.78, 0.81, 0.87, 0.76] },
+        { "name": "+ cross-encoder",  "values": [0.88, 0.89, 0.93, 0.84] }
+      ],
+      "footnote": "N=420 question pairs, gold annotated by 3 clinicians"
+    },
+    {
+      "type": "scenario_cards",
+      "section": "04 — USE CASES",
+      "title": "Three Live Workflows",
+      "scenarios": [
+        { "num": 1, "icon": "📝", "title": "Discharge draft",  "desc": "Pulls last 72h notes + meds + plan, drafts in <5s", "tag": "production" },
+        { "num": 2, "icon": "🔍", "title": "Chart Q&A",        "desc": "Clinician asks 'last ECG?' — cited answer in 2s", "tag": "beta" },
+        { "num": 3, "icon": "⚠️", "title": "Safety pre-check", "desc": "Surfaces drug/allergy conflicts before prescribing", "tag": "pilot" }
+      ]
+    },
+    { "type": "section_divider", "num": "05", "title": "Takeaways" },
+    {
+      "type": "center_focus",
+      "section": "05 — ONE LINE",
+      "title": "If you remember one thing",
+      "message": "Clinical RAG is a structure problem, not a retrieval problem. Build the scaffold first.",
+      "context": "Generic embeddings + chunk-and-pray will top out at 60% recall. Section-aware + rerank reliably hits 85%+."
+    },
+    {
+      "type": "ending",
+      "title": "Questions?",
+      "subtitle": "Slack #eng-ai · weekly office hours Thu 4pm",
+      "actions": [
+        { "icon": "📦", "title": "Repo",  "desc": "github.com/evyd-internal/copilot-rag" },
+        { "icon": "📓", "title": "Notes", "desc": "notion.so/evyd/rag-postmortems" }
+      ]
+    }
+  ]
+}

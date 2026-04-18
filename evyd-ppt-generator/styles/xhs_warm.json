@@ -6,6 +6,7 @@
   "category": "lifestyle",
   "vibe_tags": ["xhs", "warm", "cozy", "wellness", "peach", "lifestyle"],
   "chrome_style": "magazine",
+  "card_radius": true,
   "chart_colors": ["D86B4A", "E6A577", "F3D5B0", "C4785A", "9A6B50"],
   "font": "Aptos",
   "title_font": "Georgia",

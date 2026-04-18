@@ -74,7 +74,14 @@ cd evyd-ppt-generator
 python3 gen_pptx.py content.json --style evyd_blue --output output.pptx
 ```
 
-可用风格（10 套）：`evyd_blue`（默认）/ `evyd_white` / `evyd_teal` / `dark_navy` / `cooltech` / `morandi` / `warm` / `monochrome` / `sunrise` / `charcoal_gold`
+可用风格（28 套，v2 schema）：
+- business：`evyd_blue` / `evyd_white` / `evyd_teal` / `dark_navy` / `charcoal_gold` / `boardroom_slate` / `fintech_navy` / `pitch_vc` / `investor_deck`
+- tech-dark：`cooltech` / `tokyo_night` / `cyberpunk_neon` / `terminal_green`
+- editorial：`morandi` / `warm` / `warm_soft` / `sunrise` / `magazine_bold` / `newspaper_editorial` / `vogue_serif`
+- lifestyle：`xhs_white` / `xhs_warm` / `pastel_dream` / `cafe_cream`
+- minimal：`monochrome` / `nordic_minimal` / `bauhaus_primary` / `zen_mono`
+
+主题目录 + 推荐算法见 `evyd-ppt-generator/references/theme-catalog.md`。对比度审计：`python3 gen_pptx.py --check-contrast`。
 
 ### 插件打包
 
@@ -90,3 +97,13 @@ Git pull 后运行，生成 `evyd-skills.plugin` 供 Cowork 重新安装。
 - Skill 命名统一使用 `evyd-` 前缀（团队工具）
 - 所有 skill 的文本输出默认英文，对话交互使用中文
 - `evyd-requirement-breakdown` 的 Feature Scope 输出（Fxx 编号）直接作为 `evyd-user-story-writer` 的输入，两者格式耦合
+
+### 计划执行纪律（防止默默漏项）
+
+当在 `/root/.claude/plans/*.md` 里写好了计划并进入执行阶段：
+
+1. **每个 Phase 都要建对应的 todo**。Phase 下每个具体子项（helper、JSON 文件、CLI 标志、验证步骤）都要有独立的 pending todo——不要把"Phase N"作为一个粗颗粒度的 todo 就完事。
+2. **子项落地后才能 complete 那个 Phase**。例如计划里说 "Phase 3 = header_rule_color + card_radius + drop-shadow"，三样都跑通了才能把 Phase 3 标 completed。只做一样就标 completed 是违规的 silent scope cut。
+3. **验证步骤不是可选**。计划里列出的 verification 步骤（render 样例、跑 `--check-contrast`、回归测试）每一步都要建 todo 并执行。验证漏跑就是计划没完成。
+4. **主动降级要明说**。如果中途发现某子项不值得做（性价比差、有技术阻塞），必须先用 AskUserQuestion 或在输出里**显式**告知用户并让对方确认，而不是静默跳过。
+5. **收尾时对账**。commit 前重新打开 plan 文件对照一遍，任何偏差都要在 commit message 或对话里说明。

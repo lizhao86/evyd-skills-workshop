@@ -1,0 +1,86 @@
+{
+  "meta": { "style": "magazine_bold", "output": "sample-magazine-feature.pptx" },
+  "slides": [
+    {
+      "type": "cover",
+      "tag": "ISSUE 01",
+      "title": "A Decade of Digital Health",
+      "subtitle": "How Singapore quietly built — and then rebuilt — the region's most-copied EHR playbook",
+      "logo": "EVYD · Spring 2026"
+    },
+    {
+      "type": "quote_full",
+      "section": "PROLOGUE",
+      "quote": "Every country wants a national health record. Few realize the real work is governance, not data models.",
+      "attribution": "Former CIO, Ministry of Health"
+    },
+    { "type": "section_divider", "num": "01", "title": "Chapter One", "subtitle": "The Years Before The Cloud" },
+    {
+      "type": "bullets_with_panel",
+      "section": "CH.1",
+      "title": "A Quiet Decade of Plumbing",
+      "bullets": [
+        "2012: NEHR goes live — 6 clusters, shared record envisioned",
+        "2015: First real interoperability fights — whose data model wins?",
+        "2018: Legacy EHR vendors begin consolidating regional footprint"
+      ]
+    },
+    {
+      "type": "image_full",
+      "title": "Where the story began",
+      "subtitle": "The SingHealth server room, 2015 — 47 systems, 3 standards, one dream",
+      "overlay": "dark"
+    },
+    {
+      "type": "stat_highlight",
+      "section": "CH.1",
+      "title": "By the numbers",
+      "stats": [
+        { "value": "47",  "label": "systems integrated", "desc": "by 2018 in SingHealth alone" },
+        { "value": "$1.2B", "label": "cumulative spend", "desc": "public healthcare IT, 2012–2022" },
+        { "value": "3",   "label": "full migrations", "desc": "in a decade — two unfinished" }
+      ]
+    },
+    { "type": "section_divider", "num": "02", "title": "Chapter Two", "subtitle": "The Epic Pivot" },
+    {
+      "type": "comparison_table",
+      "section": "CH.2",
+      "title": "Two Philosophies",
+      "columns": ["Mono-vendor (Epic)", "Platform (EVYD + partners)"],
+      "rows": [
+        { "label": "Speed to deploy", "values": ["24–36 months", "3–9 months"] },
+        { "label": "Localization",    "values": ["limited",      "native"]      },
+        { "label": "Cost envelope",   "values": ["S$200M+",      "S$20–50M"]    },
+        { "label": "Data sovereignty", "values": ["US-hosted",    "region-hosted"] },
+        { "label": "Exit cost",       "values": ["very high",    "moderate"]    }
+      ]
+    },
+    {
+      "type": "scope_tiers",
+      "section": "CH.2",
+      "title": "What Each Model Is Good At",
+      "tiers": [
+        { "icon": "🏛", "label": "TIER · TERTIARY", "color": [139, 42, 27], "desc": "Large tertiary hospitals with >5yr horizon", "example": "Epic-style mono-vendor rewards patience and scale" },
+        { "icon": "🏥", "label": "TIER · CLUSTER",  "color": [139, 42, 27], "desc": "Healthcare clusters needing flexibility", "example": "Platform models let you swap modules without a rip-and-replace" },
+        { "icon": "🩺", "label": "TIER · COMMUNITY","color": [139, 42, 27], "desc": "Polyclinics and specialist centers",       "example": "Platform wins — deployment in months, not years" }
+      ]
+    },
+    { "type": "section_divider", "num": "03", "title": "Chapter Three", "subtitle": "The Decade Ahead" },
+    {
+      "type": "center_focus",
+      "section": "EPILOGUE",
+      "title": "The Thesis",
+      "message": "The next decade won't be about who owns the record. It will be about who can move intelligently on top of it.",
+      "context": "That's a different race — and one Singapore is built to lead."
+    },
+    {
+      "type": "ending",
+      "title": "Continue the Story",
+      "subtitle": "Next issue drops in six weeks",
+      "actions": [
+        { "icon": "📰", "title": "Subscribe",  "desc": "evyd.com/field-notes" },
+        { "icon": "🗂", "title": "Archive",    "desc": "evyd.com/archive" }
+      ]
+    }
+  ]
+}

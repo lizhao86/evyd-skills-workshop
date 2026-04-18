@@ -6,6 +6,7 @@
   "category": "tech-dark",
   "vibe_tags": ["neon", "night", "futuristic", "developer", "ai", "ide"],
   "chrome_style": "neon-grid",
+  "card_radius": true,
   "chart_colors": ["7AA2F7", "BB9AF7", "9ECE6A", "F7768E", "E0AF68"],
   "font": "Aptos",
   "title_font": "Aptos Display",

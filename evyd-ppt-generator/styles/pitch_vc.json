@@ -6,6 +6,7 @@
   "category": "business",
   "vibe_tags": ["pitch", "vc", "investor", "confident", "fundraising"],
   "chrome_style": "magazine",
+  "card_radius": true,
   "chart_colors": ["0E4A2F", "C9A96E", "1A1A22", "7FB894", "8B7A4E"],
   "font": "Aptos",
   "title_font": "Aptos Display",

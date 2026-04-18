@@ -6,6 +6,7 @@
   "category": "lifestyle",
   "vibe_tags": ["pastel", "genz", "dreamy", "consumer", "delight", "soft"],
   "chrome_style": "gradient",
+  "card_radius": true,
   "chart_colors": ["B39DDB", "A4E0C4", "FFE7A0", "F5A9C5", "B3E5FC"],
   "font": "Aptos",
   "title_font": "Aptos Display",

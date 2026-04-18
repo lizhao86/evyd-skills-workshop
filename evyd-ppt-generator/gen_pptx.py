@@ -44,9 +44,15 @@ def _rgb(v):
     raise ValueError(f"Cannot parse color: {v!r}")
 
 def _is_light(color):
-    """Return True if an RGBColor has relative luminance > 0.4 (perceptually light)."""
-    r, g, b = color[0] / 255, color[1] / 255, color[2] / 255
-    lum = 0.2126 * r + 0.7152 * g + 0.0722 * b
+    """Return True if a color is perceptually light (WCAG luminance > 0.4).
+
+    Uses proper WCAG relative luminance (sRGB gamma-expanded), not linear RGB —
+    the naive linear formula misclassifies muted mid-grey palettes like morandi
+    as 'light', which then wrongly inverts text colors on projection."""
+    def ch(v):
+        v = v / 255.0
+        return v / 12.92 if v <= 0.03928 else ((v + 0.055) / 1.055) ** 2.4
+    lum = 0.2126 * ch(color[0]) + 0.7152 * ch(color[1]) + 0.0722 * ch(color[2])
     return lum > 0.4
 
 def list_styles():
@@ -116,7 +122,7 @@ def load_style(name):
     st['title_font']    = raw.get('title_font', st['font'])
     st['body_font']     = raw.get('body_font',  st['font'])
     st['mono_font']     = raw.get('mono_font',  'Consolas')
-    st['card_radius']   = raw.get('card_radius', True)
+    st['card_radius']   = raw.get('card_radius', False)
     st['gradient_spec'] = raw.get('gradient') or None
     st['motif_spec']    = raw.get('decorative_motif') or None
 
@@ -195,6 +201,40 @@ def _set_transparency(shape, pct):
     if alpha is None:
         alpha = etree.SubElement(color_elem, qn('a:alpha'))
     alpha.set('val', str(int((100 - pct) * 1000)))
+
+def _add_shadow(shape, blur_pt=8, dist_pt=4, alpha_pct=25):
+    """Add a soft outer drop-shadow to a shape via XML. Used by _card_rc
+    when the theme's chrome_style is 'magazine' or 'gradient'."""
+    from pptx.oxml.ns import qn
+    from lxml import etree
+    spPr = shape._element.find(qn('p:spPr'))
+    if spPr is None:
+        return
+    # Remove any existing effectLst to avoid duplicates.
+    existing = spPr.find(qn('a:effectLst'))
+    if existing is not None:
+        spPr.remove(existing)
+    effectLst = etree.SubElement(spPr, qn('a:effectLst'))
+    outerShdw = etree.SubElement(effectLst, qn('a:outerShdw'))
+    outerShdw.set('blurRad', str(int(blur_pt * 12700)))
+    outerShdw.set('dist',    str(int(dist_pt * 12700)))
+    outerShdw.set('dir', '5400000')   # 90° (downward)
+    outerShdw.set('algn', 'ctr')
+    outerShdw.set('rotWithShape', '0')
+    srgb = etree.SubElement(outerShdw, qn('a:srgbClr'))
+    srgb.set('val', '000000')
+    alpha = etree.SubElement(srgb, qn('a:alpha'))
+    alpha.set('val', str(int(alpha_pct * 1000)))
+
+def _card_rc(slide, l, t, w, h, fill, st, line=None, lw=0.75, shadow=False):
+    """Draw a card. Reads `card_radius` from theme (default: False = sharp).
+    If `shadow=True` AND theme's chrome_style ∈ {magazine, gradient}, adds
+    a soft drop-shadow. Use at 'card'-style shapes; decorative strips use rc()."""
+    radius = st.get('card_radius', False)
+    shape = rc(slide, l, t, w, h, fill=fill, line=line, lw=lw, rd=radius)
+    if shadow and st.get('chrome_style') in ('magazine', 'gradient'):
+        _add_shadow(shape)
+    return shape
 
 def _fill_bg(slide, data, st):
     """Fill entire slide with the appropriate background color."""
@@ -557,7 +597,7 @@ def render_agenda(slide, data, st, _n, _total):
     items = data.get('items', [])
     for i, item in enumerate(items[:5]):
         y = 2.2 + i * 1.6
-        rc(slide, 1.0, y, 18.0, 1.4, fill=st['card'])
+        _card_rc(slide, 1.0, y, 18.0, 1.4, st['card'], st)
         rc(slide, 1.0, y, 0.12, 1.4,
            fill=_rgb(M.get('number_color', '0076B3')))
         bx(slide, 1.3, y, 1.4, 1.4, str(item.get('num', i + 1)),
@@ -829,7 +869,7 @@ def render_bullets_with_panel(slide, data, st, num, total):
 
     if has_panel:
         panel_h = SH - ct - 0.4
-        rc(slide, 11.0, ct + 0.1, 7.9, panel_h, fill=st['card_side'])
+        _card_rc(slide, 11.0, ct + 0.1, 7.9, panel_h, st['card_side'], st, shadow=True)
         rc(slide, 11.0, ct + 0.1, 0.12, panel_h, fill=st['accent'])
         bx(slide, 11.35, ct + 0.4, 7.3, 1.1, '\u201C', sz=80, italic=True,
            color=_rgb([0x33, 0x88, 0xBB]), font=F)
@@ -839,7 +879,7 @@ def render_bullets_with_panel(slide, data, st, num, total):
 
     rules = data.get('ground_rules', [])
     if rules:
-        rc(slide, 1.0, by + 0.12, 9.5, 2.55, fill=st['card'])
+        _card_rc(slide, 1.0, by + 0.12, 9.5, 2.55, st['card'], st, shadow=True)
         bx(slide, 1.15, by + 0.20, 4, 0.28, 'GROUND RULES', sz=8,
            bold=True, color=st['accent'], font=F)
         ry = by + 0.58
@@ -873,7 +913,7 @@ def render_two_column_check(slide, data, st, num, total):
         lc_key = side.get('light_color', 'green' if col_i == 0 else 'red')
         lc = _rgb(LIGHT_COLORS.get(lc_key, LIGHT_COLORS['green']))
         marker = side.get('marker', '✓' if col_i == 0 else '✗')
-        rc(slide, x, ct + 0.3, 8.8, col_h, fill=lc)
+        _card_rc(slide, x, ct + 0.3, 8.8, col_h, lc, st)
         rc(slide, x, ct + 0.3, 8.8, 0.58, fill=hc)
         bx(slide, x + 0.20, ct + 0.34, 8.3, 0.50, side.get('title', ''),
            sz=16, bold=True, color=st['white'], font=F)
@@ -908,7 +948,7 @@ def render_cards_grid(slide, data, st, num, total):
         x = 1.0 + col * (CW + GX)
         y = ct + 0.1 + row * (CH + GY)
         bg = st['card'] if blue else st['card_white']
-        rc(slide, x, y, CW, CH, fill=bg)
+        _card_rc(slide, x, y, CW, CH, bg, st, shadow=True)
         bx(slide, x + 0.2, y + CH * 0.06, 1.5, CH * 0.38, card.get('num', ''),
            sz=32, bold=True, color=st['card_num'], font=F)
         bx(slide, x + 0.2, y + CH * 0.48, CW - 0.4, CH * 0.48,
@@ -938,7 +978,7 @@ def render_criteria_rows(slide, data, st, num, total):
     for i, row in enumerate(rows):
         y = start_y + i * (RH + gap)
         bg = st['card'] if blue else st['card_white']
-        rc(slide, 1.0, y, 17.5, RH, fill=bg)
+        _card_rc(slide, 1.0, y, 17.5, RH, bg, st)
         bx(slide, 1.1, y + RH * 0.15, 1.5, RH * 0.54, row.get('num', ''),
            sz=36, bold=True, color=st['card_num'], font=F)
         rc(slide, 2.7, y + RH * 0.12, 0.04, RH * 0.76, fill=st['line_gray'])
@@ -975,7 +1015,7 @@ def render_scope_tiers(slide, data, st, num, total):
         y = ct + 0.35 + i * (BH + gap)
         tc = _rgb(tier.get('color', [0x44, 0x99, 0x44]))
         bg = st['card'] if blue else st['card_white']
-        rc(slide, 1.0, y, 17.5, BH, fill=bg)
+        _card_rc(slide, 1.0, y, 17.5, BH, bg, st)
         rc(slide, 1.0, y, 0.14, BH, fill=tc)
         bx(slide, 1.28, y + BH * 0.08, 1.0, BH * 0.43, tier.get('icon', ''),
            sz=22, color=st['white'], font=F)
@@ -999,7 +1039,7 @@ def render_two_panel(slide, data, st, num, total):
         x = 1.0 + col_i * 9.5
         hc = _rgb(panel.get('color', [0x00, 0x76, 0xB3]))
         bg = st['card'] if blue else st['card_white']
-        rc(slide, x, ct + 0.15, 8.8, panel_h, fill=bg)
+        _card_rc(slide, x, ct + 0.15, 8.8, panel_h, bg, st)
         rc(slide, x, ct + 0.15, 8.8, 0.60, fill=st['navy'])
         bx(slide, x + 0.20, ct + 0.22, 8.3, 0.50,
            f"{panel.get('icon', '')}  {panel.get('title', '')}", sz=16,
@@ -1039,7 +1079,7 @@ def render_two_column_steps(slide, data, st, num, total):
         sy = ct + 0.60
         for n, step in enumerate(col.get('steps', [])[:4], 1):
             bg = st['card'] if blue else st['card_white']
-            rc(slide, x, sy, 8.8, card_h, fill=bg)
+            _card_rc(slide, x, sy, 8.8, card_h, bg, st)
             rc(slide, x, sy, 0.55, card_h, fill=st['card_side'])
             bx(slide, x + 0.08, sy + card_h * 0.32, 0.40, 0.55, str(n), sz=17,
                bold=True, color=st['white'], align=PP_ALIGN.CENTER, font=F)
@@ -1073,7 +1113,7 @@ def render_scenario_cards(slide, data, st, num, total):
         x = 1.0 + col * (SW_C + 0.5)
         y = ct + 0.25 + row * (SH_C + 0.25)
         bg = st['card'] if blue else st['card_white']
-        rc(slide, x, y, SW_C, SH_C, fill=bg)
+        _card_rc(slide, x, y, SW_C, SH_C, bg, st)
         rc(slide, x, y, SW_C, 0.09, fill=st['accent'])
         bx(slide, x + 0.25, y + 0.20, 3.0, 0.35,
            f"Scenario {scen.get('num', '')}", sz=12, bold=True,
@@ -1103,7 +1143,7 @@ def render_survey(slide, data, st, num, total):
     for i, step in enumerate(data.get('steps', [])[:4]):
         y = ct + 0.35 + i * (STH + 0.22)
         bg = st['card_white'] if not blue else st['card']
-        rc(slide, 1.0, y, 10.5, STH, fill=bg)
+        _card_rc(slide, 1.0, y, 10.5, STH, bg, st)
         rc(slide, 1.0, y, 0.65, STH, fill=st['accent2'])
         bx(slide, 1.06, y + 0.56, 0.53, 0.65, str(i + 1), sz=22,
            bold=True, color=st['white'], align=PP_ALIGN.CENTER, font=F)
@@ -1114,8 +1154,8 @@ def render_survey(slide, data, st, num, total):
            sz=13, color=st['text_gray'], font=F)
 
     qr_bg = st['card_white'] if not blue else st['card']
-    rc(slide, 12.3, ct + 0.3, 6.6, 9.0, fill=qr_bg,
-       line=st['accent2'], lw=1.0)
+    _card_rc(slide, 12.3, ct + 0.3, 6.6, 9.0, qr_bg, st,
+             line=st['accent2'], lw=1.0)
     bx(slide, 12.3, ct + 0.45, 6.6, 0.34,
        data.get('qr_label', 'SURVEY QR CODE'), sz=9, bold=True,
        color=st['accent2'], align=PP_ALIGN.CENTER, font=F)
@@ -1155,7 +1195,7 @@ def render_stat_highlight(slide, data, st, num, total):
     for i, stat in enumerate(stats):
         x  = 1.0 + i * (CW + gap)
         bg = st['card'] if blue else st['card_white']
-        rc(slide, x, y, CW, CH, fill=bg)
+        _card_rc(slide, x, y, CW, CH, bg, st, shadow=True)
         rc(slide, x, y, CW, 0.12, fill=st['accent'])
 
         bx(slide, x + 0.15, y + CH * 0.12, CW - 0.3, CH * 0.35,
@@ -1231,7 +1271,7 @@ def render_timeline(slide, data, st, num, total):
         s.line.fill.background()
 
         # Card below
-        rc(slide, card_x, card_top, card_w, card_h, fill=card_bg)
+        _card_rc(slide, card_x, card_top, card_w, card_h, card_bg, st)
         rc(slide, card_x, card_top, card_w, 0.08, fill=lc)
 
         # Phase label (inside card top)
@@ -1820,17 +1860,79 @@ CONTENT_RENDERERS = {
 # Main
 # ─────────────────────────────────────────────────────────────────────────────
 
+def _luminance(rgb):
+    """WCAG relative luminance (0..1) for an RGBColor / [r,g,b] tuple."""
+    def ch(v):
+        v = v / 255.0
+        return v / 12.92 if v <= 0.03928 else ((v + 0.055) / 1.055) ** 2.4
+    return 0.2126 * ch(rgb[0]) + 0.7152 * ch(rgb[1]) + 0.0722 * ch(rgb[2])
+
+
+def _contrast_ratio(c1, c2):
+    """WCAG contrast ratio (1..21) between two colors."""
+    l1, l2 = _luminance(c1), _luminance(c2)
+    if l1 < l2:
+        l1, l2 = l2, l1
+    return (l1 + 0.05) / (l2 + 0.05)
+
+
+def check_contrast(threshold=3.0):
+    """Scan every theme and warn on low text/background contrast pairs.
+    WCAG AA minimum: 4.5 for body text, 3.0 for large text.
+    We use 3.0 as a soft floor — below this almost anything fails on projection.
+
+    Only audits text-on-background pairs that are actually used for reading.
+    Skips accent/navy pairs where one color is decorative only."""
+    # (fg, bg, min_ratio) — each pair reflects a real text placement.
+    # Using 3.0 for headlines (large text) and 4.0 for body (stricter).
+    audits = [
+        ('text_dim',   'bg_content', 3.0, 'body on content bg'),
+        ('text_gray',  'card_white', 4.0, 'body on light card'),
+        ('text_white', 'card',       3.0, 'title on card'),
+        ('text_white', 'bg_content', 3.0, 'title on content bg'),
+        ('text_dark',  'card_white', 4.0, 'body on light card (dark text)'),
+    ]
+    print(f'Contrast audit — below threshold flagged\n')
+    any_flagged = False
+    for name in list_styles():
+        st = load_style(name)
+        flagged = []
+        for fg, bg, min_r, label in audits:
+            if fg in st and bg in st:
+                r = _contrast_ratio(st[fg], st[bg])
+                if r < min_r:
+                    flagged.append(
+                        f'  {fg:11s} / {bg:11s}  {r:.2f} < {min_r:.1f}  ({label})')
+        if flagged:
+            any_flagged = True
+            print(f'⚠ {name}:')
+            for line in flagged:
+                print(line)
+    if not any_flagged:
+        print('✓ All 28 themes clear the contrast floor.')
+
+
 def main():
     parser = argparse.ArgumentParser(
         description='EVYD PPT Generator — render content.json → PPTX')
-    parser.add_argument('content', help='Path to content JSON file')
+    parser.add_argument('content', nargs='?', default=None,
+                        help='Path to content JSON file (omit with --check-contrast)')
     parser.add_argument('--style', default=None,
                         help='Style preset name (default: from JSON meta.style, '
                              'then evyd_blue)')
     parser.add_argument('--output', '-o', default=None,
                         help='Output .pptx path (default: from JSON meta.output, '
                              'then output.pptx)')
+    parser.add_argument('--check-contrast', action='store_true',
+                        help='Audit all themes for WCAG contrast floor (ratio < 3.0) and exit')
     args = parser.parse_args()
+
+    if args.check_contrast:
+        check_contrast()
+        return
+
+    if not args.content:
+        parser.error('content path is required unless --check-contrast is used')
 
     with open(args.content, encoding='utf-8') as f:
         content = json.load(f)

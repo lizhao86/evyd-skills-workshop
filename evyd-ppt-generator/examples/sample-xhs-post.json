@@ -1,0 +1,72 @@
+{
+  "meta": { "style": "xhs_white", "output": "sample-xhs-post.pptx" },
+  "slides": [
+    {
+      "type": "cover",
+      "tag": "AI 产品笔记",
+      "title": "做 AI 产品最容易掉的 3 个坑",
+      "subtitle": "从业 5 年亲历 · 省下至少 6 个月",
+      "logo": "@EVYD"
+    },
+    {
+      "type": "stat_highlight",
+      "section": "钩子",
+      "title": "为什么要聊这个",
+      "stats": [
+        { "value": "78%", "label": "AI 产品失败", "desc": "败在这 3 件事上" },
+        { "value": "6mo", "label": "平均返工时间", "desc": "如果没踩中" }
+      ]
+    },
+    {
+      "type": "bullets_with_panel",
+      "section": "痛点",
+      "title": "你是不是也这样",
+      "bullets": [
+        "demo 惊艳 · 上线翻车 · 用户 7 天不回来",
+        "数据看着漂亮 · 一问业务都说用不上",
+        "老板问 ROI · PM 只能搬指标搪塞"
+      ]
+    },
+    {
+      "type": "cards_grid",
+      "section": "方法",
+      "title": "三个避坑点",
+      "cards": [
+        { "num": "01", "text": "把 token 成本当 UI · 不是后端问题 · 影响用户留存" },
+        { "num": "02", "text": "先做 HITL · 再想自动化 · 节奏反了多半翻车" },
+        { "num": "03", "text": "把 eval 当产品 · 不是一次性跑分 · 要长期跑" }
+      ]
+    },
+    {
+      "type": "quote_full",
+      "section": "金句",
+      "quote": "AI 产品的护城河不在模型，在你敢不敢把 eval 当活体指标。",
+      "attribution": "——某不愿透露姓名的资深 PM"
+    },
+    {
+      "type": "stat_highlight",
+      "section": "效果",
+      "title": "做对了之后",
+      "stats": [
+        { "value": "3.2×", "label": "留存提升", "desc": "D7 对比", "trend": "up" },
+        { "value": "−60%", "label": "成本下降", "desc": "单次交互",  "trend": "down" }
+      ]
+    },
+    {
+      "type": "center_focus",
+      "section": "CTA",
+      "title": "一句话",
+      "message": "别卷模型 · 卷做产品的基本功",
+      "context": "收藏这 3 条 · 下次 review 拿出来对一下"
+    },
+    {
+      "type": "ending",
+      "title": "觉得有用 · 点个收藏",
+      "subtitle": "评论区告诉我你踩过哪个坑",
+      "actions": [
+        { "icon": "❤️", "title": "关注",   "desc": "@EVYD 产品笔记" },
+        { "icon": "💬", "title": "评论",   "desc": "说说你的故事" }
+      ]
+    }
+  ]
+}

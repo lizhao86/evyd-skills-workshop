@@ -6,6 +6,7 @@
   "category": "lifestyle",
   "vibe_tags": ["xhs", "lifestyle", "clean", "pastel", "consumer", "coral"],
   "chrome_style": "minimal",
+  "card_radius": true,
   "chart_colors": ["FF5B6C", "FFA38B", "FFE2B9", "B6D8E8", "D6B6F0"],
   "font": "Aptos",
   "title_font": "Aptos",

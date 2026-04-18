@@ -6,6 +6,7 @@
   "category": "business",
   "vibe_tags": ["fintech", "compliance", "clean", "banking", "regulated"],
   "chrome_style": "gradient",
+  "card_radius": true,
   "chart_colors": ["3EDDBB", "0E3B66", "122E52", "6BEAD1", "1B5A94"],
   "font": "Aptos",
   "title_font": "Aptos",

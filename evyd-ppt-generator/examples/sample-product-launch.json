@@ -1,0 +1,86 @@
+{
+  "meta": { "style": "tokyo_night", "output": "sample-product-launch.pptx" },
+  "slides": [
+    {
+      "type": "cover",
+      "tag": "Spring '26 Launch",
+      "title": "EVYD Copilot",
+      "subtitle": "AI sidekick for every clinical workflow — now generally available",
+      "logo": "EVYD · 2026"
+    },
+    { "type": "section_divider", "num": "01", "title": "The Problem", "subtitle": "Why clinicians still burn out at the screen" },
+    {
+      "type": "bullets_with_panel",
+      "section": "01 — PAIN POINTS",
+      "title": "Three Daily Frictions",
+      "bullets": [
+        "EHR note-taking consumes 2+ hours after shift for 61% of clinicians",
+        "Context switching between 4–7 systems fragments clinical reasoning",
+        "Discharge summaries are 80% boilerplate but still take 20 min each"
+      ]
+    },
+    {
+      "type": "quote_full",
+      "section": "01 — IN THEIR WORDS",
+      "quote": "I became a doctor to talk to patients, not to type. Most nights I'm still charting at 10pm.",
+      "attribution": "Senior Consultant, Changi General Hospital"
+    },
+    { "type": "section_divider", "num": "02", "title": "Introducing", "subtitle": "EVYD Copilot" },
+    {
+      "type": "center_focus",
+      "section": "02 — ONE LINE",
+      "title": "Copilot",
+      "message": "An AI that writes your notes, surfaces your data, and stays inside your workflow.",
+      "context": "Built in Singapore, trained on de-identified regional data, zero PHI leaves your tenant."
+    },
+    {
+      "type": "cards_grid",
+      "section": "02 — CORE FEATURES",
+      "title": "What's Inside",
+      "cards": [
+        { "num": "01", "text": "Ambient Scribe — real-time consultation note drafting" },
+        { "num": "02", "text": "Chart Whisperer — 30-second patient summaries from history" },
+        { "num": "03", "text": "Discharge Auto-Draft — 2-min from plan to printable letter" },
+        { "num": "04", "text": "Clinician Safety Net — drug / allergy / dose cross-check" }
+      ]
+    },
+    {
+      "type": "stat_highlight",
+      "section": "02 — BENCHMARK",
+      "title": "Closed Beta Results (N = 47 clinicians, 12 weeks)",
+      "stats": [
+        { "value": "−54%", "label": "note time saved", "desc": "per consultation", "trend": "down" },
+        { "value": "92%",  "label": "clinician acceptance", "desc": "of first-draft notes" },
+        { "value": "3.1×", "label": "faster discharge", "desc": "vs baseline" }
+      ]
+    },
+    {
+      "type": "image_full",
+      "title": "Copilot in the consultation room",
+      "subtitle": "Ambient capture, structured output, instant review",
+      "overlay": "dark"
+    },
+    { "type": "section_divider", "num": "03", "title": "Availability", "subtitle": "Rollout starts Q2 2026" },
+    {
+      "type": "timeline",
+      "section": "03 — ROADMAP",
+      "title": "Path to General Availability",
+      "items": [
+        { "phase": "Q1 '26", "title": "Pilot", "desc": "Two tertiary hospitals in Singapore" },
+        { "phase": "Q2 '26", "title": "GA · SG", "desc": "Opens to all public healthcare clusters" },
+        { "phase": "Q3 '26", "title": "GA · SEA", "desc": "Malaysia, Thailand, Indonesia via partners" },
+        { "phase": "Q4 '26", "title": "Platform", "desc": "SDK + marketplace for specialty modules" }
+      ]
+    },
+    {
+      "type": "ending",
+      "title": "Try Copilot",
+      "subtitle": "Book a 20-min demo — we'll bring a live consultation transcript",
+      "actions": [
+        { "icon": "📅", "title": "Book demo", "desc": "evyd.com/copilot/demo" },
+        { "icon": "📄", "title": "Read docs",  "desc": "evyd.com/copilot/docs" },
+        { "icon": "💬", "title": "Ask us",     "desc": "copilot@evyd.com" }
+      ]
+    }
+  ]
+}
