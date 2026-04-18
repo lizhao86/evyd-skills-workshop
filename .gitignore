@@ -7,3 +7,4 @@ __pycache__/
 
 # MCP config with tokens — use .mcp.json.template as starting point
 .mcp.json
+.mcp.json.local

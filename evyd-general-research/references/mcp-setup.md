@@ -105,21 +105,29 @@ failure mode where you get back raw HTML + JS blobs.
 ### Alternative: Jina Reader (free tier, simpler)
 
 Jina Reader (<https://jina.ai/reader>) is a lighter-weight alternative.
-No API key required for low-volume use.
+No API key required for low-volume use; with a key you get higher rate limits.
 
 ```json
 {
   "mcpServers": {
     "jina": {
       "command": "npx",
-      "args": ["-y", "jina-reader-mcp"]
+      "args": ["-y", "jina-reader-mcp"],
+      "env": {
+        "JINA_API_KEY": "TODO-paste-jina-key-here"
+      }
     }
   }
 }
 ```
 
 Tool: `mcp__jina__read_url`. Same use case as Firecrawl scrape, slightly less
-reliable on heavy JS pages but no token needed.
+reliable on heavy JS pages but higher free tier.
+
+> **Status**: Jina key is stashed in `.mcp.json.local` (gitignored) for
+> future activation. NOT currently active because Firecrawl covers the
+> same use case (see choice rule below). Swap in if Firecrawl rate limits
+> become a blocker.
 
 ### Choice between them
 
