@@ -108,6 +108,18 @@ def load_style(name):
 
     st['motifs'] = raw.get('motifs', {})
 
+    # ── v2 schema additions (all optional, defensive defaults) ────────────────
+    st['version']       = raw.get('version', 1)
+    st['category']      = raw.get('category', 'classic')
+    st['vibe_tags']     = raw.get('vibe_tags', [])
+    st['chrome_style']  = raw.get('chrome_style', 'classic')
+    st['title_font']    = raw.get('title_font', st['font'])
+    st['body_font']     = raw.get('body_font',  st['font'])
+    st['mono_font']     = raw.get('mono_font',  'Consolas')
+    st['card_radius']   = raw.get('card_radius', True)
+    st['gradient_spec'] = raw.get('gradient') or None
+    st['motif_spec']    = raw.get('decorative_motif') or None
+
     # Chart series colors (fallback to accent, accent2, navy)
     cc = raw.get('chart_colors', [raw.get('accent', '2CD5C3'),
                                    raw.get('accent2', '0076B3'),
@@ -197,17 +209,29 @@ def _fill_bg(slide, data, st):
 
 def hdr(slide, section, num, title, blue=True, tsz=34, st=None):
     """Standard content-slide header: section label + slide# + title + accent rule.
-    Returns content_top_y (inches) — start your content below this."""
-    F = st['font'] if st else 'Aptos'
+    Returns content_top_y (inches) — start your content below this.
+
+    Hooks (v2 schema, optional):
+      - st['motifs']['header_rule_color'] overrides the accent rule color.
+      - st['title_font'] / st['body_font'] override the default font for title / label.
+    """
+    TF = (st.get('title_font') if st else None) or (st['font'] if st else 'Aptos')
+    BF = (st.get('body_font')  if st else None) or TF
     lc = st['accent']   if st else _rgb('2CD5C3')
     nc = st['text_num'] if st else (_rgb('CCE8F5') if blue else _rgb('AAAAAA'))
     tc = st['text_white'] if st else (_rgb('FFFFFF') if blue else _rgb('172E41'))
     if not blue and st: tc = st['text_dark']
     if not blue and st: lc = st['accent2']
-    bx(slide, 1.0, 0.30, 10,   0.35, section, sz=11,  color=lc,  font=F)
-    bx(slide, 16.5, 0.30, 2.5, 0.35, num,     sz=11,  color=nc,  align=PP_ALIGN.RIGHT, font=F)
-    bx(slide, 1.0, 0.72, 17,   0.90, title,   sz=tsz, bold=True, color=tc, font=F)
-    rc(slide, 1.0, 1.60, 0.55, 0.055, fill=lc)
+    # v2 hook: allow theme to override the header rule color independently.
+    rule_c = lc
+    if st:
+        rule_override = st.get('motifs', {}).get('header_rule_color')
+        if rule_override:
+            rule_c = _rgb(rule_override)
+    bx(slide, 1.0, 0.30, 10,   0.35, section, sz=11,  color=lc,  font=BF)
+    bx(slide, 16.5, 0.30, 2.5, 0.35, num,     sz=11,  color=nc,  align=PP_ALIGN.RIGHT, font=BF)
+    bx(slide, 1.0, 0.72, 17,   0.90, title,   sz=tsz, bold=True, color=tc, font=TF)
+    rc(slide, 1.0, 1.60, 0.55, 0.055, fill=rule_c)
     return 1.85
 
 def _slide_num(slide_data, auto_num, total):
@@ -222,38 +246,301 @@ def _slide_num_free(slide, n, total, light=False, st=None):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Chrome slide renderers
+# Chrome slide renderers — layered compositor
 # ─────────────────────────────────────────────────────────────────────────────
+#
+# Architecture:
+#   render_<chrome_slide>  →  _paint_chrome_bg   (solid or gradient)
+#                          →  _paint_chrome_motif (optional, from motif_spec)
+#                          →  _compose_<slot>_<style>  (typography + accents)
+#                          →  _slide_num_free
+#
+# chrome_style values: classic | gradient | neon-grid | magazine | minimal | brutalist
+# v1 themes (no chrome_style field) default to 'classic' — visually unchanged.
 
-def render_cover(slide, data, st, n, total):
-    F = st['font']
+def _paint_gradient(slide, x, y, w, h, colors, angle, st, transparency=0):
+    """Create a gradient-filled rectangle. Reuses freeform gradient logic."""
+    from pptx.oxml.ns import qn
+    from lxml import etree
+    s = slide.shapes.add_shape(1, I(x), I(y), I(w), I(h))
+    s.line.fill.background()
+    gf = s.fill
+    gf.gradient()
+    gf.gradient_angle = angle
+    stops = gf.gradient_stops
+    stops[0].position = 0.0
+    stops[0].color.rgb = _resolve_color(colors[0], st)
+    stops[1].position = 1.0
+    stops[1].color.rgb = _resolve_color(colors[-1], st)
+    if len(colors) >= 3:
+        gs_lst = s._element.find(qn('p:spPr')).find(qn('a:gradFill')).find(qn('a:gsLst'))
+        for i, c in enumerate(colors[1:-1], 1):
+            pos = int((i / (len(colors) - 1)) * 100000)
+            gs = etree.SubElement(gs_lst, qn('a:gs'))
+            gs.set('pos', str(pos))
+            srgb = etree.SubElement(gs, qn('a:srgbClr'))
+            rgb = _resolve_color(c, st)
+            srgb.set('val', f'{rgb[0]:02X}{rgb[1]:02X}{rgb[2]:02X}')
+    if transparency:
+        _set_transparency(s, transparency)
+    return s
+
+
+def _paint_chrome_bg(slide, st, slot):
+    """Paint full-slide background for a chrome slide.
+    slot ∈ {'cover', 'section', 'ending'}.
+    Uses gradient_spec[slot] if present, else solid navy."""
+    gspec = st.get('gradient_spec')
+    if gspec and isinstance(gspec, dict) and slot in gspec:
+        g = gspec[slot]
+        colors = g.get('colors', ['navy', 'accent'])
+        angle  = g.get('angle', 0)
+        _paint_gradient(slide, 0, 0, SW, SH, colors, angle, st)
+    else:
+        rc(slide, 0, 0, SW, SH, fill=st['navy'])
+
+
+def _paint_chrome_motif(slide, st, slot):
+    """Apply decorative motif to a chrome slide. No-op if motif_spec missing."""
+    mspec = st.get('motif_spec')
+    if not mspec:
+        return
+    kind = mspec.get('kind', 'none')
+    if kind == 'none':
+        return
+    color   = _resolve_color(mspec.get('color', 'accent'), st)
+    opacity = mspec.get('opacity', 85)
+    density = mspec.get('density', 'medium')
+
+    if   kind == 'oval':  _motif_oval(slide, slot, color, opacity)
+    elif kind == 'grid':  _motif_grid(slide, slot, color, opacity, density)
+    elif kind == 'blob':  _motif_blob(slide, slot, color, opacity)
+    elif kind == 'lines': _motif_lines(slide, slot, color, opacity)
+    elif kind == 'bars':  _motif_bars(slide, slot, color, opacity, st)
+    elif kind == 'dots':  _motif_dots(slide, slot, color, opacity, density)
+
+
+def _motif_oval(slide, slot, color, opacity):
+    regions = {
+        'cover':   [(11.6, -3.0, 12.0, 12.0)],
+        'section': [(14.0, 6.0, 10.0, 10.0)],
+        'ending':  [(5.0, 0.6, 10.0, 5.6)],
+    }
+    for (x, y, w, h) in regions.get(slot, []):
+        s = slide.shapes.add_shape(9, I(x), I(y), I(w), I(h))
+        s.fill.solid(); s.fill.fore_color.rgb = color
+        _set_transparency(s, opacity)
+        s.line.fill.background()
+
+
+def _motif_grid(slide, slot, color, opacity, density):
+    step = {'sparse': 2.0, 'medium': 1.2, 'dense': 0.8}.get(density, 1.2)
+    line_w = 0.01
+    y = step
+    while y < SH:
+        s = rc(slide, 0, y, SW, line_w, fill=color)
+        _set_transparency(s, opacity)
+        y += step
+    x = step
+    while x < SW:
+        s = rc(slide, x, 0, line_w, SH, fill=color)
+        _set_transparency(s, opacity)
+        x += step
+
+
+def _motif_blob(slide, slot, color, opacity):
+    regions = {
+        'cover':   [(15.0, 2.0, 6.0, 6.0), (1.0, 7.0, 4.0, 4.0)],
+        'section': [(16.0, 1.0, 4.0, 4.0)],
+        'ending':  [(2.0, 2.0, 5.0, 5.0), (14.0, 5.0, 5.0, 5.0)],
+    }
+    for (x, y, w, h) in regions.get(slot, []):
+        s = slide.shapes.add_shape(9, I(x), I(y), I(w), I(h))
+        s.fill.solid(); s.fill.fore_color.rgb = color
+        _set_transparency(s, opacity)
+        s.line.fill.background()
+
+
+def _motif_lines(slide, slot, color, opacity):
+    regions = {
+        'cover':   [(16.5, 0.8, 0.02, 9.5)],
+        'section': [(18.0, 0.8, 0.02, 9.5)],
+        'ending':  [(1.2, 0.8, 0.02, 9.5), (18.8, 0.8, 0.02, 9.5)],
+    }
+    for (x, y, w, h) in regions.get(slot, []):
+        s = rc(slide, x, y, w, h, fill=color)
+        _set_transparency(s, max(0, opacity - 30))
+
+
+def _motif_bars(slide, slot, color, opacity, st):
+    accent2 = st['accent2']
+    regions = {
+        'cover':   [(0, 0, 0.14, SH / 2, color), (0, SH / 2, 0.14, SH / 2, accent2)],
+        'section': [(0, 0, 0.14, SH, color)],
+        'ending':  [(0, 0, 0.14, SH, color)],
+    }
+    for r in regions.get(slot, []):
+        x, y, w, h, c = r
+        rc(slide, x, y, w, h, fill=c)
+
+
+def _motif_dots(slide, slot, color, opacity, density):
+    import random
+    random.seed(42 + hash(slot))
+    n = {'sparse': 10, 'medium': 20, 'dense': 36}.get(density, 20)
+    for _ in range(n):
+        x = random.uniform(0.5, SW - 0.5)
+        y = random.uniform(0.5, SH - 0.5)
+        s = slide.shapes.add_shape(9, I(x), I(y), I(0.14), I(0.14))
+        s.fill.solid(); s.fill.fore_color.rgb = color
+        _set_transparency(s, opacity)
+        s.line.fill.background()
+
+
+# ── Cover composers ──────────────────────────────────────────────────────────
+
+def _cover_classic(slide, data, st):
+    F = st['title_font']; BF = st['body_font']
     M = st['motifs']
-    rc(slide, 0, 0, SW, SH, fill=st['navy'])
-
-    bar_colors = M.get('left_bar_colors', ['2CD5C3', '0076B3'])
-    rc(slide, 0, 0, 0.14, SH / 2, fill=_rgb(bar_colors[0]))
-    rc(slide, 0, SH / 2, 0.14, SH / 2, fill=_rgb(bar_colors[1]))
-
-    ov(slide, 11.6, -3.0, 12, 12, fill=st['accent2'], transparency=94)
+    # Left bars (signature of classic chrome)
+    if not st.get('motif_spec'):
+        bar_colors = M.get('left_bar_colors', ['2CD5C3', '0076B3'])
+        rc(slide, 0, 0, 0.14, SH / 2, fill=_rgb(bar_colors[0]))
+        rc(slide, 0, SH / 2, 0.14, SH / 2, fill=_rgb(bar_colors[1]))
+        ov(slide, 11.6, -3.0, 12, 12, fill=st['accent2'], transparency=94)
 
     tag_text = (data.get('tag', 'PRESENTATION')).upper()
     rc(slide, 1.1, 1.7, 5.6, 0.64, fill=st['accent_dark'],
        line=_rgb(M.get('header_tag_color', '2CD5C3')), lw=1)
-    bx(slide, 1.1, 1.7, 5.6, 0.64, tag_text, sz=8 * 2, bold=True,
+    bx(slide, 1.1, 1.7, 5.6, 0.64, tag_text, sz=16, bold=True,
        color=_rgb(M.get('header_tag_color', '2CD5C3')),
        align=PP_ALIGN.CENTER, font=F)
 
     bx(slide, 1.1, 2.6, 14.4, 3.8,
-       data.get('title', ''), sz=40 * 2, color=st['chrome_text'], font=F)
+       data.get('title', ''), sz=80, color=st['chrome_text'], font=F)
 
     rc(slide, 1.1, 6.7, 0.1, 1.36, fill=st['accent2'])
     bx(slide, 1.4, 6.7, 11.6, 1.36,
-       data.get('subtitle', ''), sz=14 * 2, color=st['chrome_muted'], font=F)
+       data.get('subtitle', ''), sz=28, color=st['chrome_muted'], font=BF)
 
     bx(slide, 15.0, 10.2, 4.4, 0.6,
-       data.get('logo', 'EVYD  ·  2025'), sz=9 * 2,
+       data.get('logo', 'EVYD  ·  2025'), sz=18,
        color=st['header_sep'], align=PP_ALIGN.RIGHT, font=F)
 
+
+def _cover_gradient(slide, data, st):
+    F = st['title_font']; BF = st['body_font']
+    tag = (data.get('tag', '')).upper()
+    if tag:
+        bx(slide, 1.2, 1.4, 12, 0.5, tag, sz=14, bold=True,
+           color=st['accent'], font=F)
+        rc(slide, 1.2, 1.9, 1.0, 0.04, fill=st['accent'])
+    bx(slide, 1.2, 3.0, 17.5, 4.2,
+       data.get('title', ''), sz=88, bold=True,
+       color=st['chrome_text'], font=F)
+    bx(slide, 1.2, 7.2, 14.5, 1.5,
+       data.get('subtitle', ''), sz=26,
+       color=st['chrome_muted'], font=BF)
+    bx(slide, 1.2, 10.2, 10, 0.6,
+       data.get('logo', 'EVYD  ·  2025'), sz=14,
+       color=st['chrome_muted'], font=F)
+
+
+def _cover_neongrid(slide, data, st):
+    F = st['title_font']; BF = st['body_font']; MF = st['mono_font']
+    tag = (data.get('tag', '> READY')).upper()
+    bx(slide, 1.1, 1.6, 12, 0.5, tag, sz=16, bold=True,
+       color=st['accent'], font=MF)
+    rc(slide, 1.1, 2.18, 0.8, 0.04, fill=st['accent'])
+    bx(slide, 1.1, 2.9, 17.8, 4.5,
+       data.get('title', ''), sz=80, bold=True,
+       color=st['chrome_text'], font=F)
+    bx(slide, 1.1, 7.6, 14, 1.4,
+       data.get('subtitle', ''), sz=22,
+       color=st['chrome_muted'], font=MF)
+    bx(slide, 14.5, 10.2, 5, 0.6,
+       data.get('logo', 'EVYD  ·  2025'), sz=12,
+       color=st['accent2'], align=PP_ALIGN.RIGHT, font=MF)
+
+
+def _cover_magazine(slide, data, st):
+    F = st['title_font']; BF = st['body_font']
+    # Top hairline + issue label
+    rc(slide, 1.5, 0.9, SW - 3.0, 0.02, fill=st['text_dim'])
+    tag = (data.get('tag', 'ISSUE 01')).upper()
+    bx(slide, 1.5, 1.05, 9, 0.4, tag, sz=12, bold=True,
+       color=st['text_dim'], font=F)
+    bx(slide, 10.5, 1.05, 8, 0.4,
+       data.get('logo', 'EVYD · 2025'), sz=12,
+       color=st['text_dim'], align=PP_ALIGN.RIGHT, font=F)
+    # Serif title, centered
+    bx(slide, 1.5, 3.4, SW - 3.0, 4.5,
+       data.get('title', ''), sz=90, bold=True,
+       color=st['chrome_text'], align=PP_ALIGN.CENTER, font=F)
+    # Hairline divider
+    rc(slide, 9.0, 7.9, 2.0, 0.03, fill=st['accent'])
+    # Subtitle in italic
+    bx(slide, 2.5, 8.3, SW - 5.0, 1.5,
+       data.get('subtitle', ''), sz=22, italic=True,
+       color=st['chrome_muted'], align=PP_ALIGN.CENTER, font=BF)
+    rc(slide, 1.5, SH - 0.8, SW - 3.0, 0.02, fill=st['text_dim'])
+
+
+def _cover_minimal(slide, data, st):
+    F = st['title_font']; BF = st['body_font']
+    tag = (data.get('tag', '')).upper()
+    if tag:
+        bx(slide, 1.1, 1.2, 10, 0.4, tag, sz=11, bold=True,
+           color=st['accent'], font=F)
+    bx(slide, 1.1, 4.4, SW - 2.2, 3.5,
+       data.get('title', ''), sz=76,
+       color=st['chrome_text'], font=F)
+    rc(slide, 1.1, 7.8, 0.6, 0.04, fill=st['accent'])
+    bx(slide, 1.1, 8.1, 14, 1.2,
+       data.get('subtitle', ''), sz=22,
+       color=st['chrome_muted'], font=BF)
+    bx(slide, 1.1, 10.2, 10, 0.6,
+       data.get('logo', 'EVYD'), sz=11,
+       color=st['chrome_muted'], font=F)
+
+
+def _cover_brutalist(slide, data, st):
+    F = st['title_font']; BF = st['body_font']
+    # Solid block for TAG
+    tag = (data.get('tag', 'PRESENTATION')).upper()
+    rc(slide, 1.1, 1.4, 5.5, 0.85, fill=st['accent'])
+    bx(slide, 1.1, 1.5, 5.5, 0.7, tag, sz=18, bold=True,
+       color=st['navy'], align=PP_ALIGN.CENTER, font=F)
+    # Massive ALL-CAPS title
+    bx(slide, 1.1, 2.8, SW - 2.2, 5.8,
+       (data.get('title', '')).upper(), sz=100, bold=True,
+       color=st['chrome_text'], font=F)
+    # Heavy accent block
+    rc(slide, 1.1, 8.8, 4.0, 0.25, fill=st['accent'])
+    bx(slide, 1.1, 9.2, 14, 1.2,
+       data.get('subtitle', ''), sz=24, bold=True,
+       color=st['chrome_muted'], font=BF)
+    bx(slide, 14.5, 10.2, 5, 0.6,
+       data.get('logo', 'EVYD  ·  2025'), sz=13, bold=True,
+       color=st['chrome_text'], align=PP_ALIGN.RIGHT, font=F)
+
+
+_COVER_COMPOSERS = {
+    'classic':   _cover_classic,
+    'gradient':  _cover_gradient,
+    'neon-grid': _cover_neongrid,
+    'magazine':  _cover_magazine,
+    'minimal':   _cover_minimal,
+    'brutalist': _cover_brutalist,
+}
+
+
+def render_cover(slide, data, st, n, total):
+    _paint_chrome_bg(slide, st, 'cover')
+    _paint_chrome_motif(slide, st, 'cover')
+    composer = _COVER_COMPOSERS.get(st.get('chrome_style', 'classic'),
+                                    _cover_classic)
+    composer(slide, data, st)
     _slide_num_free(slide, n, total, st=st)
 
 
@@ -286,60 +573,230 @@ def render_agenda(slide, data, st, _n, _total):
            sz=11 * 2, color=_card_sub, font=F)
 
 
-def render_section_divider(slide, data, st, _n, _total):
-    F = st['font']
+# ── Section divider composers ────────────────────────────────────────────────
+
+def _section_classic(slide, data, st):
+    F = st['title_font']
     M = st['motifs']
-    bg = _rgb(data.get('bg_color', st['navy']))
-    rc(slide, 0, 0, SW, SH, fill=bg)
-
     bx(slide, 1.0, 2.5, 5, 3.5, str(data.get('num', '01')),
-       sz=72 * 2, bold=True,
+       sz=144, bold=True,
        color=_rgb(M.get('number_color', '0076B3')), font=F)
-
     rc(slide, 1.0, 5.8, 2.0, 0.08,
        fill=_rgb(M.get('divider_color', '0076B3')))
-
     bx(slide, 1.0, 6.2, 18, 2.0, data.get('title', 'Section'),
-       sz=28 * 2, bold=True, color=st['chrome_text'], font=F)
+       sz=56, bold=True, color=st['chrome_text'], font=F)
+
+
+def _section_gradient(slide, data, st):
+    F = st['title_font']; BF = st['body_font']
+    num = str(data.get('num', '01'))
+    bx(slide, 1.0, 1.6, 6, 2.5, num, sz=180, bold=True,
+       color=st['accent'], font=F)
+    rc(slide, 1.0, 6.0, 3.0, 0.06, fill=st['accent'])
+    bx(slide, 1.0, 6.4, 18, 2.2, data.get('title', 'Section'),
+       sz=60, bold=True, color=st['chrome_text'], font=F)
+    if data.get('subtitle'):
+        bx(slide, 1.0, 8.4, 17, 1.0, data['subtitle'], sz=22,
+           color=st['chrome_muted'], font=BF)
+
+
+def _section_neongrid(slide, data, st):
+    F = st['title_font']; MF = st['mono_font']
+    num = str(data.get('num', '01'))
+    bx(slide, 1.0, 2.2, 8, 1.0, f'// SECTION {num}', sz=18, bold=True,
+       color=st['accent'], font=MF)
+    bx(slide, 1.0, 3.6, 18, 3.0, data.get('title', 'Section'),
+       sz=72, bold=True, color=st['chrome_text'], font=F)
+    rc(slide, 1.0, 7.0, 4.5, 0.06, fill=st['accent'])
+    if data.get('subtitle'):
+        bx(slide, 1.0, 7.4, 17, 1.4, data['subtitle'], sz=20,
+           color=st['chrome_muted'], font=MF)
+
+
+def _section_magazine(slide, data, st):
+    F = st['title_font']; BF = st['body_font']
+    num = str(data.get('num', '01'))
+    bx(slide, 1.5, 1.2, 17, 0.5, f'CHAPTER {num}', sz=14, bold=True,
+       color=st['accent'], align=PP_ALIGN.CENTER, font=F)
+    rc(slide, 9.0, 1.95, 2.0, 0.03, fill=st['accent'])
+    bx(slide, 1.5, 4.0, 17, 3.5, data.get('title', 'Section'),
+       sz=76, bold=True, italic=True,
+       color=st['chrome_text'], align=PP_ALIGN.CENTER, font=F)
+    if data.get('subtitle'):
+        bx(slide, 2.5, 7.8, 15, 1.4, data['subtitle'], sz=20, italic=True,
+           color=st['chrome_muted'], align=PP_ALIGN.CENTER, font=BF)
+
+
+def _section_minimal(slide, data, st):
+    F = st['title_font']; BF = st['body_font']
+    num = str(data.get('num', '01'))
+    bx(slide, 1.1, 1.4, 4, 0.45, num, sz=14, bold=True,
+       color=st['accent'], font=F)
+    bx(slide, 1.1, 4.6, 18, 3.8, data.get('title', 'Section'),
+       sz=72, color=st['chrome_text'], font=F)
+    rc(slide, 1.1, 8.5, 0.6, 0.04, fill=st['accent'])
+    if data.get('subtitle'):
+        bx(slide, 1.1, 8.8, 15, 1.0, data['subtitle'], sz=18,
+           color=st['chrome_muted'], font=BF)
+
+
+def _section_brutalist(slide, data, st):
+    F = st['title_font']; BF = st['body_font']
+    num = str(data.get('num', '01'))
+    # Massive number block
+    rc(slide, 0, 0.8, 7.5, 6.0, fill=st['accent'])
+    bx(slide, 0.3, 0.9, 7.0, 6.0, num, sz=260, bold=True,
+       color=st['navy'], align=PP_ALIGN.CENTER, font=F)
+    bx(slide, 8.2, 3.2, 11, 4.0, (data.get('title', 'SECTION')).upper(),
+       sz=68, bold=True, color=st['chrome_text'], font=F)
+    if data.get('subtitle'):
+        bx(slide, 8.2, 7.8, 11, 1.5, (data['subtitle']).upper(),
+           sz=20, bold=True, color=st['chrome_muted'], font=BF)
+
+
+_SECTION_COMPOSERS = {
+    'classic':   _section_classic,
+    'gradient':  _section_gradient,
+    'neon-grid': _section_neongrid,
+    'magazine':  _section_magazine,
+    'minimal':   _section_minimal,
+    'brutalist': _section_brutalist,
+}
+
+
+def render_section_divider(slide, data, st, _n, _total):
+    # bg_color override (v1 feature) — if user sets it, fall back to solid fill
+    if 'bg_color' in data:
+        rc(slide, 0, 0, SW, SH, fill=_rgb(data['bg_color']))
+    else:
+        _paint_chrome_bg(slide, st, 'section')
+    _paint_chrome_motif(slide, st, 'section')
+    composer = _SECTION_COMPOSERS.get(st.get('chrome_style', 'classic'),
+                                      _section_classic)
+    composer(slide, data, st)
+
+
+# ── Ending composers ─────────────────────────────────────────────────────────
+
+def _ending_actions_row(slide, data, st, y_rule=7.1, divider_c=None):
+    """Shared helper: draws actions strip across the bottom of an ending slide."""
+    F = st['title_font']; BF = st['body_font']
+    acts = data.get('actions', [])
+    if not acts: return
+    rc(slide, 0, y_rule, SW, 0.03, fill=_rgb('FFFFFF'))
+    _set_transparency(rc(slide, 0, y_rule, SW, 0.03, fill=_rgb('FFFFFF')), 88)
+    aw = SW / max(len(acts), 1)
+    for i, a in enumerate(acts):
+        ax = i * aw
+        if i > 0:
+            sep = rc(slide, ax, y_rule + 0.04, 0.03, 4.0, fill=_rgb('FFFFFF'))
+            _set_transparency(sep, 88)
+        bx(slide, ax + 0.7, y_rule + 0.26, 1.1, 1.0,
+           a.get('icon', ''), sz=44, align=PP_ALIGN.CENTER, font=F)
+        bx(slide, ax + 2.0, y_rule + 0.30, aw - 2.2, 0.7,
+           a.get('title', ''), sz=24, bold=True,
+           color=divider_c or st['accent'], font=F)
+        bx(slide, ax + 2.0, y_rule + 1.04, aw - 2.2, 1.3,
+           a.get('desc', ''), sz=21, color=st['chrome_muted'], font=BF)
+
+
+def _ending_classic(slide, data, st):
+    F = st['title_font']; M = st['motifs']
+    if not st.get('motif_spec'):
+        ov(slide, 5.0, 0.6, 10, 5.6, fill=st['accent2'], transparency=93)
+    bx(slide, 1.0, 1.4, 18, 2.2, data.get('title', 'Thank You'),
+       sz=72, color=st['chrome_text'], align=PP_ALIGN.CENTER, font=F)
+    rc(slide, 8.9, 3.8, 2.2, 0.1,
+       fill=_rgb(M.get('divider_color', '0076B3')))
+    if data.get('subtitle'):
+        bx(slide, 2.0, 4.1, 16, 0.9, data['subtitle'],
+           sz=28, color=st['chrome_muted'],
+           align=PP_ALIGN.CENTER, font=st['body_font'])
+    _ending_actions_row(slide, data, st, y_rule=7.1,
+                        divider_c=_rgb(M.get('number_color', '0076B3')))
+
+
+def _ending_gradient(slide, data, st):
+    F = st['title_font']; BF = st['body_font']
+    bx(slide, 1.0, 1.6, 18, 2.8, data.get('title', 'Thank You'),
+       sz=96, bold=True, color=st['chrome_text'],
+       align=PP_ALIGN.CENTER, font=F)
+    rc(slide, 9.0, 4.6, 2.0, 0.06, fill=st['accent'])
+    if data.get('subtitle'):
+        bx(slide, 2.0, 4.9, 16, 1.4, data['subtitle'], sz=26,
+           color=st['chrome_muted'], align=PP_ALIGN.CENTER, font=BF)
+    _ending_actions_row(slide, data, st, y_rule=7.3)
+
+
+def _ending_neongrid(slide, data, st):
+    F = st['title_font']; MF = st['mono_font']
+    bx(slide, 1.0, 1.2, 18, 0.5, '// END OF LINE', sz=16, bold=True,
+       color=st['accent'], align=PP_ALIGN.CENTER, font=MF)
+    bx(slide, 1.0, 2.2, 18, 3.2, data.get('title', 'Thank You.'),
+       sz=96, bold=True, color=st['chrome_text'],
+       align=PP_ALIGN.CENTER, font=F)
+    rc(slide, 8.5, 5.8, 3.0, 0.06, fill=st['accent'])
+    if data.get('subtitle'):
+        bx(slide, 1.0, 6.1, 18, 1.0, data['subtitle'], sz=22,
+           color=st['chrome_muted'], align=PP_ALIGN.CENTER, font=MF)
+    _ending_actions_row(slide, data, st, y_rule=7.4)
+
+
+def _ending_magazine(slide, data, st):
+    F = st['title_font']; BF = st['body_font']
+    rc(slide, 1.5, 1.0, SW - 3.0, 0.02, fill=st['text_dim'])
+    bx(slide, 1.5, 1.15, 18, 0.45, 'FINIS', sz=12, bold=True,
+       color=st['text_dim'], align=PP_ALIGN.CENTER, font=F)
+    bx(slide, 1.0, 3.0, 18, 3.5, data.get('title', 'Thank You'),
+       sz=96, bold=True, italic=True, color=st['chrome_text'],
+       align=PP_ALIGN.CENTER, font=F)
+    rc(slide, 9.0, 6.4, 2.0, 0.03, fill=st['accent'])
+    if data.get('subtitle'):
+        bx(slide, 2.0, 6.7, 16, 1.2, data['subtitle'], sz=22, italic=True,
+           color=st['chrome_muted'], align=PP_ALIGN.CENTER, font=BF)
+    _ending_actions_row(slide, data, st, y_rule=7.5)
+
+
+def _ending_minimal(slide, data, st):
+    F = st['title_font']; BF = st['body_font']
+    bx(slide, 1.1, 4.0, 18, 2.4, data.get('title', 'Thank You.'),
+       sz=72, color=st['chrome_text'], font=F)
+    rc(slide, 1.1, 6.5, 0.6, 0.04, fill=st['accent'])
+    if data.get('subtitle'):
+        bx(slide, 1.1, 6.8, 15, 1.0, data['subtitle'], sz=20,
+           color=st['chrome_muted'], font=BF)
+    _ending_actions_row(slide, data, st, y_rule=8.4)
+
+
+def _ending_brutalist(slide, data, st):
+    F = st['title_font']; BF = st['body_font']
+    rc(slide, 0, 2.0, SW, 3.6, fill=st['accent'])
+    bx(slide, 1.0, 2.1, 18, 3.3, (data.get('title', 'THANK YOU')).upper(),
+       sz=120, bold=True, color=st['navy'],
+       align=PP_ALIGN.CENTER, font=F)
+    if data.get('subtitle'):
+        bx(slide, 1.0, 5.9, 18, 1.2, (data['subtitle']).upper(),
+           sz=24, bold=True, color=st['chrome_text'],
+           align=PP_ALIGN.CENTER, font=BF)
+    _ending_actions_row(slide, data, st, y_rule=7.6)
+
+
+_ENDING_COMPOSERS = {
+    'classic':   _ending_classic,
+    'gradient':  _ending_gradient,
+    'neon-grid': _ending_neongrid,
+    'magazine':  _ending_magazine,
+    'minimal':   _ending_minimal,
+    'brutalist': _ending_brutalist,
+}
 
 
 def render_ending(slide, data, st, n, total):
-    F = st['font']
-    M = st['motifs']
-    rc(slide, 0, 0, SW, SH, fill=st['navy'])
-
-    ov(slide, 5.0, 0.6, 10, 5.6, fill=st['accent2'], transparency=93)
-
-    bx(slide, 1.0, 1.4, 18, 2.2, data.get('title', 'Thank You'),
-       sz=36 * 2, color=st['chrome_text'], align=PP_ALIGN.CENTER, font=F)
-
-    rc(slide, 8.9, 3.8, 2.2, 0.1,
-       fill=_rgb(M.get('divider_color', '0076B3')))
-
-    if data.get('subtitle'):
-        bx(slide, 2.0, 4.1, 16, 0.9, data['subtitle'],
-           sz=14 * 2, color=st['chrome_muted'], align=PP_ALIGN.CENTER, font=F)
-
-    rc(slide, 0, 7.1, SW, 0.03, fill=_rgb('FFFFFF'))
-    _set_transparency(
-        rc(slide, 0, 7.1, SW, 0.03, fill=_rgb('FFFFFF')), 88)
-
-    acts = data.get('actions', [])
-    if acts:
-        aw = SW / max(len(acts), 1)
-        for i, a in enumerate(acts):
-            ax = i * aw
-            if i > 0:
-                sep = rc(slide, ax, 7.14, 0.03, 4.0, fill=_rgb('FFFFFF'))
-                _set_transparency(sep, 88)
-            bx(slide, ax + 0.7, 7.36, 1.1, 1.0,
-               a.get('icon', ''), sz=22 * 2, align=PP_ALIGN.CENTER, font=F)
-            bx(slide, ax + 2.0, 7.4, aw - 2.2, 0.7,
-               a.get('title', ''), sz=12 * 2, bold=True,
-               color=_rgb(M.get('number_color', '0076B3')), font=F)
-            bx(slide, ax + 2.0, 8.14, aw - 2.2, 1.3,
-               a.get('desc', ''), sz=10.5 * 2, color=st['chrome_muted'], font=F)
-
+    _paint_chrome_bg(slide, st, 'ending')
+    _paint_chrome_motif(slide, st, 'ending')
+    composer = _ENDING_COMPOSERS.get(st.get('chrome_style', 'classic'),
+                                     _ending_classic)
+    composer(slide, data, st)
     _slide_num_free(slide, n, total, st=st)
 
 

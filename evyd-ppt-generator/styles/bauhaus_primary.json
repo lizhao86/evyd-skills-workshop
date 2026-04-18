@@ -1,0 +1,42 @@
+{
+  "name": "bauhaus_primary",
+  "version": 2,
+  "description": "White + primary red/blue/yellow. Bauhaus geometric + bold. Design-history homage.",
+  "best_for": "Design manifesto, bold announcement, art/design brief",
+  "category": "minimal",
+  "vibe_tags": ["bauhaus", "geometric", "bold", "primary", "design"],
+  "chrome_style": "brutalist",
+  "chart_colors": ["E53935", "1E88E5", "FDD835", "1A1A1A", "8D8D8D"],
+  "font": "Aptos",
+  "title_font": "Aptos Display",
+  "body_font": "Aptos",
+
+  "accent":     "E53935",
+  "accent2":    "1E88E5",
+  "navy":       "FFFFFF",
+  "white":      "FFFFFF",
+  "card":       "F4F4F4",
+  "card_side":  "E53935",
+  "card_num":   "1E88E5",
+  "text_dim":   "555555",
+  "text_num":   "888888",
+  "card_white": "F4F4F4",
+  "text_gray":  "333333",
+  "text_dark":  "111111",
+  "line_gray":  "CCCCCC",
+  "card_radius": false,
+
+  "bg_content": "FFFFFF",
+
+  "motifs": {
+    "left_bar_colors": ["E53935", "1E88E5"],
+    "header_tag_color": "E53935",
+    "header_rule_color": "E53935",
+    "bullet_dot_color": "E53935",
+    "number_color": "1E88E5",
+    "row_border_color": "CCCCCC",
+    "quote_mark_color": "FDD835",
+    "divider_color": "E53935",
+    "tier_dot_size": 14
+  }
+}

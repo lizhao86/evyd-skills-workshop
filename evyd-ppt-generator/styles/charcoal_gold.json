@@ -1,9 +1,15 @@
 {
   "name": "charcoal_gold",
+  "version": 2,
   "description": "Dark charcoal + gold accents. Matches Strategic Workshop Materials style.",
   "best_for": "Strategic workshops, board meetings, premium corporate",
+  "category": "business",
+  "vibe_tags": ["premium", "board", "strategy", "workshop", "luxury"],
+  "chrome_style": "classic",
   "chart_colors": ["C9A96E", "8B7A4E", "1C1C22", "E0C88C", "666655"],
   "font": "Aptos",
+  "title_font": "Aptos",
+  "body_font": "Aptos",
 
   "accent":     "C9A96E",
   "accent2":    "8B7542",
@@ -21,9 +27,12 @@
 
   "bg_content": "22222C",
 
+  "decorative_motif": { "kind": "oval", "color": "C9A96E", "opacity": 94, "density": "sparse" },
+
   "motifs": {
     "left_bar_colors": ["C9A96E", "8B7542"],
     "header_tag_color": "C9A96E",
+    "header_rule_color": "C9A96E",
     "bullet_dot_color": "C9A96E",
     "number_color": "C9A96E",
     "row_border_color": "3A3A45",

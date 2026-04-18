@@ -1,0 +1,47 @@
+{
+  "name": "cafe_cream",
+  "version": 2,
+  "description": "Latte + espresso + moss green. Hospitality-driven cafe/restaurant warmth.",
+  "best_for": "Hospitality, F&B brand, retail experience, community",
+  "category": "lifestyle",
+  "vibe_tags": ["hospitality", "coffee", "food", "retail", "community", "warm"],
+  "chrome_style": "magazine",
+  "chart_colors": ["4A3A2A", "8B6B4A", "6A8A5F", "C4A888", "A89378"],
+  "font": "Aptos",
+  "title_font": "Georgia",
+  "body_font": "Aptos",
+
+  "accent":     "4A3A2A",
+  "accent2":    "6A8A5F",
+  "navy":       "F0E4D0",
+  "white":      "FBF4E5",
+  "card":       "FBF4E5",
+  "card_side":  "4A3A2A",
+  "card_num":   "4A3A2A",
+  "text_dim":   "6A5A48",
+  "text_num":   "8B7A5E",
+  "card_white": "FBF4E5",
+  "text_gray":  "4A3A2A",
+  "text_dark":  "2A1E12",
+  "line_gray":  "C4A888",
+
+  "bg_content": "F0E4D0",
+
+  "gradient": {
+    "cover":   { "colors": ["FBF4E5", "F0E4D0", "D4B89A"], "angle": 135 },
+    "section": { "colors": ["FBF4E5", "EEDFC5"], "angle": 90 },
+    "ending":  { "colors": ["FBF4E5", "D4B89A"], "angle": 45 }
+  },
+
+  "motifs": {
+    "left_bar_colors": ["4A3A2A", "6A8A5F"],
+    "header_tag_color": "4A3A2A",
+    "header_rule_color": "4A3A2A",
+    "bullet_dot_color": "4A3A2A",
+    "number_color": "6A8A5F",
+    "row_border_color": "C4A888",
+    "quote_mark_color": "4A3A2A",
+    "divider_color": "6A8A5F",
+    "tier_dot_size": 14
+  }
+}

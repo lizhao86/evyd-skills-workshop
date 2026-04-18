@@ -1,0 +1,47 @@
+{
+  "name": "nordic_minimal",
+  "version": 2,
+  "description": "Off-white + pale wood + 10%-ink accent. Nordic-clean minimalism with a hint of warmth.",
+  "best_for": "Product design review, industrial/furniture brand, quiet confidence",
+  "category": "minimal",
+  "vibe_tags": ["minimal", "nordic", "airy", "product", "quiet", "wood"],
+  "chrome_style": "minimal",
+  "chart_colors": ["1A1A1A", "9E8668", "D8C8B3", "4A4A4A", "B8A890"],
+  "font": "Aptos",
+  "title_font": "Aptos",
+  "body_font": "Aptos",
+
+  "accent":     "1A1A1A",
+  "accent2":    "9E8668",
+  "navy":       "F5F1EC",
+  "white":      "FDFAF3",
+  "card":       "F5F1EC",
+  "card_side":  "1A1A1A",
+  "card_num":   "1A1A1A",
+  "text_dim":   "6A6258",
+  "text_num":   "9E8668",
+  "card_white": "F5F1EC",
+  "text_gray":  "4A4540",
+  "text_dark":  "1A1A1A",
+  "line_gray":  "D8D0C0",
+
+  "bg_content": "FAF7F0",
+
+  "gradient": {
+    "cover":   { "colors": ["FDFAF3", "F5F1EC"], "angle": 90 },
+    "section": { "colors": ["F5F1EC", "ECE4D2"], "angle": 90 },
+    "ending":  { "colors": ["FDFAF3", "F5F1EC"], "angle": 45 }
+  },
+
+  "motifs": {
+    "left_bar_colors": ["1A1A1A", "9E8668"],
+    "header_tag_color": "1A1A1A",
+    "header_rule_color": "1A1A1A",
+    "bullet_dot_color": "1A1A1A",
+    "number_color": "9E8668",
+    "row_border_color": "D8D0C0",
+    "quote_mark_color": "9E8668",
+    "divider_color": "9E8668",
+    "tier_dot_size": 14
+  }
+}

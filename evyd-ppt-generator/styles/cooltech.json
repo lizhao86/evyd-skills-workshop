@@ -1,9 +1,16 @@
 {
   "name": "cooltech",
+  "version": 2,
   "description": "Deep space navy with tech cyan + electric purple. Futuristic, confident.",
   "best_for": "AI/SaaS/healthtech, innovation topics, data-heavy",
+  "category": "tech-dark",
+  "vibe_tags": ["ai", "saas", "futuristic", "tech", "healthtech"],
+  "chrome_style": "neon-grid",
   "chart_colors": ["00C9C8", "3A8FD6", "0D1B2A", "66E0D3", "5588BB"],
   "font": "Aptos",
+  "title_font": "Aptos",
+  "body_font": "Aptos",
+  "mono_font": "Consolas",
 
   "accent":     "00C9C8",
   "accent2":    "7B61FF",
@@ -21,9 +28,17 @@
 
   "bg_content": "14304A",
 
+  "gradient": {
+    "cover":   { "colors": ["0D1B2A", "14304A", "7B61FF"], "angle": 135 },
+    "section": { "colors": ["0D1B2A", "122A45"], "angle": 90 },
+    "ending":  { "colors": ["0D1B2A", "00C9C8"], "angle": 45 }
+  },
+  "decorative_motif": { "kind": "grid", "color": "00C9C8", "opacity": 92, "density": "medium" },
+
   "motifs": {
     "left_bar_colors": ["00C9C8", "7B61FF"],
     "header_tag_color": "00C9C8",
+    "header_rule_color": "00C9C8",
     "bullet_dot_color": "00C9C8",
     "number_color": "7B61FF",
     "row_border_color": "00C9C8",

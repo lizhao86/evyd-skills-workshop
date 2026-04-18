@@ -1,0 +1,49 @@
+{
+  "name": "terminal_green",
+  "version": 2,
+  "description": "Phosphor green on deep charcoal. CRT terminal / Matrix vibe for engineers.",
+  "best_for": "Tech sharing, infrastructure talk, engineer brown-bag",
+  "category": "tech-dark",
+  "vibe_tags": ["mono", "terminal", "engineer", "retro", "matrix"],
+  "chrome_style": "neon-grid",
+  "chart_colors": ["39FF14", "7CFC00", "00FF9F", "B8FF48", "28B028"],
+  "font": "Aptos",
+  "title_font": "Aptos",
+  "body_font": "Consolas",
+  "mono_font": "Consolas",
+
+  "accent":     "39FF14",
+  "accent2":    "00FF9F",
+  "navy":       "080C08",
+  "white":      "EAFFEA",
+  "card":       "0F1A0F",
+  "card_side":  "0A120A",
+  "card_num":   "39FF14",
+  "text_dim":   "70B070",
+  "text_num":   "AAFFAA",
+  "card_white": "E8F4E8",
+  "text_gray":  "3A6A3A",
+  "text_dark":  "080C08",
+  "line_gray":  "1F3A1F",
+
+  "bg_content": "0C140C",
+
+  "gradient": {
+    "cover":   { "colors": ["080C08", "0C140C", "1F3A1F"], "angle": 135 },
+    "section": { "colors": ["080C08", "0F1A0F"], "angle": 90 },
+    "ending":  { "colors": ["080C08", "39FF14"], "angle": 45 }
+  },
+  "decorative_motif": { "kind": "grid", "color": "39FF14", "opacity": 94, "density": "medium" },
+
+  "motifs": {
+    "left_bar_colors": ["39FF14", "00FF9F"],
+    "header_tag_color": "39FF14",
+    "header_rule_color": "39FF14",
+    "bullet_dot_color": "39FF14",
+    "number_color": "00FF9F",
+    "row_border_color": "1F3A1F",
+    "quote_mark_color": "39FF14",
+    "divider_color": "39FF14",
+    "tier_dot_size": 14
+  }
+}

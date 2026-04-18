@@ -1,9 +1,15 @@
 {
   "name": "sunrise",
+  "version": 2,
   "description": "Medium navy + coral + amber. Warm, hopeful, high-contrast. For AI/progress narratives.",
   "best_for": "Progress reports, AI transformation, hopeful narratives",
+  "category": "editorial",
+  "vibe_tags": ["hopeful", "progress", "transformation", "narrative"],
+  "chrome_style": "magazine",
   "chart_colors": ["E8634A", "F5A623", "1B2838", "F09068", "FFCC66"],
   "font": "Aptos",
+  "title_font": "Georgia",
+  "body_font": "Aptos",
 
   "accent":     "E8634A",
   "accent2":    "F5A623",
@@ -21,9 +27,17 @@
 
   "bg_content": "243B53",
 
+  "gradient": {
+    "cover":   { "colors": ["1B2838", "2E4562", "F5A623"], "angle": 135 },
+    "section": { "colors": ["1B2838", "34506A"], "angle": 90 },
+    "ending":  { "colors": ["1B2838", "E8634A"], "angle": 45 }
+  },
+  "decorative_motif": { "kind": "oval", "color": "F5A623", "opacity": 90, "density": "sparse" },
+
   "motifs": {
     "left_bar_colors": ["E8634A", "F5A623"],
     "header_tag_color": "E8634A",
+    "header_rule_color": "E8634A",
     "bullet_dot_color": "E8634A",
     "number_color": "F5A623",
     "row_border_color": "F5A623",

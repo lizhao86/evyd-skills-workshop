@@ -1,9 +1,15 @@
 {
   "name": "evyd_white",
+  "version": 2,
   "description": "White backgrounds throughout. Good for printed handouts.",
   "best_for": "Printed handouts, light projection, white-background presentations",
+  "category": "business",
+  "vibe_tags": ["clean", "print", "light", "handout"],
+  "chrome_style": "minimal",
   "chart_colors": ["0076B3", "2CD5C3", "172E41", "99C4E2", "446688"],
   "font": "Aptos",
+  "title_font": "Aptos",
+  "body_font": "Aptos",
 
   "accent":     "0076B3",
   "accent2":    "2CD5C3",
@@ -21,9 +27,16 @@
 
   "bg_content": "F5F9FC",
 
+  "gradient": {
+    "cover":   { "colors": ["FFFFFF", "F5F9FC", "E9F1F8"], "angle": 135 },
+    "section": { "colors": ["F5F9FC", "E9F1F8"], "angle": 90 },
+    "ending":  { "colors": ["FFFFFF", "E9F1F8"], "angle": 45 }
+  },
+
   "motifs": {
     "left_bar_colors": ["0076B3", "2CD5C3"],
     "header_tag_color": "0076B3",
+    "header_rule_color": "0076B3",
     "bullet_dot_color": "0076B3",
     "number_color": "2CD5C3",
     "row_border_color": "2CD5C3",

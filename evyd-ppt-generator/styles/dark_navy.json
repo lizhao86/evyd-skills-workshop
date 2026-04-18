@@ -1,9 +1,15 @@
 {
   "name": "dark_navy",
+  "version": 2,
   "description": "Deep navy + teal + orange. Premium look for strategy/research decks.",
   "best_for": "Strategy decks, research presentations, finance",
+  "category": "business",
+  "vibe_tags": ["strategy", "premium", "research", "finance"],
+  "chrome_style": "gradient",
   "chart_colors": ["E87722", "3A8FD6", "0B1F3A", "F5A623", "6BAFDB"],
   "font": "Aptos",
+  "title_font": "Aptos",
+  "body_font": "Aptos",
 
   "accent":     "E87722",
   "accent2":    "17A589",
@@ -21,9 +27,17 @@
 
   "bg_content": "1A5276",
 
+  "gradient": {
+    "cover":   { "colors": ["0B1F3A", "17375A", "E87722"], "angle": 135 },
+    "section": { "colors": ["0B1F3A", "1A5276"], "angle": 90 },
+    "ending":  { "colors": ["0B1F3A", "17A589"], "angle": 45 }
+  },
+  "decorative_motif": { "kind": "blob", "color": "E87722", "opacity": 92, "density": "sparse" },
+
   "motifs": {
     "left_bar_colors": ["E87722", "17A589"],
     "header_tag_color": "E87722",
+    "header_rule_color": "E87722",
     "bullet_dot_color": "E87722",
     "number_color": "17A589",
     "row_border_color": "17A589",

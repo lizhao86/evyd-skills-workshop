@@ -1,0 +1,48 @@
+{
+  "name": "newspaper_editorial",
+  "version": 2,
+  "description": "Warm off-white + ink black + accent slate. Broadsheet-style editorial with hairline rules.",
+  "best_for": "Long-form story, retrospective, broadsheet feature",
+  "category": "editorial",
+  "vibe_tags": ["editorial", "newspaper", "broadsheet", "retrospective", "serif"],
+  "chrome_style": "magazine",
+  "chart_colors": ["2A2A2A", "8B6F47", "5A6B7A", "B89878", "A8A8A8"],
+  "font": "Aptos",
+  "title_font": "Georgia",
+  "body_font": "Georgia",
+
+  "accent":     "2A2A2A",
+  "accent2":    "8B6F47",
+  "navy":       "F8F3EA",
+  "white":      "FDFAF3",
+  "card":       "FDFAF3",
+  "card_side":  "8B6F47",
+  "card_num":   "2A2A2A",
+  "text_dim":   "6A6055",
+  "text_num":   "A89478",
+  "card_white": "FDFAF3",
+  "text_gray":  "4A4038",
+  "text_dark":  "1A1A1A",
+  "line_gray":  "C8B898",
+
+  "bg_content": "F8F3EA",
+
+  "gradient": {
+    "cover":   { "colors": ["FDFAF3", "F8F3EA"], "angle": 90 },
+    "section": { "colors": ["F8F3EA", "F0E6D0"], "angle": 90 },
+    "ending":  { "colors": ["FDFAF3", "F8F3EA"], "angle": 45 }
+  },
+  "decorative_motif": { "kind": "lines", "color": "8B6F47", "opacity": 70, "density": "sparse" },
+
+  "motifs": {
+    "left_bar_colors": ["2A2A2A", "8B6F47"],
+    "header_tag_color": "2A2A2A",
+    "header_rule_color": "2A2A2A",
+    "bullet_dot_color": "2A2A2A",
+    "number_color": "8B6F47",
+    "row_border_color": "C8B898",
+    "quote_mark_color": "8B6F47",
+    "divider_color": "8B6F47",
+    "tier_dot_size": 14
+  }
+}

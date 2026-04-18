@@ -1,0 +1,49 @@
+{
+  "name": "tokyo_night",
+  "version": 2,
+  "description": "Night-blue + neon lavender + cyan. Developer IDE aesthetic, AI demo, hackathon.",
+  "best_for": "AI demo, hackathon pitch, developer tools, tech sharing",
+  "category": "tech-dark",
+  "vibe_tags": ["neon", "night", "futuristic", "developer", "ai", "ide"],
+  "chrome_style": "neon-grid",
+  "chart_colors": ["7AA2F7", "BB9AF7", "9ECE6A", "F7768E", "E0AF68"],
+  "font": "Aptos",
+  "title_font": "Aptos Display",
+  "body_font": "Aptos",
+  "mono_font": "Consolas",
+
+  "accent":     "7AA2F7",
+  "accent2":    "BB9AF7",
+  "navy":       "1A1B26",
+  "white":      "FFFFFF",
+  "card":       "24283B",
+  "card_side":  "2C3148",
+  "card_num":   "7AA2F7",
+  "text_dim":   "9AA5CE",
+  "text_num":   "C0CAF5",
+  "card_white": "EEEEF5",
+  "text_gray":  "565F89",
+  "text_dark":  "1A1B26",
+  "line_gray":  "414868",
+
+  "bg_content": "1F2335",
+
+  "gradient": {
+    "cover":   { "colors": ["1A1B26", "24283B", "7AA2F7"], "angle": 135 },
+    "section": { "colors": ["1A1B26", "414868"], "angle": 90 },
+    "ending":  { "colors": ["24283B", "BB9AF7"], "angle": 45 }
+  },
+  "decorative_motif": { "kind": "grid", "color": "7AA2F7", "opacity": 93, "density": "medium" },
+
+  "motifs": {
+    "left_bar_colors": ["7AA2F7", "BB9AF7"],
+    "header_tag_color": "7AA2F7",
+    "header_rule_color": "7AA2F7",
+    "bullet_dot_color": "7AA2F7",
+    "number_color": "BB9AF7",
+    "row_border_color": "414868",
+    "quote_mark_color": "BB9AF7",
+    "divider_color": "7AA2F7",
+    "tier_dot_size": 14
+  }
+}

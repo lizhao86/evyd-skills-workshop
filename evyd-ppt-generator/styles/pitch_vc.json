@@ -1,0 +1,47 @@
+{
+  "name": "pitch_vc",
+  "version": 2,
+  "description": "White + deep green + gold. Sequoia-style pitch deck — understated but confident.",
+  "best_for": "VC pitch, fundraising, investor meetings, product launch",
+  "category": "business",
+  "vibe_tags": ["pitch", "vc", "investor", "confident", "fundraising"],
+  "chrome_style": "magazine",
+  "chart_colors": ["0E4A2F", "C9A96E", "1A1A22", "7FB894", "8B7A4E"],
+  "font": "Aptos",
+  "title_font": "Aptos Display",
+  "body_font": "Aptos",
+
+  "accent":     "0E4A2F",
+  "accent2":    "C9A96E",
+  "navy":       "FFFFFF",
+  "white":      "FFFFFF",
+  "card":       "F3F7F1",
+  "card_side":  "0E4A2F",
+  "card_num":   "0E4A2F",
+  "text_dim":   "4A6A58",
+  "text_num":   "7FB894",
+  "card_white": "F3F7F1",
+  "text_gray":  "4A5040",
+  "text_dark":  "1A1A22",
+  "line_gray":  "D0DCD2",
+
+  "bg_content": "FFFFFF",
+
+  "gradient": {
+    "cover":   { "colors": ["FFFFFF", "F8FAF7"], "angle": 90 },
+    "section": { "colors": ["F8FAF7", "EDF3EC"], "angle": 90 },
+    "ending":  { "colors": ["FFFFFF", "F8FAF7"], "angle": 135 }
+  },
+
+  "motifs": {
+    "left_bar_colors": ["0E4A2F", "C9A96E"],
+    "header_tag_color": "0E4A2F",
+    "header_rule_color": "0E4A2F",
+    "bullet_dot_color": "0E4A2F",
+    "number_color": "C9A96E",
+    "row_border_color": "D0DCD2",
+    "quote_mark_color": "C9A96E",
+    "divider_color": "C9A96E",
+    "tier_dot_size": 14
+  }
+}

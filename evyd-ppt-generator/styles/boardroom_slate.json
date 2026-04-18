@@ -1,0 +1,43 @@
+{
+  "name": "boardroom_slate",
+  "version": 2,
+  "description": "Slate grey + deep oxblood accent. Understated formal tone for executive audiences.",
+  "best_for": "Board meetings, executive briefings, legal/compliance",
+  "category": "business",
+  "vibe_tags": ["board", "formal", "legal", "exec", "gravitas"],
+  "chrome_style": "classic",
+  "chart_colors": ["8B2A2A", "6E8391", "2C353E", "B05050", "4C5A66"],
+  "font": "Aptos",
+  "title_font": "Aptos",
+  "body_font": "Aptos",
+
+  "accent":     "8B2A2A",
+  "accent2":    "6E8391",
+  "navy":       "2C353E",
+  "white":      "FFFFFF",
+  "card":       "38424C",
+  "card_side":  "2E3842",
+  "card_num":   "8B2A2A",
+  "text_dim":   "A5B3BE",
+  "text_num":   "C5D3DE",
+  "card_white": "F1F3F6",
+  "text_gray":  "5A6670",
+  "text_dark":  "2C353E",
+  "line_gray":  "4C5A66",
+
+  "bg_content": "34404A",
+
+  "decorative_motif": { "kind": "oval", "color": "8B2A2A", "opacity": 94, "density": "sparse" },
+
+  "motifs": {
+    "left_bar_colors": ["8B2A2A", "6E8391"],
+    "header_tag_color": "8B2A2A",
+    "header_rule_color": "8B2A2A",
+    "bullet_dot_color": "8B2A2A",
+    "number_color": "6E8391",
+    "row_border_color": "4C5A66",
+    "quote_mark_color": "8B2A2A",
+    "divider_color": "6E8391",
+    "tier_dot_size": 14
+  }
+}

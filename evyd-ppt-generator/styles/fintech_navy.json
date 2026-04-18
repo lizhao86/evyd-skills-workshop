@@ -1,0 +1,48 @@
+{
+  "name": "fintech_navy",
+  "version": 2,
+  "description": "Navy + mint + white. Clean compliance-friendly fintech tone.",
+  "best_for": "Fintech demo, compliance briefings, banking partner decks",
+  "category": "business",
+  "vibe_tags": ["fintech", "compliance", "clean", "banking", "regulated"],
+  "chrome_style": "gradient",
+  "chart_colors": ["3EDDBB", "0E3B66", "122E52", "6BEAD1", "1B5A94"],
+  "font": "Aptos",
+  "title_font": "Aptos",
+  "body_font": "Aptos",
+
+  "accent":     "3EDDBB",
+  "accent2":    "1B5A94",
+  "navy":       "0E2747",
+  "white":      "FFFFFF",
+  "card":       "122E52",
+  "card_side":  "163862",
+  "card_num":   "3EDDBB",
+  "text_dim":   "9EC0D9",
+  "text_num":   "CCE8F5",
+  "card_white": "F0F6FA",
+  "text_gray":  "4A6580",
+  "text_dark":  "0E2747",
+  "line_gray":  "29466A",
+
+  "bg_content": "0F2F52",
+
+  "gradient": {
+    "cover":   { "colors": ["0E2747", "163862", "3EDDBB"], "angle": 135 },
+    "section": { "colors": ["0E2747", "1B5A94"], "angle": 90 },
+    "ending":  { "colors": ["0E2747", "3EDDBB"], "angle": 45 }
+  },
+  "decorative_motif": { "kind": "oval", "color": "3EDDBB", "opacity": 92, "density": "sparse" },
+
+  "motifs": {
+    "left_bar_colors": ["3EDDBB", "1B5A94"],
+    "header_tag_color": "3EDDBB",
+    "header_rule_color": "3EDDBB",
+    "bullet_dot_color": "3EDDBB",
+    "number_color": "1B5A94",
+    "row_border_color": "29466A",
+    "quote_mark_color": "3EDDBB",
+    "divider_color": "1B5A94",
+    "tier_dot_size": 14
+  }
+}

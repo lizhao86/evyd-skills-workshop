@@ -1,0 +1,48 @@
+{
+  "name": "zen_mono",
+  "version": 2,
+  "description": "Washi paper + sumi black + single hairline accent. Japanese-zen minimalism.",
+  "best_for": "Calm keynote, brand philosophy, quiet product reveal",
+  "category": "minimal",
+  "vibe_tags": ["zen", "japanese", "calm", "philosophy", "quiet", "washi"],
+  "chrome_style": "minimal",
+  "chart_colors": ["1A1A1A", "5C5C5C", "9A9A9A", "C0A878", "D5D0C8"],
+  "font": "Aptos",
+  "title_font": "Georgia",
+  "body_font": "Aptos",
+
+  "accent":     "1A1A1A",
+  "accent2":    "C0A878",
+  "navy":       "F3EEDE",
+  "white":      "FAF4E3",
+  "card":       "F3EEDE",
+  "card_side":  "1A1A1A",
+  "card_num":   "1A1A1A",
+  "text_dim":   "6A6555",
+  "text_num":   "8A8575",
+  "card_white": "F3EEDE",
+  "text_gray":  "4A4535",
+  "text_dark":  "1A1A1A",
+  "line_gray":  "C8C0A8",
+
+  "bg_content": "F3EEDE",
+
+  "gradient": {
+    "cover":   { "colors": ["FAF4E3", "F3EEDE"], "angle": 90 },
+    "section": { "colors": ["F3EEDE", "EDE5C8"], "angle": 90 },
+    "ending":  { "colors": ["FAF4E3", "F3EEDE"], "angle": 45 }
+  },
+  "decorative_motif": { "kind": "lines", "color": "1A1A1A", "opacity": 78, "density": "sparse" },
+
+  "motifs": {
+    "left_bar_colors": ["1A1A1A", "C0A878"],
+    "header_tag_color": "1A1A1A",
+    "header_rule_color": "1A1A1A",
+    "bullet_dot_color": "1A1A1A",
+    "number_color": "C0A878",
+    "row_border_color": "C8C0A8",
+    "quote_mark_color": "C0A878",
+    "divider_color": "1A1A1A",
+    "tier_dot_size": 14
+  }
+}

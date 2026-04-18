@@ -1,9 +1,15 @@
 {
   "name": "warm_soft",
+  "version": 2,
   "description": "Cream + muted terracotta + amber. Low-contrast, warm, paper-like. Refined and approachable.",
   "best_for": "Government alignment, healthcare proposals, warm professional presentations",
+  "category": "editorial",
+  "vibe_tags": ["paper", "refined", "soft", "government", "healthcare"],
+  "chrome_style": "magazine",
   "chart_colors": ["C4785A", "D4A070", "8B6B50", "B89878", "A0836A"],
   "font": "Aptos",
+  "title_font": "Georgia",
+  "body_font": "Aptos",
 
   "accent":     "C4785A",
   "accent2":    "D4A070",
@@ -21,9 +27,17 @@
 
   "bg_content": "F0E0D0",
 
+  "gradient": {
+    "cover":   { "colors": ["FFF8F0", "F0E0D0", "E0C8B0"], "angle": 135 },
+    "section": { "colors": ["F5EBE0", "E8D4C0"], "angle": 90 },
+    "ending":  { "colors": ["FFF8F0", "EDD8C4"], "angle": 45 }
+  },
+  "decorative_motif": { "kind": "lines", "color": "C4785A", "opacity": 80, "density": "sparse" },
+
   "motifs": {
     "left_bar_colors": ["C4785A", "D4A070"],
     "header_tag_color": "C4785A",
+    "header_rule_color": "C4785A",
     "bullet_dot_color": "C4785A",
     "number_color": "D4A070",
     "row_border_color": "D0BCA8",

@@ -1,9 +1,15 @@
 {
   "name": "evyd_teal",
+  "version": 2,
   "description": "Dark navy + teal accent. High-contrast for external events.",
   "best_for": "External events, conferences, high-contrast projection",
+  "category": "business",
+  "vibe_tags": ["bold", "high-contrast", "conference", "external"],
+  "chrome_style": "gradient",
   "chart_colors": ["2CD5C3", "0076B3", "0A1E30", "66E0D3", "336699"],
   "font": "Aptos",
+  "title_font": "Aptos",
+  "body_font": "Aptos",
 
   "accent":     "2CD5C3",
   "accent2":    "06B6AA",
@@ -21,9 +27,17 @@
 
   "bg_content": "0C2A38",
 
+  "gradient": {
+    "cover":   { "colors": ["0A1E30", "0C2A38", "06B6AA"], "angle": 135 },
+    "section": { "colors": ["0A1E30", "0F3D4A"], "angle": 90 },
+    "ending":  { "colors": ["0A1E30", "2CD5C3"], "angle": 45 }
+  },
+  "decorative_motif": { "kind": "oval", "color": "2CD5C3", "opacity": 92, "density": "sparse" },
+
   "motifs": {
     "left_bar_colors": ["2CD5C3", "06B6AA"],
     "header_tag_color": "2CD5C3",
+    "header_rule_color": "2CD5C3",
     "bullet_dot_color": "2CD5C3",
     "number_color": "06B6AA",
     "row_border_color": "06B6AA",

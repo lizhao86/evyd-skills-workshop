@@ -1,0 +1,47 @@
+{
+  "name": "xhs_white",
+  "version": 2,
+  "description": "Pure white + coral + pastel. 小红书-style figure/image post — clean lifestyle vibe.",
+  "best_for": "小红书 post, lifestyle content, consumer-facing short-form",
+  "category": "lifestyle",
+  "vibe_tags": ["xhs", "lifestyle", "clean", "pastel", "consumer", "coral"],
+  "chrome_style": "minimal",
+  "chart_colors": ["FF5B6C", "FFA38B", "FFE2B9", "B6D8E8", "D6B6F0"],
+  "font": "Aptos",
+  "title_font": "Aptos",
+  "body_font": "Aptos",
+
+  "accent":     "FF5B6C",
+  "accent2":    "FFA38B",
+  "navy":       "FFFFFF",
+  "white":      "FFFFFF",
+  "card":       "FFF5F0",
+  "card_side":  "FF5B6C",
+  "card_num":   "FF5B6C",
+  "text_dim":   "808080",
+  "text_num":   "FFA38B",
+  "card_white": "FFF5F0",
+  "text_gray":  "555555",
+  "text_dark":  "222222",
+  "line_gray":  "F0D8D0",
+
+  "bg_content": "FFFFFF",
+
+  "gradient": {
+    "cover":   { "colors": ["FFFFFF", "FFF5F0", "FFE8DD"], "angle": 135 },
+    "section": { "colors": ["FFFFFF", "FFF5F0"], "angle": 90 },
+    "ending":  { "colors": ["FFFFFF", "FFE8DD"], "angle": 45 }
+  },
+
+  "motifs": {
+    "left_bar_colors": ["FF5B6C", "FFA38B"],
+    "header_tag_color": "FF5B6C",
+    "header_rule_color": "FF5B6C",
+    "bullet_dot_color": "FF5B6C",
+    "number_color": "FFA38B",
+    "row_border_color": "F0D8D0",
+    "quote_mark_color": "FF5B6C",
+    "divider_color": "FFA38B",
+    "tier_dot_size": 14
+  }
+}

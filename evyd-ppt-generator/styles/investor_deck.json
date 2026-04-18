@@ -1,0 +1,47 @@
+{
+  "name": "investor_deck",
+  "version": 2,
+  "description": "Near-monochrome + single saturated orange accent. Classic pitch deck restraint.",
+  "best_for": "Seed/Series A deck, investor memo, one-color brand",
+  "category": "business",
+  "vibe_tags": ["pitch", "restrained", "one-color", "accent", "focused"],
+  "chrome_style": "minimal",
+  "chart_colors": ["FF5A1F", "333333", "888888", "FFA070", "CCCCCC"],
+  "font": "Aptos",
+  "title_font": "Aptos",
+  "body_font": "Aptos",
+
+  "accent":     "FF5A1F",
+  "accent2":    "333333",
+  "navy":       "FFFFFF",
+  "white":      "FFFFFF",
+  "card":       "F6F6F6",
+  "card_side":  "FF5A1F",
+  "card_num":   "FF5A1F",
+  "text_dim":   "555555",
+  "text_num":   "AAAAAA",
+  "card_white": "F6F6F6",
+  "text_gray":  "555555",
+  "text_dark":  "111111",
+  "line_gray":  "DDDDDD",
+
+  "bg_content": "FFFFFF",
+
+  "gradient": {
+    "cover":   { "colors": ["FFFFFF", "F6F6F6"], "angle": 90 },
+    "section": { "colors": ["FFFFFF", "F0F0F0"], "angle": 90 },
+    "ending":  { "colors": ["FFFFFF", "F6F6F6"], "angle": 45 }
+  },
+
+  "motifs": {
+    "left_bar_colors": ["FF5A1F", "333333"],
+    "header_tag_color": "FF5A1F",
+    "header_rule_color": "FF5A1F",
+    "bullet_dot_color": "FF5A1F",
+    "number_color": "FF5A1F",
+    "row_border_color": "DDDDDD",
+    "quote_mark_color": "FF5A1F",
+    "divider_color": "FF5A1F",
+    "tier_dot_size": 14
+  }
+}

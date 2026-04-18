@@ -1,9 +1,15 @@
 {
   "name": "warm",
+  "version": 2,
   "description": "Coral + amber on deep espresso. Energetic, approachable, human.",
   "best_for": "Education, training, workshops, team building",
+  "category": "editorial",
+  "vibe_tags": ["warm", "workshop", "training", "education", "human"],
+  "chrome_style": "magazine",
   "chart_colors": ["E8622A", "C4883A", "2C1810", "F09040", "8B6B3E"],
   "font": "Aptos",
+  "title_font": "Georgia",
+  "body_font": "Aptos",
 
   "accent":     "E8622A",
   "accent2":    "F0A830",
@@ -21,9 +27,17 @@
 
   "bg_content": "3D2418",
 
+  "gradient": {
+    "cover":   { "colors": ["2C1810", "3D2418", "E8622A"], "angle": 135 },
+    "section": { "colors": ["2C1810", "4E2E20"], "angle": 90 },
+    "ending":  { "colors": ["2C1810", "F0A830"], "angle": 45 }
+  },
+  "decorative_motif": { "kind": "oval", "color": "F0A830", "opacity": 92, "density": "sparse" },
+
   "motifs": {
     "left_bar_colors": ["E8622A", "F0A830"],
     "header_tag_color": "E8622A",
+    "header_rule_color": "E8622A",
     "bullet_dot_color": "E8622A",
     "number_color": "F0A830",
     "row_border_color": "E8622A",

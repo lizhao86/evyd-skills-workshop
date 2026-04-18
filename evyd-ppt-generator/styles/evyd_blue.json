@@ -1,9 +1,15 @@
 {
   "name": "evyd_blue",
+  "version": 2,
   "description": "Navy header + blue backgrounds. Default for EVYD internal/MOH presentations.",
   "best_for": "EVYD internal, MOH, government, default",
+  "category": "business",
+  "vibe_tags": ["corporate", "trust", "gov", "internal"],
+  "chrome_style": "gradient",
   "chart_colors": ["2CD5C3", "0076B3", "172E41", "CCE8F5", "446688"],
   "font": "Aptos",
+  "title_font": "Aptos",
+  "body_font": "Aptos",
 
   "accent":     "2CD5C3",
   "accent2":    "0076B3",
@@ -21,9 +27,17 @@
 
   "bg_content": "0A3A5C",
 
+  "gradient": {
+    "cover":   { "colors": ["0A1F35", "172E41", "0076B3"], "angle": 135 },
+    "section": { "colors": ["0A1F35", "1F4A6A"], "angle": 90 },
+    "ending":  { "colors": ["172E41", "0076B3"], "angle": 45 }
+  },
+  "decorative_motif": { "kind": "oval", "color": "2CD5C3", "opacity": 92, "density": "sparse" },
+
   "motifs": {
     "left_bar_colors": ["2CD5C3", "0076B3"],
     "header_tag_color": "2CD5C3",
+    "header_rule_color": "2CD5C3",
     "bullet_dot_color": "2CD5C3",
     "number_color": "0076B3",
     "row_border_color": "0076B3",

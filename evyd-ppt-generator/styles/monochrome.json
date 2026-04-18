@@ -1,9 +1,15 @@
 {
   "name": "monochrome",
+  "version": 2,
   "description": "Black, white, and grey — minimal, editorial, high-end.",
   "best_for": "Executive briefings, editorial, minimalist",
+  "category": "minimal",
+  "vibe_tags": ["minimal", "editorial", "exec", "high-end", "mono"],
+  "chrome_style": "minimal",
   "chart_colors": ["666666", "999999", "111111", "BBBBBB", "444444"],
   "font": "Aptos",
+  "title_font": "Aptos",
+  "body_font": "Aptos",
 
   "accent":     "EEEEEE",
   "accent2":    "888888",
@@ -12,18 +18,21 @@
   "card":       "1A1A1A",
   "card_side":  "080808",
   "card_num":   "AAAAAA",
-  "text_dim":   "666666",
-  "text_num":   "444444",
+  "text_dim":   "888888",
+  "text_num":   "555555",
   "card_white": "F0F0F0",
-  "text_gray":  "444444",
+  "text_gray":  "555555",
   "text_dark":  "111111",
   "line_gray":  "333333",
 
   "bg_content": "1E1E1E",
 
+  "decorative_motif": { "kind": "lines", "color": "EEEEEE", "opacity": 80, "density": "sparse" },
+
   "motifs": {
     "left_bar_colors": ["EEEEEE", "888888"],
     "header_tag_color": "DDDDDD",
+    "header_rule_color": "EEEEEE",
     "bullet_dot_color": "EEEEEE",
     "number_color": "AAAAAA",
     "row_border_color": "AAAAAA",

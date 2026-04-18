@@ -9,7 +9,8 @@ description: >
 # EVYD PPT Generator Skill
 
 Generates native-PPTX presentations from a compact content JSON file.
-One renderer (`gen_pptx.py`), 22 slide types (18 content + 4 chrome), ten pluggable styles.
+One renderer (`gen_pptx.py`), 22 slide types (18 content + 4 chrome), **28 pluggable styles**
+across 6 chrome identities (classic / gradient / neon-grid / magazine / minimal / brutalist).
 All slides are drawn from code — no template file required.
 
 **Skill location**: `/Users/Li.ZHAO/我的代码/技能 skills 作坊/evyd-ppt-generator/`
@@ -25,15 +26,45 @@ Always consult this file when deciding:
 - Whether to use `"blue"` or `"white"` background
 - How to write concise titles and bullets
 
+### Theme catalog (MUST consult before recommending a style)
+
+**`references/theme-catalog.md`** — complete directory of 28 built-in themes with
+category, chrome style, vibe tags, best-for hints, and paired narrative templates.
+
+### Style recommendation UX (Phase 1 deliverable)
+
+Don't ask "which style do you want?" cold — the user rarely knows. Instead:
+
+1. Extract 2–4 **keywords** from the user's brief covering: topic, audience, vibe.
+2. Open `references/theme-catalog.md`, score each theme by keyword match on
+   `category` + `vibe_tags` + `best_for`.
+3. Filter by audience (decision-maker / engineer / consumer / external / internal).
+4. **Present 2–3 top candidates** in a compact table: theme name, 1-line "why it
+   fits", recommended narrative template.
+5. If the user is undecided, offer a **preview**: render the cover slide for each
+   candidate into `/tmp/preview_<theme>.pptx` so they can compare visually.
+6. After the user picks, proceed to Phase 3 content generation.
+
+Example:
+```
+User: 想做一个对外的 AI 新产品发布会 PPT，要有冲击力
+→ keywords: [product-launch, external, bold, ai]
+→ 3 candidates:
+  1. cyberpunk_neon  — neon-grid chrome, max visual punch (template H)
+  2. tokyo_night     — IDE-style neon, fits AI framing (template H or I)
+  3. pitch_vc        — confident rather than loud (template H)
+```
+
 ### Design direction brainstorming (style & color)
 
-When discussing design direction, style, or color palette with the user — **always use
-the `ui-ux-pro-max` skill first** to brainstorm palettes, font pairings, and visual
-direction. Run `--design-system` with relevant keywords before settling on a style.
+If the user wants to explore beyond the built-in 28 themes, use the
+`ui-ux-pro-max` skill (if available) to brainstorm novel palettes, font pairings,
+and direction. Run `--design-system` with relevant keywords, then materialize the
+result as a new theme JSON following the v2 schema
+(see `styles/tokyo_night.json` as reference).
 
-If `ui-ux-pro-max` is not installed, fall back to the built-in
-`references/design-guidelines.md` style mapping and color psychology tables.
-The core workflow does not depend on it — never fail or ask the user to install it.
+The core workflow does not depend on `ui-ux-pro-max` —
+never fail or ask the user to install it.
 
 ---
 
@@ -62,7 +93,10 @@ Three-layer separation:
 3. **User background** — ask directly: "你的行业/角色是什么？PPT 给谁看的？" Do NOT guess or infer from context. Use the answer to select narrative template and slide density.
 4. **Key sections** / what needs to be covered
 5. **Date, venue, presenter** (for cover slide)
-6. **Style** preference — use `ui-ux-pro-max` skill (if available) to brainstorm palettes and design direction, then map to a built-in style or create a new one. Fall back to `references/design-guidelines.md` if the skill is not installed.
+6. **Style** preference — run the **Style recommendation UX** above: extract
+   keywords → consult `references/theme-catalog.md` → propose 2–3 candidates →
+   let user pick (optionally preview). Only fall back to `ui-ux-pro-max`
+   brainstorm when no existing theme scores ≥ 2 keyword matches.
 
 #### Audience analysis matrix
 
@@ -129,6 +163,44 @@ comparison_table(多维对比) → scope_tiers(分层发现) →
 section_divider("结论") → center_focus(核心结论) →
 two_column_steps(建议行动) → ending
 ```
+
+**H. Product Launch** (发布会、产品上线、新功能宣发)
+```
+cover → section_divider("The Problem") → bullets_with_panel(痛点) →
+quote_full(用户声音) → section_divider("Introducing") →
+center_focus(产品名+slogan) → cards_grid(核心特性) →
+stat_highlight(benchmark) → image_full(产品图) →
+section_divider("Availability") → timeline(roadmap) → ending(CTA)
+```
+推荐主题：`tokyo_night` / `cyberpunk_neon` / `pitch_vc` / `fintech_navy`
+
+**I. Tech Sharing** (技术分享、brown-bag、工程专题)
+```
+cover → agenda → section_divider("Background") → bullets_with_panel →
+freeform(架构图) → comparison_table(方案对比) → chart(benchmark) →
+scenario_cards(use cases) → section_divider("Takeaways") →
+center_focus → ending
+```
+推荐主题：`terminal_green` / `cooltech` / `tokyo_night` / `dark_navy`
+
+**J. XHS Post / Short-Form Card Deck** (小红书图文、短 feed，9-10 页)
+```
+cover(大标题+emoji) → stat_highlight(钩子数字) →
+bullets_with_panel(痛点) → cards_grid(方法 3-4 张) →
+quote_full(金句) → stat_highlight(结果) →
+center_focus(CTA) → ending(关注引导)
+```
+密度覆写：每页 2-3 points / 标题 ≤ 10 中文字符 / 尽量单屏可读。
+推荐主题：`xhs_white` / `xhs_warm` / `pastel_dream` / `warm_soft`
+
+**K. Magazine Feature** (长文深度报道、品牌故事、白皮书节选)
+```
+cover → quote_full(引言) → section_divider("第一章") →
+bullets_with_panel(叙事) → image_full(氛围图) → stat_highlight(数据) →
+section_divider("第二章") → comparison_table → scope_tiers →
+section_divider("尾声") → center_focus(主张) → ending
+```
+推荐主题：`magazine_bold` / `newspaper_editorial` / `vogue_serif` / `morandi`
 
 #### Content density controls
 

@@ -1,0 +1,48 @@
+{
+  "name": "pastel_dream",
+  "version": 2,
+  "description": "Lavender + mint + butter yellow. Gen-Z soft palette for delightful consumer products.",
+  "best_for": "Consumer app launch, Gen-Z brand, delightful user journey",
+  "category": "lifestyle",
+  "vibe_tags": ["pastel", "genz", "dreamy", "consumer", "delight", "soft"],
+  "chrome_style": "gradient",
+  "chart_colors": ["B39DDB", "A4E0C4", "FFE7A0", "F5A9C5", "B3E5FC"],
+  "font": "Aptos",
+  "title_font": "Aptos Display",
+  "body_font": "Aptos",
+
+  "accent":     "9B7FD0",
+  "accent2":    "A4E0C4",
+  "navy":       "F3EDFB",
+  "white":      "FFFDFF",
+  "card":       "F3EDFB",
+  "card_side":  "E2D4F0",
+  "card_num":   "9B7FD0",
+  "text_dim":   "887B99",
+  "text_num":   "A895C8",
+  "card_white": "F3EDFB",
+  "text_gray":  "606070",
+  "text_dark":  "3A3455",
+  "line_gray":  "D8CCE5",
+
+  "bg_content": "EDE4F8",
+
+  "gradient": {
+    "cover":   { "colors": ["E8D8F0", "D8EDE0", "FFF0C0"], "angle": 135 },
+    "section": { "colors": ["F3EDFB", "E2F4E8"], "angle": 90 },
+    "ending":  { "colors": ["F3EDFB", "FFF0C0"], "angle": 45 }
+  },
+  "decorative_motif": { "kind": "blob", "color": "A4E0C4", "opacity": 88, "density": "sparse" },
+
+  "motifs": {
+    "left_bar_colors": ["9B7FD0", "A4E0C4"],
+    "header_tag_color": "9B7FD0",
+    "header_rule_color": "9B7FD0",
+    "bullet_dot_color": "9B7FD0",
+    "number_color": "A4E0C4",
+    "row_border_color": "D8CCE5",
+    "quote_mark_color": "9B7FD0",
+    "divider_color": "A4E0C4",
+    "tier_dot_size": 14
+  }
+}

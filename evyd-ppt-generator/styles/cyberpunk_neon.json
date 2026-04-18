@@ -1,0 +1,49 @@
+{
+  "name": "cyberpunk_neon",
+  "version": 2,
+  "description": "Magenta + cyan on pure black. High-voltage neon aesthetic for bold tech statements.",
+  "best_for": "Product launch, hackathon demo, bold tech brand",
+  "category": "tech-dark",
+  "vibe_tags": ["neon", "bold", "vibrant", "cyberpunk", "launch"],
+  "chrome_style": "neon-grid",
+  "chart_colors": ["FF2E9A", "00F0FF", "9C27FF", "FFE600", "FF6B00"],
+  "font": "Aptos",
+  "title_font": "Aptos Display",
+  "body_font": "Aptos",
+  "mono_font": "Consolas",
+
+  "accent":     "FF2E9A",
+  "accent2":    "00F0FF",
+  "navy":       "0A0014",
+  "white":      "FFFFFF",
+  "card":       "14002A",
+  "card_side":  "1A0038",
+  "card_num":   "00F0FF",
+  "text_dim":   "C090E0",
+  "text_num":   "FF80D0",
+  "card_white": "F2E0F8",
+  "text_gray":  "806090",
+  "text_dark":  "0A0014",
+  "line_gray":  "3A1A58",
+
+  "bg_content": "1A0028",
+
+  "gradient": {
+    "cover":   { "colors": ["0A0014", "2A0056", "FF2E9A"], "angle": 135 },
+    "section": { "colors": ["0A0014", "1A0038"], "angle": 90 },
+    "ending":  { "colors": ["0A0014", "00F0FF"], "angle": 45 }
+  },
+  "decorative_motif": { "kind": "grid", "color": "FF2E9A", "opacity": 94, "density": "dense" },
+
+  "motifs": {
+    "left_bar_colors": ["FF2E9A", "00F0FF"],
+    "header_tag_color": "FF2E9A",
+    "header_rule_color": "FF2E9A",
+    "bullet_dot_color": "FF2E9A",
+    "number_color": "00F0FF",
+    "row_border_color": "3A1A58",
+    "quote_mark_color": "00F0FF",
+    "divider_color": "FF2E9A",
+    "tier_dot_size": 14
+  }
+}

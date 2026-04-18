@@ -1,9 +1,15 @@
 {
   "name": "morandi",
+  "version": 2,
   "description": "Muted grey-toned pastels — slate, dusty rose, sage. Calm and refined.",
   "best_for": "Culture, brand, design, artistic presentations",
+  "category": "editorial",
+  "vibe_tags": ["calm", "refined", "brand", "culture", "design"],
+  "chrome_style": "magazine",
   "chart_colors": ["C4857A", "7BA3A8", "5C7080", "D4A89A", "8FB8AD"],
   "font": "Aptos",
+  "title_font": "Georgia",
+  "body_font": "Aptos",
 
   "accent":     "C4857A",
   "accent2":    "8FAF9F",
@@ -21,9 +27,16 @@
 
   "bg_content": "6B8090",
 
+  "gradient": {
+    "cover":   { "colors": ["5C7080", "6B8090"], "angle": 135 },
+    "section": { "colors": ["5C7080", "7A90A0"], "angle": 90 },
+    "ending":  { "colors": ["5C7080", "8FAF9F"], "angle": 45 }
+  },
+
   "motifs": {
     "left_bar_colors": ["C4857A", "8FAF9F"],
     "header_tag_color": "C4857A",
+    "header_rule_color": "C4857A",
     "bullet_dot_color": "C4857A",
     "number_color": "8FAF9F",
     "row_border_color": "8FAF9F",

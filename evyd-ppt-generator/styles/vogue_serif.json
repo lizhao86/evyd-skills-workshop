@@ -1,0 +1,47 @@
+{
+  "name": "vogue_serif",
+  "version": 2,
+  "description": "Ivory + rose + charcoal. High-fashion serif, airy white space.",
+  "best_for": "Brand story, fashion/beauty/design, aspirational feature",
+  "category": "editorial",
+  "vibe_tags": ["fashion", "editorial", "aspirational", "serif", "luxury"],
+  "chrome_style": "magazine",
+  "chart_colors": ["C77B86", "1A1A1A", "A69787", "E2B4BA", "6D5A4A"],
+  "font": "Aptos",
+  "title_font": "Georgia",
+  "body_font": "Aptos",
+
+  "accent":     "C77B86",
+  "accent2":    "1A1A1A",
+  "navy":       "FAF5F2",
+  "white":      "FFFDFB",
+  "card":       "FFFDFB",
+  "card_side":  "C77B86",
+  "card_num":   "C77B86",
+  "text_dim":   "7A6B60",
+  "text_num":   "C0A5A0",
+  "card_white": "FFFDFB",
+  "text_gray":  "555045",
+  "text_dark":  "1A1A1A",
+  "line_gray":  "D8C8C0",
+
+  "bg_content": "FAF5F2",
+
+  "gradient": {
+    "cover":   { "colors": ["FFFDFB", "FAF5F2", "EFD8D3"], "angle": 135 },
+    "section": { "colors": ["FAF5F2", "F2E4DE"], "angle": 90 },
+    "ending":  { "colors": ["FFFDFB", "FAF5F2"], "angle": 45 }
+  },
+
+  "motifs": {
+    "left_bar_colors": ["C77B86", "1A1A1A"],
+    "header_tag_color": "C77B86",
+    "header_rule_color": "C77B86",
+    "bullet_dot_color": "C77B86",
+    "number_color": "1A1A1A",
+    "row_border_color": "D8C8C0",
+    "quote_mark_color": "C77B86",
+    "divider_color": "C77B86",
+    "tier_dot_size": 14
+  }
+}

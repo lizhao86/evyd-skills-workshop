@@ -1,0 +1,47 @@
+{
+  "name": "xhs_warm",
+  "version": 2,
+  "description": "Peach + terracotta + cream. 小红书 warm lifestyle variant for cozy topics.",
+  "best_for": "小红书 lifestyle post, home/food/wellness content",
+  "category": "lifestyle",
+  "vibe_tags": ["xhs", "warm", "cozy", "wellness", "peach", "lifestyle"],
+  "chrome_style": "magazine",
+  "chart_colors": ["D86B4A", "E6A577", "F3D5B0", "C4785A", "9A6B50"],
+  "font": "Aptos",
+  "title_font": "Georgia",
+  "body_font": "Aptos",
+
+  "accent":     "D86B4A",
+  "accent2":    "E6A577",
+  "navy":       "FDF3EC",
+  "white":      "FFFAF3",
+  "card":       "FFFAF3",
+  "card_side":  "D86B4A",
+  "card_num":   "D86B4A",
+  "text_dim":   "8A6B55",
+  "text_num":   "B58F73",
+  "card_white": "FFFAF3",
+  "text_gray":  "6A5040",
+  "text_dark":  "3D2418",
+  "line_gray":  "E8D0B8",
+
+  "bg_content": "FDF3EC",
+
+  "gradient": {
+    "cover":   { "colors": ["FFFAF3", "FDEDDD", "F7D5B8"], "angle": 135 },
+    "section": { "colors": ["FFFAF3", "FDEDDD"], "angle": 90 },
+    "ending":  { "colors": ["FFFAF3", "F7D5B8"], "angle": 45 }
+  },
+
+  "motifs": {
+    "left_bar_colors": ["D86B4A", "E6A577"],
+    "header_tag_color": "D86B4A",
+    "header_rule_color": "D86B4A",
+    "bullet_dot_color": "D86B4A",
+    "number_color": "E6A577",
+    "row_border_color": "E8D0B8",
+    "quote_mark_color": "D86B4A",
+    "divider_color": "E6A577",
+    "tier_dot_size": 14
+  }
+}
